@@ -102,6 +102,8 @@ def apply_verdicts(con: sqlite3.Connection, deals: list[Deal]) -> None:
             judge(d, itad[d.store_id], "itad")
             continue
         low, days = local_low(con, d)
-        # 기록이 1일뿐이면 오늘 가격이 곧 최저라 의미가 없으므로 판정 보류
-        judge(d, low if days >= 7 else None, "local", days)
+        # 기록이 짧으면 오늘 가격이 곧 최저라 의미가 없으므로 판정 보류.
+        # 콘솔은 외부 가격 이력이 없어 자체 기록이 90일은 쌓여야 판정한다 ("추적 n일 중 최저가")
+        need = 90 if d.store in ("playstation", "nintendo", "xbox") else 7
+        judge(d, low if days >= need else None, "local", days)
 

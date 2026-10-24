@@ -29,6 +29,8 @@ class Deal:
     developer: str = ""
     publisher: str = ""
     release_year: Optional[int] = None
+    platforms: list[str] = field(default_factory=list)  # 콘솔: ["PS5", "PS4"]
+    popularity: Optional[int] = None                    # 스토어 판매 순위 (콘솔은 평가 대신 사용)
 
     # 가공 단계에서 채움
     verdict: str = "unknown"        # best / near / wait / unknown
@@ -38,6 +40,7 @@ class Deal:
     score: float = 0.0
     history: list = field(default_factory=list)   # [[YYYY-MM-DD, price], ...]
     palette: dict = field(default_factory=dict)   # {"accent": "#hex", "deep": "#hex"}
+    pc_compare: Optional[dict] = None             # 콘솔 게임의 PC 가격 {"store", "price", "diff"}
 
     @property
     def key(self) -> str:

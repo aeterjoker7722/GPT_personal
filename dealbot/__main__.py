@@ -14,7 +14,7 @@ from datetime import datetime
 
 from . import config, curate, history, motion, posts, render
 from .models import Deal, FreeGame
-from .sources import directg, epic, gog, steam, stove
+from .sources import directg, epic, gog, playstation, steam, stove
 
 
 def collect() -> tuple[list[Deal], list[FreeGame], list[str]]:
@@ -42,7 +42,8 @@ def collect() -> tuple[list[Deal], list[FreeGame], list[str]]:
     if ep:
         free, ep_deals = ep
         deals += ep_deals
-    for name, fn in (("gog", gog.fetch), ("directg", directg.fetch), ("stove", stove.fetch)):
+    for name, fn in (("gog", gog.fetch), ("directg", directg.fetch), ("stove", stove.fetch),
+                     ("playstation", playstation.fetch)):
         got = run(name, fn)
         if got:
             deals += got
@@ -104,11 +105,13 @@ def prepare():
     con = history.connect()
     history.record(con, deals)
     history.apply_verdicts(con, deals)
-    curate.compare_stores(deals)
+    pc = [d for d in deals if d.store not in curate.CONSOLE_STORES]
+    curate.compare_stores(pc)
+    curate.compare_console([d for d in deals if d.store in curate.CONSOLE_STORES], pc)
     return deals, free, stores, con
 
 
-POST_KINDS = [*posts.POSTS, "reel", "reel:ending", "story:upcoming-free"]
+POST_KINDS = [*posts.POSTS, "reel", "reel:ending", "reel:console", "story:upcoming-free"]
 
 
 def make_post(kind: str, deals, free, stores, con, out, args, sample: bool = False) -> None:

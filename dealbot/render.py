@@ -11,7 +11,8 @@ from . import config, motion, palette
 from .models import Deal, FreeGame
 
 KST = timezone(timedelta(hours=9))
-STORE_NAMES = {"steam": "Steam", "gog": "GOG", "epic": "Epic", "directg": "다이렉트게임즈", "stove": "STOVE"}
+STORE_NAMES = {"steam": "Steam", "gog": "GOG", "epic": "Epic", "directg": "다이렉트게임즈", "stove": "STOVE",
+               "playstation": "PlayStation", "nintendo": "Nintendo", "xbox": "Xbox"}
 TEMPLATES = Path(__file__).parent / "templates"
 
 # 테마 이름 → 설명. 템플릿은 templates/<theme>.html.j2
@@ -72,6 +73,7 @@ def _env() -> Environment:
         "pad2": lambda n: f"{int(n):02d}",
         "ord": ord,
         "dday": _dday,
+        "short_won": lambda v: (f"{v / 10000:.1f}".rstrip("0").rstrip(".") + "만") if v >= 10000 else f"{int(v) // 1000}천" if v >= 1000 else f"{int(v)}",
     })
     env.globals["chart"] = chart
     return env
@@ -147,7 +149,7 @@ def render_theme(slides: list[dict], theme: str, out_dir: Path, *, name: str | N
     return result
 
 
-REEL_TITLES = {"weekly": ("이번 주", "할인"), "ending": ("곧 끝나는", "할인")}
+REEL_TITLES = {"weekly": ("이번 주", "할인"), "ending": ("곧 끝나는", "할인"), "console": ("주말 콘솔", "세일")}
 
 
 def render_reel(picks: list[Deal], out_dir: Path, *, count: int = 3, sample: bool = False,

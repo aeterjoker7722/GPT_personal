@@ -9,7 +9,7 @@ from . import config
 from .models import Deal
 
 VERDICT_BONUS = {"best": 25, "near": 10, "unknown": 0, "wait": -20}
-KOREAN_BONUS = {"음성": 12, "자막": 8, "미지원": -10}
+KOREAN_BONUS = {"음성": 12, "자막": 8, "지원": 8, "미지원": -10}
 
 
 def normalize_title(title: str) -> str:
@@ -40,6 +40,41 @@ def compare_stores(deals: list[Deal]) -> None:
                 d.review_pct, d.review_count = rated.review_pct, rated.review_count
 
 
+CONSOLE_STORES = {"playstation", "nintendo", "xbox"}
+PLATFORM_WORDS = re.compile(r"\b(ps4|ps5|ps4 & ps5|ps4 and ps5|nintendo switch 2|nintendo switch|switch|xbox series x\|s|xbox one)\b")
+
+
+def compare_console(console: list[Deal], pc: list[Deal]) -> None:
+    """콘솔 게임과 같은 제목의 PC 할인을 찾아 가격 차이를 기록 (콘솔가 - PC가)."""
+    by_title: dict[str, Deal] = {}
+    for d in pc:
+        t = normalize_title(d.title)
+        if t not in by_title or d.price < by_title[t].price:
+            by_title[t] = d
+    for c in console:
+        t = re.sub(r"\s+", " ", PLATFORM_WORDS.sub(" ", normalize_title(c.title))).strip()
+        match = by_title.get(t)
+        if match:
+            c.pc_compare = {"store": match.store, "price": match.price, "diff": c.price - match.price}
+
+
+def pick_console(deals: list[Deal], n: int, min_discount: int = 30) -> list[Deal]:
+    """콘솔은 평가 데이터가 없으므로 판매 순위와 할인율로 고른다."""
+    cands = [d for d in deals if d.store in CONSOLE_STORES and d.discount >= min_discount]
+    for d in cands:
+        rank = d.popularity or 150
+        d.score = round(d.discount * 0.6 + max(0, 150 - rank) * 0.4 + KOREAN_BONUS.get(d.korean or "", 0), 1)
+    out, seen = [], set()
+    for d in sorted(cands, key=lambda d: d.score, reverse=True):
+        t = re.sub(r"\s+", " ", PLATFORM_WORDS.sub(" ", normalize_title(d.title))).strip()
+        if t not in seen:
+            seen.add(t)
+            out.append(d)
+        if len(out) >= n:
+            break
+    return out
+
+
 def score(d: Deal) -> float:
     s = d.discount * 0.6
     if d.review_pct is not None:
@@ -54,6 +89,8 @@ def score(d: Deal) -> float:
 
 
 def passes(d: Deal) -> bool:
+    if d.store in CONSOLE_STORES:
+        return False  # 콘솔은 pick_console 로만 고른다
     if d.discount < config.MIN_DISCOUNT:
         return False
     if d.store in ("steam", "gog"):
@@ -84,7 +121,7 @@ def pick(deals: list[Deal], n: int) -> list[Deal]:
 SERIES = {
     "top": ("이번 주 할인 TOP", lambda d: True),
     "under5k": ("5천 원 이하 명작", lambda d: d.price <= 5000),
-    "korean": ("한국어 지원 할인작", lambda d: d.korean in ("음성", "자막")),
+    "korean": ("한국어 지원 할인작", lambda d: d.korean in ("음성", "자막", "지원")),
     "best": ("역대 최저가 갱신", lambda d: d.verdict == "best"),
 }
 

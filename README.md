@@ -24,7 +24,7 @@ playwright install chromium
 
 ```bash
 python -m dealbot today --motion               # 오늘 요일 편성표대로 전부 생성 → output/YYYY-MM-DD/<포맷>/
-python -m dealbot post weekly lowest           # 원하는 포맷만 (weekly, lowest, ending, under5k, korean, aaa, free, story, guide, reel, reel:ending)
+python -m dealbot post weekly lowest           # 원하는 포맷만 (weekly, lowest, ending, under5k, korean, aaa, console, free, story, guide, reel, reel:ending, reel:console)
 python -m dealbot post weekly --motion key     # 표지와 메인 카드를 MP4 로도
 python -m dealbot post weekly --affiliate      # 제휴 링크를 쓸 때 [광고] 표기 추가
 python -m dealbot run --theme receipt          # 다른 시안(editorial/receipt/ticker)으로 주간 TOP
@@ -43,6 +43,7 @@ python -m dealbot sample --post weekly free     # 네트워크 없이 샘플 데
 | Epic | freeGamesPromotions | 무료 배포(현재, 다음 주)와 할인 |
 | GOG | catalog API (판매량순, 할인 중) | 한국은 USD 결제라 `DEALBOT_USD_KRW` 환율로 환산 표시 |
 | 다이렉트게임즈 | 할인 목록 HTML 파싱 | 평가 정보가 없어 같은 제목의 스팀 평가를 공유. 상업적으로 쓰기 전에 이용약관 확인 필요 |
+| PlayStation (한국) | 스토어 웹의 GraphQL (베스트셀러순, 할인 중인 제품판) | 비공개 API라 스토어 개편 시 해시 갱신 필요. PS Plus 전용 할인 제외. 콘솔은 역대 최저가 판정 대신 PC 가격 비교와 절약액 표시 |
 | 스토브 | `data/stove_manual.csv` 수동 입력 | 공개 API가 없고 해외 서버에서는 검색 결과가 비어 자동 수집 미구현. 예시: `data/stove_manual.example.csv` |
 
 ## 최저가 판정

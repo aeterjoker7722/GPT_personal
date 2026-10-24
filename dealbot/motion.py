@@ -126,6 +126,11 @@ def fetch_trailer(manifest_url: str, out: Path, start_sec: float | None = None, 
     """
     if not manifest_url:
         return None
+    if manifest_url.split("?")[0].endswith(".mp4"):  # PS 스토어 미리보기 영상은 MP4 한 파일
+        subprocess.run([_ffmpeg(), "-loglevel", "error", "-y", "-ss", str(start_sec or 4), "-t", str(seconds),
+                        "-i", manifest_url, "-an", "-vf", "setpts=PTS-STARTPTS", "-c:v", "libx264",
+                        "-preset", "veryfast", "-crf", "20", str(out)], check=True)
+        return out
     if start_sec is None:
         length = _trailer_length(manifest_url)
         start_sec = max(6.0, min(length * 0.3, length - seconds - 3)) if length else 12.0

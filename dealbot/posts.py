@@ -12,7 +12,8 @@ from . import curate
 from .models import Deal, FreeGame
 
 KST = timezone(timedelta(hours=9))
-STORE_NAMES = {"steam": "Steam", "gog": "GOG", "epic": "Epic", "directg": "다이렉트게임즈", "stove": "STOVE"}
+STORE_NAMES = {"steam": "Steam", "gog": "GOG", "epic": "Epic", "directg": "다이렉트게임즈", "stove": "STOVE",
+               "playstation": "PlayStation", "nintendo": "Nintendo", "xbox": "Xbox"}
 
 
 @dataclass
@@ -44,6 +45,9 @@ POSTS = {
     "aaa": PostType("aaa", "AAA DEALS", "정가 5만 원 넘는\n대작 할인 {n}",
                     "원래 5만 원 넘던 대작들이 할인 중입니다.",
                     "#스팀할인 #대작게임 #AAA게임 #게임할인"),
+    "console": PostType("console", "CONSOLE SALE", "주말 콘솔\n세일 {n}",
+                        "주말에 할 콘솔 게임, 할인 중인 인기작 {n}개입니다. 같은 게임의 PC 가격도 같이 적었습니다.",
+                        "#PS5할인 #플스할인 #PS스토어 #콘솔게임"),
     "free": PostType("free", "FREE THIS WEEK", "이번 주\n무료 게임",
                      "이번 주 무료 게임입니다. 받아 두면 계속 내 게임입니다.",
                      "#에픽무료게임 #무료게임 #에픽게임즈 #PC게임", heroes=0),
@@ -63,7 +67,7 @@ WEEKLY_PLAN = {
     2: [("19:00", "series")],
     3: [("23:00", "story:upcoming-free")],
     4: [("00:05", "free"), ("18:00", "ending"), ("20:00", "reel:ending")],
-    5: [("12:00", "series")],
+    5: [("12:00", "console")],
     6: [("20:00", "story")],
 }
 
@@ -105,6 +109,8 @@ def select(kind: str, deals: list[Deal], n: int = 9) -> list[Deal]:
         return curate.pick([d for d in deals if d.regular >= 50000], n)
     if kind in ("under5k", "korean"):
         return curate.series(deals, kind, n)
+    if kind == "console":
+        return curate.pick_console(deals, n)
     if kind == "story":
         return curate.pick(deals, 1)
     if kind == "guide":
@@ -139,6 +145,8 @@ def build(kind: str, picks: list[Deal], free: list[FreeGame], stores: list[str])
         stat, stat_label = (f"D-{hours // 24}" if hours >= 24 else f"{hours}H"), "가장 빠른 마감"
     elif kind == "lowest":
         stat, stat_label = f"{len(every)}", "역대 최저가"
+    elif kind == "console":
+        stat, stat_label = f"₩{sum(d.regular - d.price for d in every[:5]) // 10000}만", "TOP 5 할인액 합계"
     elif kind in ("weekly", "aaa"):
         stat, stat_label = f"₩{sum(d.regular - d.price for d in every[:5]) // 10000}만", "TOP 5 할인액 합계"
     slides = [{"kind": "cover", "post": post, "deals": every[:5], "deal_count": len(every),
@@ -168,11 +176,14 @@ def caption(kind: str, picks: list[Deal], free: list[FreeGame], affiliate: bool 
         for i, d in enumerate(picks, 1):
             extra = f" · ~{_kst(d.ends_at)} 종료" if kind == "ending" and d.ends_at else ""
             ko = f" · 한국어 {d.korean}" if d.korean and d.korean != "미지원" else ""
+            if d.pc_compare:
+                diff = d.pc_compare["diff"]
+                ko += f" · PC보다 ₩{-diff:,} 쌈" if diff < 0 else (f" · PC({STORE_NAMES[d.pc_compare['store']]})가 ₩{diff:,} 더 쌈" if diff > 0 else " · PC와 같은 가격")
             lines.append(f"{i}. {d.title} ({STORE_NAMES[d.store]}) -{d.discount}% ₩{d.price:,}{ko}{marks[d.verdict]}{extra}")
     lines += [
         "",
         "기다리는 게임을 댓글로 남겨 주세요. 할인하면 알려드릴게요.",
-        "월 TOP · 화 최저가 · 수 큐레이션 · 금 0시 무료게임 · 금 마감임박",
+        "월 TOP · 화 최저가 · 수 큐레이션 · 금 0시 무료게임 · 금 마감임박 · 토 콘솔",
         "가격은 게시 시점 기준이며 바뀔 수 있습니다.",
         "",
         pt.hashtags,

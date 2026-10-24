@@ -63,6 +63,7 @@
   .seal text { font-family: var(--sans); font-weight: 800; fill: var(--brand-ink); }
   .seal .core { font-family: var(--num); font-weight: 400; font-size: 64px; letter-spacing: .01em; }
   .seal .core.kr { font-family: var(--sans); font-weight: 900; font-size: 50px; letter-spacing: -.04em; }
+  .seal .core.kr.sm { font-size: 38px; }
 
   .panel { position: absolute; left: 0; right: 0; bottom: 0; z-index: 5; animation: rise .75s .2s cubic-bezier(.7,0,.2,1) both; }
   .story .panel { bottom: 250px; }
@@ -77,6 +78,8 @@
   .titlebar { background: var(--black); padding: 26px 44px 0; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
   .titlebar h2 { font-size: 60px; font-weight: 900; letter-spacing: -.04em; line-height: 1.08; animation: wipe .7s 1s cubic-bezier(.6,0,.2,1) both;
                  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .titlebar .plats { flex: none; display: flex; gap: 8px; padding-bottom: 8px; }
+  .titlebar .plats i { font-style: normal; font-family: var(--num); font-size: 26px; letter-spacing: .06em; padding: 4px 12px 2px; border: 2px solid var(--paper); }
   .titlebar .ends { flex: none; font-family: var(--num); font-size: 34px; letter-spacing: .04em; color: var(--brand); padding-bottom: 6px; }
   /* 영화 포스터 하단 빌링 블록: 세로로 늘린 좁은 글자 */
   .billing { background: var(--black); padding: 18px 44px 34px; font-size: 19px; font-weight: 600; line-height: 1.25; letter-spacing: -.01em; color: rgba(244,240,230,.72);
@@ -158,13 +161,15 @@
   <circle cx="120" cy="120" r="118" fill="#ffd60a"/>
   <circle cx="120" cy="120" r="70" fill="none" stroke="#0b0b0a" stroke-width="3"/>
   <g class="ring"><text font-size="21" letter-spacing="2.2"><textPath href="#sp{{ uid }}">{{ ring ~ ring ~ ring }}</textPath></text></g>
-  <text class="core{{ ' kr' if kr }}" x="120" y="{{ 138 if kr else 143 }}" text-anchor="middle">{{ core }}</text>
+  <text class="core{{ ' kr' if kr }}{{ ' sm' if core|length > 3 }}" x="120" y="{{ 138 if kr else 143 }}" text-anchor="middle">{{ core }}</text>
 </svg>
 {%- endmacro %}
 
 {% macro billing(d, post) -%}
 <p class="billing">
   <span><b>{{ d.store|store_name|upper }}</b> 한국 판매가 ₩{{ d.price|won }}</span>
+  {% if d.platforms %}<span>플랫폼 <b>{{ d.platforms|join(' / ') }}</b></span>{% endif %}
+  {% if d.pc_compare %}<span>{{ d.pc_compare.store|store_name }} ₩{{ d.pc_compare.price|won }} <b>{% if d.pc_compare.diff < 0 %}(PC보다 ₩{{ (0 - d.pc_compare.diff)|won }} 쌈){% elif d.pc_compare.diff > 0 %}(PC가 ₩{{ d.pc_compare.diff|won }} 더 쌈){% else %}(PC와 같음){% endif %}</b></span>{% endif %}
   <span>정가 ₩{{ d.regular|won }}</span>
   <span>한국어 <b>{{ d.korean or '미확인' }}</b></span>
   {% if d.review_pct is not none %}<span>평가 <b>{{ d.review_desc or (d.review_pct ~ '%') }}</b> {{ d.review_pct }}%{% if d.review_count %} · {{ d.review_count|compact }}명{% endif %}</span>{% endif %}
@@ -182,14 +187,16 @@
     <div class="pct"><span data-count-from="0" data-count-to="{{ d.discount }}" data-count-start=".75" data-count-dur=".5" data-prefix="−" data-suffix="%">−{{ d.discount }}%</span></div>
     <div class="price"><small>{{ label }}</small><b data-count-from="{{ d.regular }}" data-count-to="{{ d.price }}" data-count-start=".6" data-count-dur="1.2" data-prefix="₩" data-round="10">₩{{ d.price|won }}</b><s>₩{{ d.regular|won }}</s></div>
   </div>
-  <div class="titlebar"><h2>{{ d.title }}</h2>{% if post.key == 'ending' and d.ends_at %}<span class="ends">~{{ d.ends_at|kdatetime }}</span>{% endif %}</div>
+  <div class="titlebar"><h2>{{ d.title }}</h2>{% if post.key == 'ending' and d.ends_at %}<span class="ends">~{{ d.ends_at|kdatetime }}</span>{% elif d.platforms %}<span class="plats">{% for pf in d.platforms|sort(reverse=true) %}<i>{{ pf }}</i>{% endfor %}</span>{% endif %}</div>
   {{ billing(d, post) }}
 </div>
 {%- endmacro %}
 
 {% macro deal_seal(d, post, uid, top) -%}
 {% if post.key == 'ending' and d.ends_at %}{{ seal(uid, "ENDING SOON · 곧 마감 · ", d.ends_at|dday, top) }}
-{% elif d.verdict in verdict_seal %}{{ seal(uid, verdict_seal[d.verdict][0], verdict_seal[d.verdict][1], top, true) }}{% endif %}
+{% elif d.verdict in verdict_seal %}{{ seal(uid, verdict_seal[d.verdict][0], verdict_seal[d.verdict][1], top, true) }}
+{% elif d.pc_compare and d.pc_compare.diff < 0 %}{{ seal(uid, "CHEAPER THAN PC · PC보다 쌈 · ", "−" ~ (0 - d.pc_compare.diff)|short_won, top, true) }}
+{% elif d.platforms %}{{ seal(uid, "YOU SAVE · 정가 대비 절약 · ", (d.regular - d.price)|short_won, top, true) }}{% endif %}
 {%- endmacro %}
 
 {% for s in slides %}{% set n = loop.index %}{% set post = s.post %}
@@ -259,7 +266,7 @@
         <span class="n">{{ (s.offset + loop.index)|pad2 }}</span>
         <img src="{{ d.art_tall or d.image }}" alt="">
         <div style="min-width:0"><div class="t">{{ d.title }}</div>
-          <div class="s">{{ d.store|store_name }} · 한국어 {{ d.korean or '미확인' }}{% if d.review_pct is not none %} · 평가 {{ d.review_pct }}%{% endif %}{% if post.key == 'ending' and d.ends_at %} · ~{{ d.ends_at|kdatetime }}{% elif d.verdict == 'best' %} · 역대 최저{% endif %}</div></div>
+          <div class="s">{{ d.store|store_name }} · 한국어 {{ d.korean or '미확인' }}{% if d.review_pct is not none %} · 평가 {{ d.review_pct }}%{% endif %}{% if post.key == 'ending' and d.ends_at %} · ~{{ d.ends_at|kdatetime }}{% elif d.verdict == 'best' %} · 역대 최저{% endif %}{% if d.platforms %} · {{ d.platforms|sort(reverse=true)|join('/') }}{% endif %}{% if d.pc_compare and d.pc_compare.diff < 0 %} · PC보다 ₩{{ (0 - d.pc_compare.diff)|won }} 쌈{% endif %}</div></div>
         <div class="p"><em>−{{ d.discount }}%</em><b>₩{{ d.price|won }}</b></div>
       </div>
     {% endfor %}
@@ -305,9 +312,10 @@
     <div class="sched">
       <div><i>MON</i>이번 주 할인 TOP</div>
       <div><i>TUE</i>역대 최저가 갱신</div>
-      <div><i>WED·SAT</i>주제별 큐레이션</div>
+      <div><i>WED</i>주제별 큐레이션</div>
       <div><i>FRI 00:00</i>에픽 무료 게임</div>
       <div><i>FRI</i>주말에 끝나는 할인</div>
+      <div><i>SAT</i>주말 콘솔 세일</div>
     </div>
     <p class="legal">공식 스토어와 공인 키셀러만 소개합니다. 가격은 게시 시점 기준이며 바뀔 수 있습니다. 기다리는 게임은 댓글로 남겨 주세요.{% if affiliate %}<br>이 게시물에는 제휴 링크가 포함되어 있으며, 구매 시 수수료를 받을 수 있습니다.{% endif %}</p>
     <div class="handle">{{ handle }}</div>
