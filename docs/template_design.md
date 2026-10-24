@@ -12,10 +12,10 @@
 
 | 시안 | 표지 | 메인 카드 | 모션 |
 |---|---|---|---|
-| **editorial** 에디토리얼 매거진 | ![](samples/editorial/slide_01.png) | ![](samples/editorial/slide_02.png) | ![](samples/editorial/slide_02.gif) |
-| **receipt** 영수증 | ![](samples/receipt/slide_01.png) | ![](samples/receipt/slide_02.png) | ![](samples/receipt/slide_02.gif) |
-| **ticker** 증권 시세 | ![](samples/ticker/slide_01.png) | ![](samples/ticker/slide_02.png) | ![](samples/ticker/slide_02.gif) |
-| **poster** 포스터 | ![](samples/poster/slide_01.png) | ![](samples/poster/slide_02.png) | ![](samples/poster/slide_02.gif) |
+| **editorial** 에디토리얼 매거진 | ![](samples/editorial/slide_01.jpg) | ![](samples/editorial/slide_02.jpg) | ![](samples/editorial/slide_02.gif) |
+| **receipt** 영수증 | ![](samples/receipt/slide_01.jpg) | ![](samples/receipt/slide_02.jpg) | ![](samples/receipt/slide_02.gif) |
+| **ticker** 증권 시세 | ![](samples/ticker/slide_01.jpg) | ![](samples/ticker/slide_02.jpg) | ![](samples/ticker/slide_02.gif) |
+| **poster** 포스터 | ![](samples/poster/slide_01.jpg) | ![](samples/poster/slide_02.jpg) | ![](samples/poster/slide_02.gif) |
 
 릴스(9:16, 트레일러 합성): ![](samples/reel/reel.gif)
 
