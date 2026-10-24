@@ -1,0 +1,31 @@
+# 매일 가격을 수집해 data/price_history.sqlite 에 쌓는다.
+# 기록이 7일 이상 쌓여야 "최저가 판정"이 켜진다 (ITAD_API_KEY 를 Secrets 에 넣으면 스팀은 바로 판정).
+name: collect-prices
+
+on:
+  schedule:
+    - cron: "17 1 * * *"   # 매일 10:17 KST
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests beautifulsoup4 Jinja2
+      - run: python -m dealbot collect
+        env:
+          ITAD_API_KEY: ${{ secrets.ITAD_API_KEY }}
+      - name: Commit price history
+        run: |
+          git config user.name "dealbot"
+          git config user.email "dealbot@users.noreply.github.com"
+          git add data/price_history.sqlite
+          git diff --cached --quiet || git commit -m "data: price snapshot $(date -u +%F)"
+          git push
