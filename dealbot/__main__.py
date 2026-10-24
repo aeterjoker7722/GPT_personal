@@ -136,7 +136,8 @@ def make_post(kind: str, deals, free, stores, con, out, args, sample: bool = Fal
         if kind == "free" and not free:
             print("[free] 무료 배포 게임이 없어 건너뜀")
             return
-        picks = posts.select(kind, deals) if kind != "free" else []
+        picks = posts.trim(kind, posts.select(kind, deals)) if kind not in ("free", "story", "guide") else (
+            posts.select(kind, deals) if kind != "free" else [])
         if kind not in ("free",) and not picks:
             print(f"[{kind}] 조건에 맞는 게임이 없어 건너뜀")
             return

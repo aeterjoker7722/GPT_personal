@@ -118,6 +118,18 @@ def select(kind: str, deals: list[Deal], n: int = 9) -> list[Deal]:
     return []
 
 
+LIST_ROWS = 5
+
+
+def trim(kind: str, picks: list[Deal]) -> list[Deal]:
+    """목록 슬라이드 마지막 장에 1~2개만 남으면 그만큼 덜어 낸다 (거의 빈 장 방지)."""
+    heroes = POSTS[kind].heroes
+    rest = len(picks) - heroes
+    if rest > LIST_ROWS and rest % LIST_ROWS in (1, 2):
+        return picks[:heroes + rest // LIST_ROWS * LIST_ROWS]
+    return picks
+
+
 def build(kind: str, picks: list[Deal], free: list[FreeGame], stores: list[str]) -> list[dict]:
     """포맷 → 슬라이드 목록 (poster 템플릿의 kind 별 블록과 짝)."""
     pt = POSTS[kind]
@@ -153,8 +165,8 @@ def build(kind: str, picks: list[Deal], free: list[FreeGame], stores: list[str])
                "stat": stat, "stat_label": stat_label, "stores": stores}]
     slides += [{"kind": "hero", "deal": d, "rank": i + 1, "post": post} for i, d in enumerate(every[:pt.heroes])]
     rest = every[pt.heroes:]
-    for i in range(0, len(rest), 5):
-        slides.append({"kind": "list", "deals": rest[i:i + 5], "offset": pt.heroes + i, "post": post})
+    for i in range(0, len(rest), LIST_ROWS):
+        slides.append({"kind": "list", "deals": rest[i:i + LIST_ROWS], "offset": pt.heroes + i, "post": post})
     if kind == "weekly" and free:
         slides += [{"kind": "free", "game": g, "post": post} for g in [g for g in free if not g.upcoming][:1]]
     slides.append({"kind": "cta", "post": post})

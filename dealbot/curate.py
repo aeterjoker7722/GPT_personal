@@ -41,7 +41,7 @@ def compare_stores(deals: list[Deal]) -> None:
 
 
 CONSOLE_STORES = {"playstation", "nintendo", "xbox"}
-PLATFORM_WORDS = re.compile(r"\b(ps4|ps5|ps4 & ps5|ps4 and ps5|nintendo switch 2|nintendo switch|switch|xbox series x\|s|xbox one)\b")
+PLATFORM_WORDS = re.compile(r"(&|\band\b|\bps4\b|\bps5\b|\bnintendo switch 2\b|\bnintendo switch\b|\bswitch\b|\bxbox series x\|s\b|\bxbox one\b)")
 
 
 def compare_console(console: list[Deal], pc: list[Deal]) -> None:
