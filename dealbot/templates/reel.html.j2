@@ -44,7 +44,7 @@
   .store { position: absolute; left: 60px; top: 430px; font-size: 32px; font-weight: 800; background: var(--paper); color: var(--black); padding: 8px 18px; animation: wipe .5s .3s both; z-index: 3; }
   .band { position: absolute; left: 0; right: 0; bottom: 340px; z-index: 3; animation: rise .6s .2s cubic-bezier(.7,0,.2,1) both; }
   .band .deal { display: grid; grid-template-columns: auto 1fr; }
-  .band .pct { background: var(--accent); color: var(--on); font-family: var(--num); font-size: 250px; line-height: .82; padding: 30px 36px 12px 56px; white-space: nowrap; position: relative; overflow: hidden; }
+  .band .pct { background: var(--accent); color: var(--on); font-family: var(--num); font-size: 236px; line-height: .82; padding: 30px 36px 12px 56px; white-space: nowrap; position: relative; overflow: hidden; min-width: max-content; }
   .band .pct span { display: inline-block; animation: pop .45s .7s cubic-bezier(.2,1.4,.4,1) both; }
   .band .pct::after { content: ""; position: absolute; top: 0; bottom: 0; width: 34%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent); animation: shine .9s 1.2s ease-in-out both; }
   .band .price { background: var(--black); padding: 30px 150px 20px 30px; display: flex; flex-direction: column; justify-content: flex-end; }

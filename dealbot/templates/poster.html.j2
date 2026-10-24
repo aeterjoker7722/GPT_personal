@@ -67,7 +67,7 @@
   .panel { position: absolute; left: 0; right: 0; bottom: 0; z-index: 5; animation: rise .75s .2s cubic-bezier(.7,0,.2,1) both; }
   .story .panel { bottom: 250px; }
   .deal { display: grid; grid-template-columns: auto 1fr; align-items: stretch; }
-  .pct { background: var(--accent); color: var(--on); font-family: var(--num); font-size: 236px; line-height: .82; padding: 30px 40px 14px 44px; position: relative; overflow: hidden; white-space: nowrap; }
+  .pct { background: var(--accent); color: var(--on); font-family: var(--num); font-size: 236px; line-height: .82; padding: 30px 40px 14px 44px; position: relative; overflow: hidden; white-space: nowrap; min-width: max-content; }
   .pct span { display: inline-block; animation: pop .45s .75s cubic-bezier(.2,1.4,.4,1) both; }
   .pct::after { content: ""; position: absolute; top: 0; bottom: 0; width: 34%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent); animation: shine .9s 1.3s ease-in-out both; }
   .price { background: var(--black); padding: 30px 44px 22px 34px; display: flex; flex-direction: column; justify-content: flex-end; text-align: right; }
@@ -199,7 +199,7 @@
 {% if not arts and s.free_games %}{% set arts = s.free_games|map(attribute='image_tall')|select|list %}{% endif %}
 {% if not arts %}{% set arts = s.deals|map(attribute='image')|list %}{% endif %}
 <section class="slide">
-  <div class="strips">{% for a in (arts * 5)[:5] %}<div><img src="{{ a }}" alt=""></div>{% endfor %}</div>
+  <div class="strips">{% for a in arts[:5] %}<div><img src="{{ a }}" alt=""></div>{% endfor %}</div>
   <div class="fadebottom"></div><div class="scrim"></div>
   {{ topline(post) }}
   <div class="coverbox">
