@@ -1,24 +1,31 @@
 # dealbot: 게임 할인 인스타그램 카드뉴스 자동화
 
 Steam, Epic, GOG, 다이렉트게임즈(+스토브 수동 입력)의 할인을 모아서 처리합니다.
-**최저가 판정, 한국어 지원, 스토어 간 가격 비교**를 붙인 뒤 인스타그램 캐러셀 PNG와 캡션을 만듭니다.
+**가격 추적과 최저가 판정, 한국어 지원, 스토어 간 가격 비교**를 붙인 뒤 다음을 만듭니다.
+
+- 인스타그램 캐러셀: 디자인 시안 4종(editorial / receipt / ticker / poster), PNG와 MP4
+- 스팀 트레일러를 합성한 9:16 릴스 MP4
+- 캡션
 
 - 운영 전략: [docs/strategy.md](docs/strategy.md)
 - 경쟁 조사: [docs/competitor_research.md](docs/competitor_research.md)
-- 템플릿 디자인: [docs/template_design.md](docs/template_design.md)
+- 템플릿 시안과 모션: [docs/template_design.md](docs/template_design.md)
 
 ## 설치
 
 ```bash
 pip install -r requirements.txt
 playwright install chromium
+# 모션/릴스를 만들려면 ffmpeg 도 필요 (macOS: brew install ffmpeg)
 ```
 
 ## 사용
 
 ```bash
-python -m dealbot run              # 수집 → 판정 → 선별 → output/YYYY-MM-DD/ 에 PNG, caption.txt, deals.json
-python -m dealbot run --affiliate  # 제휴 링크를 쓸 때 [광고] 표기 추가
+python -m dealbot run                          # 수집 → 판정 → 선별 → output/YYYY-MM-DD/<theme>/ 에 PNG
+python -m dealbot run --theme all --motion     # 4개 시안 전부, 표지와 메인 카드는 MP4 도
+python -m dealbot run --reel                   # 트레일러 릴스 (output/.../reel/reel.mp4)
+python -m dealbot run --affiliate              # 제휴 링크를 쓸 때 [광고] 표기 추가
 python -m dealbot collect          # 가격 기록만 쌓기 (매일)
 python -m dealbot sample           # 네트워크 없이 샘플 데이터로 템플릿 미리보기
 ```
@@ -48,6 +55,8 @@ python -m dealbot sample           # 네트워크 없이 샘플 데이터로 템
 | 변수 | 기본값 | 설명 |
 |---|---|---|
 | `DEALBOT_HANDLE` | `@your_handle` | 카드에 찍힐 계정명 |
+| `DEALBOT_BRAND` | `주간 게임 세일` | 카드에 찍힐 브랜드명 |
+| `DEALBOT_THEME` | `editorial` | 기본 시안 |
 | `DEALBOT_MIN_DISCOUNT` | 50 | 최소 할인율 |
 | `DEALBOT_MIN_REVIEW_PCT` / `_COUNT` | 75 / 500 | 최소 평가 비율과 리뷰 수 |
 | `DEALBOT_HERO_SLIDES` | 5 | 메인 카드 장수 |

@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700;900&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=block" rel="stylesheet">
+<style>
+  :root {
+    --paper: #eeeae1; --paper-2: #e4dfd3; --ink: #151412; --mute: #6d685e; --rule: #151412; --red: #d0331f;
+    --serif: "Noto Serif KR", serif; --sans: "IBM Plex Sans KR", sans-serif; --mono: "IBM Plex Mono", "IBM Plex Sans KR", monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #777; font-family: var(--sans); color: var(--ink); -webkit-font-smoothing: antialiased; }
+  .slide { width: 1080px; height: 1350px; background: var(--paper); position: relative; overflow: hidden; padding: 64px 72px 56px;
+           display: flex; flex-direction: column; margin-bottom: 24px; }
+  .slide > * { flex-shrink: 0; }
+  .slide::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .5; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .1  0 0 0 0 .09  0 0 0 0 .07  0 0 0 .22 0'/></filter><rect width='300' height='300' filter='url(%23n)'/></svg>"); }
+
+  /* 공통 요소 */
+  .mast { display: flex; justify-content: space-between; align-items: baseline; font-family: var(--mono); font-size: 21px; letter-spacing: .02em; }
+  .mast b { font-family: var(--serif); font-weight: 900; font-size: 30px; letter-spacing: -.02em; }
+  .rule { height: 2px; background: var(--rule); transform-origin: left; animation: draw .9s cubic-bezier(.6,0,.2,1) both; }
+  .rule.thick { height: 7px; }
+  .rule.thin { height: 1px; }
+  .folio { margin-top: auto; display: flex; justify-content: space-between; font-family: var(--mono); font-size: 19px; color: var(--mute); padding-top: 18px; border-top: 1px solid var(--rule); }
+  .label { font-family: var(--mono); font-size: 19px; letter-spacing: .14em; text-transform: uppercase; color: var(--mute); }
+  .up { animation: up .8s cubic-bezier(.2,.7,.1,1) both; }
+  .d1 { animation-delay: .15s } .d2 { animation-delay: .3s } .d3 { animation-delay: .45s } .d4 { animation-delay: .6s }
+  .d5 { animation-delay: .75s } .d6 { animation-delay: .9s } .d7 { animation-delay: 1.05s } .d8 { animation-delay: 1.2s }
+  @keyframes draw { from { transform: scaleX(0) } to { transform: scaleX(1) } }
+  @keyframes up { from { opacity: 0; transform: translateY(26px) } to { opacity: 1; transform: none } }
+  @keyframes reveal { from { clip-path: inset(0 0 100% 0) } to { clip-path: inset(0 0 0 0) } }
+  @keyframes settle { from { transform: scale(1.12) } to { transform: scale(1.0) } }
+  @keyframes strike { from { width: 0 } to { width: 104% } }
+  .sample { position: absolute; right: 72px; bottom: 22px; font-family: var(--mono); font-size: 15px; color: var(--mute); }
+
+  /* 표지 */
+  .cover h1 { font-family: var(--serif); font-weight: 900; font-size: 150px; line-height: 1.0; letter-spacing: -.045em; margin: 64px 0 48px; }
+  .cover h1 span { display: block; }
+  .cover h1 em { font-style: normal; color: var(--red); }
+  .toc { margin-top: 26px; }
+  .toc li { list-style: none; display: grid; grid-template-columns: 64px 1fr auto; align-items: baseline; gap: 16px; padding: 16px 0; border-bottom: 1px solid rgba(21,20,18,.28); }
+  .toc .n { font-family: var(--mono); font-size: 22px; color: var(--mute); }
+  .toc .t { font-family: var(--serif); font-weight: 700; font-size: 35px; letter-spacing: -.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .toc .p { font-family: var(--mono); font-size: 30px; color: var(--red); font-weight: 500; }
+  .cover .meta { display: flex; gap: 56px; margin-top: 36px; }
+  .cover .meta div { font-family: var(--serif); font-size: 52px; font-weight: 900; letter-spacing: -.03em; line-height: 1; }
+  .cover .meta small { display: block; font-family: var(--mono); font-size: 18px; font-weight: 400; letter-spacing: .1em; color: var(--mute); margin-top: 10px; }
+
+  /* 메인 카드 */
+  .hero .art { margin: 30px -72px 0; height: 560px; overflow: hidden; animation: reveal 1.1s cubic-bezier(.7,0,.2,1) both; position: relative; }
+  .hero .art img { width: 100%; height: 100%; object-fit: cover; animation: settle 4s cubic-bezier(.2,.6,.2,1) both; filter: saturate(.92) contrast(1.03); }
+  .hero .fig { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 18px; color: var(--mute); margin-top: 14px; }
+  .hero h2 { font-family: var(--serif); font-weight: 900; font-size: 84px; line-height: 1.06; letter-spacing: -.04em; margin-top: 24px;
+             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr 1.45fr; margin-top: 30px; border-top: 2px solid var(--rule); border-bottom: 1px solid var(--rule); }
+  .grid > div { padding: 18px 0 20px; }
+  .grid > div + div { border-left: 1px solid var(--rule); padding-left: 24px; }
+  .grid .v { font-family: var(--serif); font-weight: 700; font-size: 46px; letter-spacing: -.03em; margin-top: 8px; line-height: 1; }
+  .grid .v.reg { color: var(--mute); position: relative; display: inline-block; }
+  .grid .v.reg::after { content: ""; position: absolute; left: -2%; top: 52%; height: 3px; background: var(--ink); animation: strike .5s 1.1s ease-out both; }
+  .grid .v.pct { color: var(--red); }
+  .grid .v.now { font-weight: 900; font-size: 64px; color: var(--red); }
+  .verdict { display: grid; grid-template-columns: 1fr 340px; gap: 30px; margin-top: 26px; align-items: center; }
+  .verdict p { font-family: var(--serif); font-weight: 500; font-size: 37px; line-height: 1.38; letter-spacing: -.02em; }
+  .verdict p b { font-weight: 900; }
+  .verdict p.best b { color: var(--red); }
+  .spark svg { display: block; overflow: visible; }
+  .spark path.line { fill: none; stroke: var(--ink); stroke-width: 2.5; stroke-dasharray: 2400; animation: dash 1.8s .9s ease-in-out both; }
+  .spark .lo { fill: var(--red); }
+  .spark text { font-family: var(--mono); font-size: 15px; fill: var(--mute); }
+  @keyframes dash { from { stroke-dashoffset: 2400 } to { stroke-dashoffset: 0 } }
+  .facts { font-family: var(--mono); font-size: 20px; color: var(--mute); margin-top: 16px; }
+
+  /* 목록 */
+  .list h3, .free h3 { font-family: var(--serif); font-weight: 900; font-size: 92px; letter-spacing: -.045em; line-height: 1.02; margin: 46px 0 34px; }
+  .list h3 em, .free h3 em { font-style: normal; color: var(--red); }
+  .rows { border-top: 2px solid var(--rule); }
+  .row { display: grid; grid-template-columns: 54px 150px 1fr auto; gap: 22px; align-items: center; padding: 18px 0; border-bottom: 1px solid rgba(21,20,18,.3); }
+  .row .n { font-family: var(--mono); font-size: 21px; color: var(--mute); }
+  .row img { width: 150px; height: 70px; object-fit: cover; filter: saturate(.9); }
+  .row .t { font-family: var(--serif); font-weight: 700; font-size: 32px; letter-spacing: -.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row .s { font-family: var(--mono); font-size: 18px; color: var(--mute); margin-top: 4px; }
+  .row .p { text-align: right; }
+  .row .p em { font-style: normal; font-family: var(--mono); font-size: 22px; color: var(--red); display: block; }
+  .row .p b { font-family: var(--serif); font-weight: 900; font-size: 36px; letter-spacing: -.02em; }
+
+  /* 무료 */
+  .item { display: grid; grid-template-columns: 1fr; margin-bottom: 30px; }
+  .item .img { height: 300px; overflow: hidden; animation: reveal 1s cubic-bezier(.7,0,.2,1) both; }
+  .item .img img { width: 100%; height: 100%; object-fit: cover; }
+  .item .cap { padding-top: 14px; }
+  .item .cap span { display: block; margin-top: 6px; }
+  .item .cap b { font-family: var(--serif); font-weight: 900; font-size: 40px; letter-spacing: -.03em; }
+  .item .cap span { font-family: var(--mono); font-size: 20px; color: var(--mute); }
+  .item .cap .tag { color: var(--red); }
+
+  /* 마지막 */
+  .cta h3 { font-family: var(--serif); font-weight: 900; font-size: 128px; line-height: 1.02; letter-spacing: -.05em; margin-top: 110px; }
+  .cta h3 em { font-style: normal; color: var(--red); }
+  .notes { margin-top: 80px; border-top: 2px solid var(--rule); }
+  .notes li { list-style: none; display: grid; grid-template-columns: 70px 1fr; padding: 24px 0; border-bottom: 1px solid rgba(21,20,18,.3); font-size: 31px; line-height: 1.45; }
+  .notes li span { font-family: var(--mono); font-size: 22px; color: var(--red); padding-top: 5px; }
+  .small { font-size: 19px; color: var(--mute); line-height: 1.6; margin-top: 26px; }
+</style>
+</head>
+<body>
+{% include "_grain.html.j2" %}
+{% set verdict_text = {
+  "best": "<b>역대 최저가.</b> 지금 사도 됩니다.",
+  "near": "<b>최저가에 거의 붙었습니다.</b> ",
+  "wait": "<b>더 싸진 적이 있습니다.</b> ",
+  "unknown": "<b>가격을 기록하는 중입니다.</b> 판정은 기록 7일 이후부터.",
+} %}
+{% for s in slides %}{% set n = loop.index %}
+
+{% if s.kind == "cover" %}
+<section class="slide cover">
+  <div class="mast up"><b>{{ brand }}</b><span>No.{{ week.no }} · {{ week.year }}</span></div>
+  <div class="rule thick" style="margin-top:14px"></div>
+  <div class="mast up d1" style="margin-top:12px"><span>{{ week.range }}</span><span>{{ handle }}</span></div>
+  <h1><span class="up d1">이번 주,</span><span class="up d2">사도 되는</span><span class="up d3">게임 <em>{{ s.deal_count }}</em></span></h1>
+  <div class="label up d4">Contents</div>
+  <ol class="toc">
+  {% for d in s.deals %}<li class="up d{{ loop.index + 3 }}"><span class="n">{{ loop.index|pad2 }}</span><span class="t">{{ d.title }}</span><span class="p">−{{ d.discount }}%</span></li>{% endfor %}
+  </ol>
+  <div class="meta up d8">
+    <div>{{ s.max_pct }}%<small>최대 할인</small></div>
+    <div>₩{{ s.savings|won }}<small>위 5개 할인액 합계</small></div>
+    <div>{{ s.free_count }}<small>무료 배포</small></div>
+  </div>
+  <div class="folio"><span>평가 {{ min_review }}% 이상 · 할인 {{ min_discount }}% 이상만 골랐습니다</span><span>{{ n|pad2 }} / {{ total|pad2 }}</span></div>
+  {% if sample %}<div class="sample">샘플 데이터</div>{% endif %}
+</section>
+
+{% elif s.kind == "hero" %}{% set d = s.deal %}{% set c = chart(d.history, 340, 120) %}
+<section class="slide hero">
+  <div class="mast up"><span>{{ s.rank|pad2 }} — {{ d.store|store_name }}{% if d.tags %} / {{ d.tags[0] }}{% endif %}</span><span>{{ brand }} No.{{ week.no }}</span></div>
+  <div class="art"><img src="{{ d.art_wide or d.image }}" alt=""></div>
+  <div class="fig up d2"><span>fig.{{ s.rank|pad2 }}</span><span>{{ d.url|short_url }}</span></div>
+  <h2 class="up d3">{{ d.title }}</h2>
+  <div class="grid up d4">
+    <div><div class="label">정가</div><div class="v reg">₩{{ d.regular|won }}</div></div>
+    <div><div class="label">할인</div><div class="v pct">−{{ d.discount }}%</div></div>
+    <div><div class="label">지금</div><div class="v now" data-count-from="{{ d.regular }}" data-count-to="{{ d.price }}" data-count-start="0.6" data-count-dur="1.4" data-prefix="₩" data-round="10">₩{{ d.price|won }}</div></div>
+  </div>
+  <div class="verdict up d6">
+    <p class="{{ d.verdict }}">{{ verdict_text[d.verdict]|safe }}{% if d.verdict in ("near", "wait") %}{{ d.verdict_note }}.{% endif %}</p>
+    {% if c %}<div class="spark">
+      <svg width="{{ c.w }}" height="{{ c.h + 28 }}">
+        <path class="line" d="{{ c.path }}"/>
+        <circle class="lo" cx="{{ c.low[0] }}" cy="{{ c.low[1] }}" r="6"/>
+        <text x="0" y="{{ c.h + 24 }}">{{ c.start[5:] }}</text><text x="{{ c.w }}" y="{{ c.h + 24 }}" text-anchor="end">최저 ₩{{ c.min|won }}</text>
+      </svg></div>{% endif %}
+  </div>
+  <div class="facts up d7">한국어 {{ d.korean or '미확인' }}{% if d.review_pct is not none %} · 평가 {{ d.review_pct }}%{% if d.review_count %} ({{ d.review_count|compact }}){% endif %}{% endif %}{% if d.ends_at %} · {{ d.ends_at|kdate }} 종료{% endif %}{% if d.currency_note %} · {{ d.currency_note }}{% endif %}</div>
+  <div class="folio"><span>{{ brand }}</span><span>{{ n|pad2 }} / {{ total|pad2 }}</span></div>
+  {% if sample %}<div class="sample">샘플 데이터</div>{% endif %}
+</section>
+
+{% elif s.kind == "list" %}
+<section class="slide list">
+  <div class="mast up"><span>{{ brand }} No.{{ week.no }}</span><span>{{ week.range }}</span></div>
+  <h3 class="up d1">이것도<br><em>봐 둘 만합니다.</em></h3>
+  <div class="rows">
+  {% for d in s.deals %}
+    <div class="row up d{{ loop.index + 1 }}">
+      <span class="n">{{ (s.offset + loop.index)|pad2 }}</span>
+      <img src="{{ d.image }}" alt="">
+      <div style="min-width:0"><div class="t">{{ d.title }}</div><div class="s">{{ d.store|store_name }} · 한국어 {{ d.korean or '미확인' }}{% if d.verdict == 'best' %} · 역대 최저{% endif %}</div></div>
+      <div class="p"><em>−{{ d.discount }}%</em><b>₩{{ d.price|won }}</b></div>
+    </div>
+  {% endfor %}
+  </div>
+  <div class="folio"><span>가격은 게시 시점 기준</span><span>{{ n|pad2 }} / {{ total|pad2 }}</span></div>
+</section>
+
+{% elif s.kind == "free" %}
+<section class="slide free">
+  <div class="mast up"><span>{{ brand }} No.{{ week.no }}</span><span>Epic Games Store</span></div>
+  <h3 class="up d1">이번 주<br><em>무료입니다.</em></h3>
+  {% for g in s.games %}
+  <div class="item up d{{ loop.index + 1 }}">
+    <div class="img"><img src="{{ g.image }}" alt=""></div>
+    <div class="cap"><b>{{ g.title }}</b><span class="{{ '' if g.upcoming else 'tag' }}">{% if g.upcoming %}{{ g.starts_at|kdate }}부터{% else %}{{ g.ends_at|kdatetime }}까지{% endif %}{% if g.regular %} · 정가 ₩{{ g.regular|won }}{% endif %}</span></div>
+  </div>
+  {% endfor %}
+  <div class="folio"><span>매주 목요일 자정 교체</span><span>{{ n|pad2 }} / {{ total|pad2 }}</span></div>
+</section>
+
+{% elif s.kind == "cta" %}
+<section class="slide cta">
+  <div class="mast up"><b>{{ brand }}</b><span>{{ handle }}</span></div>
+  <div class="rule thick" style="margin-top:14px"></div>
+  <h3><span class="up d1" style="display:block">다음 호는</span><span class="up d2" style="display:block"><em>목요일 자정.</em></span></h3>
+  <ol class="notes">
+    <li class="up d3"><span>01</span>저장해 두면 세일이 끝나기 전에 다시 볼 수 있습니다.</li>
+    <li class="up d4"><span>02</span>기다리는 게임을 댓글로 남겨 주세요. 할인하면 알려 드립니다.</li>
+    <li class="up d5"><span>03</span>판정은 역대 최저가 기록을 기준으로 합니다.</li>
+  </ol>
+  <p class="small up d6">공식 스토어와 공인 키셀러만 소개합니다. 가격은 게시 시점 기준이며 바뀔 수 있습니다.{% if affiliate %}<br>이 게시물에는 제휴 링크가 포함되어 있으며, 구매 시 수수료를 받을 수 있습니다.{% endif %}</p>
+  <div class="folio"><span>{{ handle }}</span><span>{{ n|pad2 }} / {{ total|pad2 }}</span></div>
+</section>
+{% endif %}
+{% endfor %}
+{% include "_runtime.html.j2" %}
+</body>
+</html>

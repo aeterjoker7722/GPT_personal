@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<link href="https://fonts.googleapis.com/css2?family=Anton&display=block" rel="stylesheet">
+<style>
+  :root { --black: #0d0d0c; --paper: #f2eee5; --sans: Pretendard, sans-serif; --num: "Anton", Pretendard, sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #444; font-family: var(--sans); color: var(--paper); -webkit-font-smoothing: antialiased; }
+  .slide { width: 1080px; height: 1350px; background: var(--black); position: relative; overflow: hidden; margin-bottom: 24px; }
+  .slide::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .3; mix-blend-mode: overlay; z-index: 9;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='240' height='240' filter='url(%23n)'/></svg>"); }
+  .sample { position: absolute; left: 50px; bottom: 18px; font-size: 16px; opacity: .6; z-index: 10; }
+  @keyframes kb { from { transform: scale(1.16) translateY(-2%) } to { transform: scale(1.02) } }
+  @keyframes rise { from { transform: translateY(101%) } to { transform: none } }
+  @keyframes wipe { from { clip-path: inset(0 100% 0 0) } to { clip-path: inset(0 0 0 0) } }
+  @keyframes pop { 0% { transform: scale(1.5); opacity: 0 } 100% { transform: none; opacity: 1 } }
+  @keyframes in { from { opacity: 0; transform: translateY(24px) } to { opacity: 1; transform: none } }
+  .in { animation: in .7s cubic-bezier(.2,.8,.2,1) both; }
+
+  /* 메인 카드 */
+  .art { position: absolute; inset: 0; }
+  .art img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 0%; animation: kb 6s cubic-bezier(.2,.6,.3,1) both; }
+  .rank { position: absolute; left: 50px; top: 44px; font-family: var(--num); font-size: 150px; line-height: .9; color: transparent; -webkit-text-stroke: 3px var(--paper); z-index: 2; animation: in .6s .2s both; }
+  .vert { position: absolute; right: 44px; top: 50px; writing-mode: vertical-rl; font-size: 22px; font-weight: 700; letter-spacing: .2em; z-index: 2; text-shadow: 0 1px 8px rgba(0,0,0,.5); }
+  .band { position: absolute; left: 0; right: 0; bottom: 0; background: var(--accent); color: var(--on); padding: 36px 50px 40px; z-index: 3;
+          animation: rise .75s .25s cubic-bezier(.7,0,.2,1) both; }
+  .band .row1 { display: flex; justify-content: space-between; align-items: flex-end; gap: 30px; }
+  .pct { font-family: var(--num); font-size: 236px; line-height: .8; white-space: nowrap; letter-spacing: -.01em; animation: pop .45s .8s cubic-bezier(.2,1.4,.4,1) both; }
+  .price { text-align: right; padding-bottom: 8px; flex-shrink: 0; }
+  .price s { display: block; font-size: 34px; font-weight: 600; opacity: .6; }
+  .price b { display: block; font-size: 78px; white-space: nowrap; font-weight: 900; letter-spacing: -.04em; line-height: 1; }
+  .band h2 { font-size: 54px; font-weight: 900; letter-spacing: -.035em; line-height: 1.1; margin-top: 26px; animation: wipe .7s 1s cubic-bezier(.6,0,.2,1) both;
+             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .band .meta { display: flex; gap: 0; margin-top: 22px; font-size: 25px; font-weight: 700; border-top: 3px solid var(--on); padding-top: 16px; }
+  .band .meta span { flex: 1; }
+  .band .meta span + span { border-left: 2px solid color-mix(in srgb, var(--on) 35%, transparent); padding-left: 18px; }
+  .band .meta small { display: block; font-size: 18px; font-weight: 600; opacity: .65; margin-bottom: 2px; }
+
+  /* 표지 */
+  .mosaic { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); }
+  .mosaic > div { overflow: hidden; position: relative; }
+  .mosaic img { width: 100%; height: 100%; object-fit: cover; animation: kb 6s both; }
+  .mosaic .tile { background: var(--accent); color: var(--on); padding: 40px 34px; display: flex; flex-direction: column; justify-content: space-between; }
+  .mosaic .tile .big { font-family: var(--num); font-size: 170px; line-height: .82; }
+  .mosaic .tile .k { font-size: 40px; font-weight: 900; letter-spacing: -.04em; line-height: 1.12; }
+  .mosaic .tile .s { font-size: 21px; font-weight: 700; opacity: .75; }
+  .mosaic .tag { position: absolute; left: 0; bottom: 0; background: var(--black); color: var(--paper); font-family: var(--num); font-size: 46px; padding: 6px 16px 2px; }
+  .cover-head { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); z-index: 4; background: var(--black); padding: 26px 50px; display: flex; justify-content: space-between; align-items: center; animation: wipe .8s .3s cubic-bezier(.6,0,.2,1) both; }
+  .cover-head b { font-size: 64px; font-weight: 900; letter-spacing: -.04em; }
+  .cover-head span { font-size: 24px; font-weight: 700; text-align: right; opacity: .8; line-height: 1.4; }
+
+  /* 목록 */
+  .pad { padding: 56px 50px; height: 100%; display: flex; flex-direction: column; }
+  .pad > * { flex-shrink: 0; }
+  .head { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 4px solid var(--paper); padding-bottom: 18px; }
+  .head b { font-size: 76px; font-weight: 900; letter-spacing: -.045em; line-height: 1; }
+  .head span { font-size: 22px; font-weight: 700; opacity: .7; text-align: right; }
+  .li { display: grid; grid-template-columns: 96px 1fr auto; gap: 26px; align-items: center; padding: 18px 0; border-bottom: 1px solid rgba(242,238,229,.25); }
+  .li img { width: 96px; height: 144px; object-fit: cover; }
+  .li .t { font-size: 36px; font-weight: 800; letter-spacing: -.03em; line-height: 1.15; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .li .s { font-size: 21px; font-weight: 600; opacity: .6; margin-top: 6px; }
+  .li .p { text-align: right; }
+  .li .p em { font-style: normal; font-family: var(--num); font-size: 78px; line-height: .9; color: var(--accent); display: block; }
+  .li .p b { font-size: 28px; font-weight: 800; }
+  .foot { margin-top: auto; display: flex; justify-content: space-between; font-size: 20px; font-weight: 700; opacity: .6; padding-top: 16px; }
+
+  /* 무료 */
+  .freebox { position: relative; height: 520px; margin-top: 30px; overflow: hidden; }
+  .freebox img { width: 100%; height: 100%; object-fit: cover; animation: kb 6s both; }
+  .freebox .lab { position: absolute; left: 0; bottom: 0; right: 0; background: var(--paper); color: var(--black); padding: 20px 26px; display: flex; justify-content: space-between; align-items: center; }
+  .freebox .lab b { font-size: 38px; font-weight: 900; letter-spacing: -.03em; }
+  .freebox .lab span { font-size: 21px; font-weight: 700; opacity: .7; display: block; }
+  .freebox .free { font-family: var(--num); font-size: 96px; line-height: .8; color: #d8312a; }
+
+  /* 마지막 */
+  .cta { background: var(--paper); color: var(--black); }
+  .cta .big { font-size: 150px; font-weight: 900; letter-spacing: -.06em; line-height: .98; margin-top: 70px; }
+  .cta .lines { margin-top: 70px; border-top: 4px solid var(--black); }
+  .cta .lines div { display: grid; grid-template-columns: 90px 1fr; padding: 24px 0; border-bottom: 2px solid var(--black); font-size: 32px; font-weight: 700; letter-spacing: -.02em; }
+  .cta .lines i { font-style: normal; font-family: var(--num); font-size: 40px; }
+  .cta .legal { font-size: 19px; line-height: 1.6; opacity: .65; margin-top: 26px; font-weight: 500; }
+</style>
+</head>
+<body>
+{% for s in slides %}{% set n = loop.index %}
+
+{% if s.kind == "cover" %}{% set p0 = s.deals[0].palette if s.deals else {} %}
+<section class="slide" style="--accent: {{ p0.accent or '#e8412c' }}; --on: {{ p0.ink or '#fff' }}">
+  <div class="mosaic">
+    {% for d in s.deals[:2] %}<div><img src="{{ d.art_tall or d.image }}" alt=""><span class="tag">−{{ d.discount }}%</span></div>{% endfor %}
+    <div class="tile"><div class="s">{{ week.range }}<br>No.{{ week.no }}</div><div><div class="big" data-count-from="0" data-count-to="{{ s.max_pct }}" data-count-start=".6" data-count-dur="1.1">{{ s.max_pct }}</div><div class="k">% 까지<br>할인 중</div></div></div>
+    {% for d in s.deals[2:5] %}<div><img src="{{ d.art_tall or d.image }}" alt=""><span class="tag">−{{ d.discount }}%</span></div>{% endfor %}
+  </div>
+  <div class="cover-head"><b>이번 주 할인 {{ s.deal_count }}</b><span>{{ brand }}<br>{{ handle }}</span></div>
+  {% if sample %}<div class="sample">샘플 데이터</div>{% endif %}
+</section>
+
+{% elif s.kind == "hero" %}{% set d = s.deal %}
+<section class="slide" style="--accent: {{ d.palette.accent or '#e8412c' }}; --on: {{ d.palette.ink or '#fff' }}">
+  <div class="art"><img src="{{ d.art_tall or d.image }}" alt=""></div>
+  <div class="rank">{{ s.rank|pad2 }}</div>
+  <div class="vert">{{ brand }} · No.{{ week.no }} · {{ handle }}</div>
+  <div class="band">
+    <div class="row1">
+      <div class="pct" data-count-from="0" data-count-to="{{ d.discount }}" data-count-start=".8" data-count-dur=".6" data-prefix="−" data-suffix="%">−{{ d.discount }}%</div>
+      <div class="price"><s>₩{{ d.regular|won }}</s><b>₩{{ d.price|won }}</b></div>
+    </div>
+    <h2>{{ d.title }}</h2>
+    <div class="meta">
+      <span><small>판정</small>{{ {"best": "역대 최저가", "near": "최저가 근접", "wait": "더 싸진 적 있음", "unknown": "기록 중"}[d.verdict] }}</span>
+      <span><small>한국어</small>{{ d.korean or '미확인' }}</span>
+      <span><small>평가</small>{% if d.review_pct is not none %}{{ d.review_pct }}%{% else %}-{% endif %}</span>
+      <span><small>스토어</small>{{ d.store|store_name }}</span>
+    </div>
+  </div>
+  {% if sample %}<div class="sample">샘플 데이터</div>{% endif %}
+</section>
+
+{% elif s.kind == "list" %}{% set p0 = s.deals[0].palette if s.deals else {} %}
+<section class="slide" style="--accent: {{ p0.accent or '#e8412c' }}">
+  <div class="pad">
+    <div class="head in"><b>이것도 싸다</b><span>{{ brand }}<br>No.{{ week.no }}</span></div>
+    {% for d in s.deals %}
+    <div class="li in" style="animation-delay: {{ loop.index * 0.1 }}s; --accent: {{ d.palette.accent or '#e8412c' }}">
+      <img src="{{ d.art_tall or d.image }}" alt="">
+      <div style="min-width:0"><div class="t">{{ d.title }}</div><div class="s">{{ d.store|store_name }} · 한국어 {{ d.korean or '미확인' }}{% if d.verdict == 'best' %} · 역대 최저{% endif %}</div></div>
+      <div class="p"><em>−{{ d.discount }}%</em><b>₩{{ d.price|won }}</b></div>
+    </div>
+    {% endfor %}
+    <div class="foot"><span>가격은 게시 시점 기준</span><span>{{ n|pad2 }}/{{ total|pad2 }}</span></div>
+  </div>
+</section>
+
+{% elif s.kind == "free" %}
+<section class="slide">
+  <div class="pad">
+    <div class="head in"><b>공짜입니다</b><span>Epic Games Store<br>목요일 자정 교체</span></div>
+    {% for g in s.games %}
+    <div class="freebox in" style="animation-delay: {{ loop.index * 0.15 }}s; height: {{ 520 if s.games|length > 1 else 900 }}px">
+      <img src="{{ g.image }}" alt="">
+      <div class="lab"><div><b>{{ g.title }}</b><span>{% if g.upcoming %}{{ g.starts_at|kdate }}부터{% else %}{{ g.ends_at|kdatetime }}까지{% endif %}{% if g.regular %} · 정가 ₩{{ g.regular|won }}{% endif %}</span></div><div class="free">{{ 'NEXT' if g.upcoming else 'FREE' }}</div></div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% elif s.kind == "cta" %}
+<section class="slide cta">
+  <div class="pad">
+    <div class="head in" style="border-color: var(--black)"><b style="font-size:40px">{{ brand }}</b><span>{{ handle }}</span></div>
+    <div class="big in" style="animation-delay:.15s">저장.<br>댓글.<br>목요일 자정.</div>
+    <div class="lines in" style="animation-delay:.3s">
+      <div><i>01</i>저장해 두고 세일 끝나기 전에 다시 보기</div>
+      <div><i>02</i>기다리는 게임을 댓글로 남기면 할인 때 알림</div>
+      <div><i>03</i>에픽 무료 게임은 목요일 자정 스토리로</div>
+    </div>
+    <p class="legal">공식 스토어와 공인 키셀러만 소개합니다. 가격은 게시 시점 기준이며 바뀔 수 있습니다.{% if affiliate %} 이 게시물에는 제휴 링크가 포함되어 있으며, 구매 시 수수료를 받을 수 있습니다.{% endif %}</p>
+    <div class="foot"><span>{{ handle }}</span><span>{{ n|pad2 }}/{{ total|pad2 }}</span></div>
+  </div>
+</section>
+{% endif %}
+{% endfor %}
+{% include "_runtime.html.j2" %}
+</body>
+</html>

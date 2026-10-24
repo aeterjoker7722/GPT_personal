@@ -22,6 +22,9 @@ class Deal:
     review_desc: str = ""
     ends_at: Optional[str] = None   # ISO8601
     tags: list[str] = field(default_factory=list)
+    art_tall: str = ""              # 세로 키아트 (600x900)
+    art_wide: str = ""              # 와이드 키아트 (library hero)
+    trailer: str = ""               # 트레일러 DASH(h264) manifest URL
 
     # 가공 단계에서 채움
     verdict: str = "unknown"        # best / near / wait / unknown
@@ -29,6 +32,8 @@ class Deal:
     history_low: Optional[int] = None
     cheaper_elsewhere: Optional[dict] = None  # {"store": .., "price": .., "url": ..}
     score: float = 0.0
+    history: list = field(default_factory=list)   # [[YYYY-MM-DD, price], ...]
+    palette: dict = field(default_factory=dict)   # {"accent": "#hex", "deep": "#hex"}
 
     @property
     def key(self) -> str:

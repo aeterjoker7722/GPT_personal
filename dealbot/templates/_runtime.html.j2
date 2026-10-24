@@ -1,0 +1,26 @@
+{# 모든 테마 공통: window.__seek(t) 로 CSS 애니메이션과 숫자 카운터를 t초 시점에 고정 (렌더러가 프레임마다 호출).
+   브라우저로 직접 열면 그냥 재생된다. 애니메이션은 반드시 animation-fill-mode: both 로 작성할 것. #}
+<script>
+(function () {
+  var ease = function (p) { return 1 - Math.pow(1 - p, 4); };
+  var fmt = function (n) { return Math.round(n).toLocaleString('ko-KR'); };
+  function counters(t) {
+    document.querySelectorAll('[data-count-to]').forEach(function (el) {
+      var a = +(el.dataset.countFrom || 0), b = +el.dataset.countTo;
+      var s = +(el.dataset.countStart || 0), d = +(el.dataset.countDur || 1);
+      var p = Math.min(Math.max((t - s) / d, 0), 1);
+      var v = a + (b - a) * ease(p);
+      if (el.dataset.round) v = Math.round(v / +el.dataset.round) * +el.dataset.round;
+      el.textContent = (el.dataset.prefix || '') + fmt(v) + (el.dataset.suffix || '');
+    });
+  }
+  window.__seek = function (t) {
+    document.getAnimations().forEach(function (a) { a.pause(); a.currentTime = t * 1000; });
+    counters(t);
+  };
+  if (!navigator.webdriver) {
+    var t0 = performance.now();
+    (function loop() { counters((performance.now() - t0) / 1000); requestAnimationFrame(loop); })();
+  }
+})();
+</script>

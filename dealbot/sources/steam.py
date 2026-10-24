@@ -98,6 +98,12 @@ def enrich(deal: Deal) -> Deal:
     if data.get("name"):
         deal.title = data["name"]
     deal.tags = [g["description"] for g in data.get("genres", [])][:3]
+    art = f"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/{deal.store_id}"
+    deal.art_tall, deal.art_wide = f"{art}/library_600x900_2x.jpg", f"{art}/library_hero.jpg"
+    movies = data.get("movies") or []
+    movie = next((m for m in movies if m.get("highlight")), movies[0] if movies else None)
+    if movie:
+        deal.trailer = movie.get("dash_h264", "")
     po = data.get("price_overview")
     if po:  # 검색 결과보다 정확한 최신 가격
         deal.price, deal.regular, deal.discount = po["final"] // 100, po["initial"] // 100, po["discount_percent"]

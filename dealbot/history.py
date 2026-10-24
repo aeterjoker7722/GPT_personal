@@ -46,6 +46,16 @@ def local_low(con: sqlite3.Connection, deal: Deal) -> tuple[int | None, int]:
     return row[0], row[1] or 0
 
 
+def series(con: sqlite3.Connection, deal: Deal, days: int = 180) -> list[list]:
+    """차트용 가격 이력 [[날짜, 가격], ...] (오래된 순)."""
+    rows = con.execute(
+        "SELECT seen_at, price FROM prices WHERE store=? AND store_id=? "
+        "AND seen_at >= date('now', ?) ORDER BY seen_at",
+        (deal.store, deal.store_id, f"-{days} days"),
+    ).fetchall()
+    return [list(r) for r in rows]
+
+
 def itad_lows(steam_appids: list[str]) -> dict[str, int]:
     """스팀 appid -> ITAD 역대 최저가(원, KR). 키가 없거나 실패하면 빈 dict."""
     if not config.ITAD_API_KEY or not steam_appids:

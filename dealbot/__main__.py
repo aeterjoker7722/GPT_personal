@@ -1,6 +1,7 @@
 """사용법:
-    python -m dealbot run            # 수집 → 판정 → 선별 → 카드뉴스 PNG + 캡션
-    python -m dealbot run --no-png   # HTML 미리보기와 캡션만
+    python -m dealbot run                         # 수집 → 판정 → 선별 → 카드뉴스 PNG + 캡션
+    python -m dealbot run --theme all --motion    # 4가지 테마 전부, 표지/메인카드는 MP4 도
+    python -m dealbot run --reel                  # 트레일러 릴스(9:16) 추가
     python -m dealbot collect        # 가격 기록만 쌓기 (매일 cron 용)
     python -m dealbot sample         # 네트워크 없이 샘플 데이터로 템플릿 확인
 """
@@ -10,7 +11,7 @@ import argparse
 import json
 from datetime import datetime
 
-from . import config, curate, history, render
+from . import config, curate, history, motion, render
 from .models import Deal, FreeGame
 from .sources import directg, epic, gog, steam, stove
 
@@ -61,18 +62,32 @@ def cmd_run(args) -> None:
     picked = {d.key for d in picks}
     more = [d for d in curate.series(deals, "korean", 12) if d.key not in picked][:6]
 
+    for d in picks + more:
+        d.history = history.series(con, d)
     out = config.OUTPUT_DIR / datetime.now(render.KST).strftime("%Y-%m-%d")
+    publish(out, picks, more, free, stores, args)
+
+
+def publish(out, picks, more, free, stores, args, sample=False) -> None:
     out.mkdir(parents=True, exist_ok=True)
+    render.decorate(picks + more)
     slides = render.build_slides(picks, more, free, stores)
-    html_path = out / "carousel.html"
-    html_path.write_text(render.render_html(slides, args.affiliate), encoding="utf-8")
     (out / "caption.txt").write_text(render.caption(picks, free, args.affiliate), encoding="utf-8")
     (out / "deals.json").write_text(json.dumps(
         {"picks": [d.to_dict() for d in picks], "more": [d.to_dict() for d in more],
          "free": [g.to_dict() for g in free]}, ensure_ascii=False, indent=2), encoding="utf-8")
-    if not args.no_png:
-        pngs = render.render_png(html_path, out)
-        print(f"PNG {len(pngs)}장 생성")
+    themes = list(render.THEMES) if args.theme == "all" else [args.theme]
+    for theme in themes:
+        r = render.render_theme(slides, theme, out, motion_slides=args.motion, sample=sample, affiliate=args.affiliate)
+        if args.gif:
+            for mp4 in r["mp4"]:
+                motion.to_gif(mp4)
+        print(f"[{theme}] 이미지 {len(r['png'])}장, 영상 {len(r['mp4'])}개")
+    if args.reel:
+        reel = render.render_reel(picks, out, sample=sample)
+        if args.gif:
+            motion.to_gif(reel, width=270, fps=10)
+        print(f"[reel] {reel}")
     print(f"결과: {out}")
 
 
@@ -87,15 +102,8 @@ def cmd_sample(args) -> None:
     from .sample import sample_data
 
     picks, more, free = sample_data()
-    out = config.OUTPUT_DIR / "sample"
-    out.mkdir(parents=True, exist_ok=True)
-    slides = render.build_slides(picks, more, free, ["steam", "epic", "gog", "directg", "stove"])
-    html_path = out / "carousel.html"
-    html_path.write_text(render.render_html(slides, args.affiliate), encoding="utf-8")
-    (out / "caption.txt").write_text(render.caption(picks, free, args.affiliate), encoding="utf-8")
-    if not args.no_png:
-        render.render_png(html_path, out)
-    print(f"결과: {out}")
+    publish(config.OUTPUT_DIR / "sample", picks, more, free, ["steam", "epic", "gog", "directg", "stove"],
+            args, sample=True)
 
 
 def main() -> None:
@@ -103,7 +111,11 @@ def main() -> None:
     sub = ap.add_subparsers(dest="cmd", required=True)
     for name, fn in (("run", cmd_run), ("collect", cmd_collect), ("sample", cmd_sample)):
         p = sub.add_parser(name)
-        p.add_argument("--no-png", action="store_true")
+        p.add_argument("--theme", default=config.THEME, choices=[*render.THEMES, "all"])
+        p.add_argument("--motion", nargs="?", const="key", default="", choices=["key", "all"],
+                       help="슬라이드를 MP4 로도 출력 (key: 표지+메인카드, all: 전부)")
+        p.add_argument("--gif", action="store_true", help="MP4 마다 미리보기 GIF 도 생성")
+        p.add_argument("--reel", action="store_true", help="트레일러를 쓴 9:16 릴스 MP4 생성")
         p.add_argument("--affiliate", action="store_true", help="제휴 링크 포함 시 광고 표기 추가")
         p.set_defaults(fn=fn)
     args = ap.parse_args()
