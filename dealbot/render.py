@@ -13,6 +13,7 @@ from .models import Deal, FreeGame
 KST = timezone(timedelta(hours=9))
 STORE_NAMES = {"steam": "Steam", "gog": "GOG", "epic": "Epic", "directg": "다이렉트게임즈", "stove": "STOVE",
                "playstation": "PlayStation", "nintendo": "Nintendo", "xbox": "Xbox"}
+STORE_SHORT = {"directg": "다이렉트G", "playstation": "PS", "nintendo": "Switch"}
 TEMPLATES = Path(__file__).parent / "templates"
 
 # 테마 이름 → 설명. 템플릿은 templates/<theme>.html.j2
@@ -73,6 +74,7 @@ def _env() -> Environment:
         "pad2": lambda n: f"{int(n):02d}",
         "ord": ord,
         "dday": _dday,
+        "store_short": lambda s: STORE_SHORT.get(s, STORE_NAMES.get(s, s)),
         "short_won": lambda v: (f"{v / 10000:.1f}".rstrip("0").rstrip(".") + "만") if v >= 10000 else f"{int(v) // 1000}천" if v >= 1000 else f"{int(v)}",
     })
     env.globals["chart"] = chart

@@ -108,6 +108,7 @@ def prepare():
     pc = [d for d in deals if d.store not in curate.CONSOLE_STORES]
     curate.compare_stores(pc)
     curate.compare_console([d for d in deals if d.store in curate.CONSOLE_STORES], pc)
+    curate.attach_offers(deals)
     return deals, free, stores, con
 
 

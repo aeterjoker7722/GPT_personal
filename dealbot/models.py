@@ -41,6 +41,7 @@ class Deal:
     history: list = field(default_factory=list)   # [[YYYY-MM-DD, price], ...]
     palette: dict = field(default_factory=dict)   # {"accent": "#hex", "deep": "#hex"}
     pc_compare: Optional[dict] = None             # 콘솔 게임의 PC 가격 {"store", "price", "diff"}
+    offers: list = field(default_factory=list)    # 같은 게임의 다른 스토어·플랫폼 가격 [{"store", "price", "platform"}]
 
     @property
     def key(self) -> str:

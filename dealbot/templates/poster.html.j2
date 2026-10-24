@@ -28,8 +28,6 @@
   @keyframes fade { from { opacity: 0 } to { opacity: 1 } }
   @keyframes up { from { opacity: 0; transform: translateY(40px) } to { opacity: 1; transform: none } }
   @keyframes shine { from { transform: translateX(-130%) skewX(-18deg) } to { transform: translateX(260%) skewX(-18deg) } }
-  @keyframes spin { to { transform: rotate(360deg) } }
-  @keyframes seal-in { 0% { transform: scale(0) rotate(-90deg) } 70% { transform: scale(1.08) rotate(6deg) } 100% { transform: scale(1) rotate(0) } }
 
   /* 상단 크레딧 라인 */
   .topline { position: absolute; left: 48px; right: 48px; top: 40px; z-index: 6; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
@@ -47,6 +45,7 @@
   .stack > .art { position: relative; inset: auto; flex: 1 1 auto; overflow: hidden; min-height: 0; }
   .stack > .art img { object-position: 50% 0%; transform-origin: 50% 0%; }
   .stack > .art::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--brand); transform-origin: left; animation: wipe .8s .1s both; }
+  .stack > .art::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 150px; z-index: 1; background: linear-gradient(rgba(11,11,10,0), var(--black)); }
   .stack > .panel { position: relative; bottom: auto; flex: none; }
   .story.stack > .panel { bottom: auto; }
   .story.stack .tail { flex: none; height: 250px; background: var(--black); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; opacity: .5; }
@@ -58,34 +57,36 @@
   .art img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 12%; animation: kb 6s cubic-bezier(.2,.6,.3,1) both; }
   .rank { position: absolute; left: 44px; top: 98px; z-index: 6; font-family: var(--num); font-size: 168px; line-height: 1; color: transparent; -webkit-text-stroke: 3px var(--paper); animation: up .6s .15s both; }
   .story .rank { top: 210px; }
-  .seal { position: absolute; right: 40px; z-index: 7; width: 236px; height: 236px; animation: seal-in .7s 1.25s cubic-bezier(.3,1.4,.5,1) both; }
-  .seal .ring { transform-origin: 120px 120px; animation: spin 14s linear infinite; }
-  .seal text { font-family: var(--sans); font-weight: 800; fill: var(--brand-ink); }
-  .seal .core { font-family: var(--num); font-weight: 400; font-size: 64px; letter-spacing: .01em; }
-  .seal .core.kr { font-family: var(--sans); font-weight: 900; font-size: 50px; letter-spacing: -.04em; }
-  .seal .core.kr.sm { font-size: 38px; }
-
   .panel { position: absolute; left: 0; right: 0; bottom: 0; z-index: 5; animation: rise .75s .2s cubic-bezier(.7,0,.2,1) both; }
   .story .panel { bottom: 250px; }
   .deal { display: grid; grid-template-columns: auto 1fr; align-items: stretch; }
   .pct { background: var(--accent); color: var(--on); font-family: var(--num); font-size: 236px; line-height: .82; padding: 30px 40px 14px 44px; position: relative; overflow: hidden; white-space: nowrap; min-width: max-content; }
   .pct span { display: inline-block; animation: pop .45s .75s cubic-bezier(.2,1.4,.4,1) both; }
   .pct::after { content: ""; position: absolute; top: 0; bottom: 0; width: 34%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent); animation: shine .9s 1.3s ease-in-out both; }
-  .price { background: var(--black); padding: 30px 44px 22px 34px; display: flex; flex-direction: column; justify-content: flex-end; text-align: right; }
-  .price small { font-size: 22px; font-weight: 800; letter-spacing: .1em; color: var(--brand); }
+  .price { background: var(--black); padding: 24px 44px 16px 34px; display: flex; flex-direction: column; justify-content: flex-end; text-align: right; }
+  .price small { font-size: 23px; font-weight: 800; letter-spacing: .1em; color: var(--brand); }
   .price b { font-size: 84px; font-weight: 900; letter-spacing: -.045em; line-height: 1; margin-top: 6px; white-space: nowrap; }
-  .price s { font-size: 30px; font-weight: 600; opacity: .55; margin-top: 8px; }
+  .price s { font-size: 30px; font-weight: 600; opacity: .55; margin-top: 4px; }
   .titlebar { background: var(--black); padding: 26px 44px 0; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
   .titlebar h2 { font-size: 60px; font-weight: 900; letter-spacing: -.04em; line-height: 1.08; animation: wipe .7s 1s cubic-bezier(.6,0,.2,1) both;
                  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .titlebar .plats { flex: none; display: flex; gap: 8px; padding-bottom: 8px; }
   .titlebar .plats i { font-style: normal; font-family: var(--num); font-size: 26px; letter-spacing: .06em; padding: 4px 12px 2px; border: 2px solid var(--paper); }
   .titlebar .ends { flex: none; font-family: var(--num); font-size: 34px; letter-spacing: .04em; color: var(--brand); padding-bottom: 6px; }
-  /* 영화 포스터 하단 빌링 블록: 세로로 늘린 좁은 글자 */
-  .billing { background: var(--black); padding: 18px 44px 34px; font-size: 19px; font-weight: 600; line-height: 1.25; letter-spacing: -.01em; color: rgba(244,240,230,.72);
-             transform-origin: top left; animation: fade .8s 1.4s both; }
-  .billing span { display: inline-block; transform: scaleY(1.45); transform-origin: bottom; margin-right: 18px; }
-  .billing b { color: var(--paper); font-weight: 800; }
+  /* 정보 줄: 아이콘 + 짧은 말. 가격 블록과 겹치는 정보(판매가, 정가, 스토어)는 넣지 않는다 */
+  .facts { background: var(--black); padding: 20px 44px 36px; display: flex; flex-wrap: wrap; gap: 14px 34px; animation: fade .8s 1.3s both; }
+  .fact { display: inline-flex; align-items: center; gap: 12px; font-size: 31px; font-weight: 700; letter-spacing: -.02em; color: var(--paper); white-space: nowrap; }
+  .fact svg { width: 36px; height: 36px; flex: none; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .fact .ko { font-style: normal; width: 36px; height: 36px; border: 2.4px solid currentColor; border-radius: 8px; display: grid; place-items: center; font-size: 20px; font-weight: 900; line-height: 1; }
+  .fact.hot { color: var(--brand); }
+  .fact.dim { opacity: .55; }
+  /* 가격 아래 스토어·플랫폼별 가격 */
+  .offers { list-style: none; margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(244,240,230,.28); display: flex; flex-direction: column; gap: 6px; }
+  .offers li { display: flex; justify-content: space-between; align-items: baseline; gap: 26px; font-size: 28px; font-weight: 700; white-space: nowrap; line-height: 1.25; }
+  .offers li span { opacity: .7; font-weight: 600; }
+  .offers li b { font-size: 31px; font-weight: 800; margin: 0; letter-spacing: -.02em; }
+  .offers li.low b, .offers li.low span { color: var(--brand); opacity: 1; }
+  .offers li.low b::after { content: " 최저"; font-size: 21px; font-weight: 800; }
 
   /* 표지: 키아트 세로 띠 */
   .strips { position: absolute; inset: -6% 0; z-index: 1; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; background: var(--black); }
@@ -112,7 +113,7 @@
   .row .n { font-family: var(--num); font-size: 54px; color: transparent; -webkit-text-stroke: 2px var(--paper); }
   .row img { width: 120px; height: 160px; object-fit: cover; display: block; }
   .row .t { font-size: 36px; font-weight: 800; letter-spacing: -.03em; line-height: 1.15; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .row .s { font-size: 20px; font-weight: 600; opacity: .62; margin-top: 8px; }
+  .row .s { font-size: 24px; font-weight: 600; opacity: .7; margin-top: 8px; }
   .row .p { text-align: right; }
   .row .p em { font-style: normal; display: block; font-family: var(--num); font-size: 84px; line-height: .9; color: var(--accent); }
   .row .p b { font-size: 30px; font-weight: 900; letter-spacing: -.03em; }
@@ -128,12 +129,12 @@
   .legend h3 { font-size: 80px; font-weight: 900; letter-spacing: -.05em; line-height: 1.02; margin-top: 30px; animation: up .6s .1s both; }
   .legend h3 em { font-style: normal; color: var(--brand); }
   .legend .items { margin-top: 40px; border-top: 3px solid var(--paper); }
-  .legend .it { display: grid; grid-template-columns: 170px 1fr; gap: 30px; align-items: center; padding: 26px 0; border-bottom: 1px solid rgba(244,240,230,.25); animation: up .55s both; }
-  .legend .it svg { width: 170px; height: 170px; }
-  .legend .it .seal { position: static; animation: none; width: 170px; height: 170px; }
+  .legend .it { display: grid; grid-template-columns: 150px 1fr; gap: 30px; align-items: center; padding: 26px 0; border-bottom: 1px solid rgba(244,240,230,.25); animation: up .55s both; }
+  .legend .it .ic { width: 150px; height: 150px; border: 4px solid var(--brand); color: var(--brand); display: grid; place-items: center; }
+  .legend .it .ic svg { width: 84px; height: 84px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .legend .it .ic.off { border-style: dashed; border-color: rgba(244,240,230,.5); color: rgba(244,240,230,.6); font-family: var(--num); font-size: 40px; }
   .legend .it b { font-size: 46px; font-weight: 900; letter-spacing: -.04em; display: block; }
   .legend .it p { font-size: 27px; font-weight: 600; opacity: .75; line-height: 1.45; margin-top: 6px; }
-  .legend .it .dash { width: 170px; height: 170px; border-radius: 50%; border: 4px dashed rgba(244,240,230,.5); display: grid; place-items: center; font-family: var(--num); font-size: 44px; }
 
   /* 마지막 장 */
   .cta { background: var(--brand); color: var(--brand-ink); }
@@ -149,54 +150,45 @@
 </style>
 </head>
 <body>
-{% set verdict_seal = {"best": ("LOWEST EVER · 역대 최저가 · ", "최저"), "near": ("NEAR LOW · 최저가 근접 · ", "근접")} %}
-
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M3 6l6.5 6.5 4-4L21 16"/><path d="M21 10v6h-6"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></symbol>
+  <symbol id="i-thumb" viewBox="0 0 24 24"><path d="M7 10v10H4V10h3z"/><path d="M7 10l4-7c1.6 0 2.6 1.3 2.2 2.8L12.6 9H19a2 2 0 0 1 2 2.3l-1.2 6.9A2.2 2.2 0 0 1 17.6 20H7"/></symbol>
+  <symbol id="i-dollar" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 9.2c-.5-1-1.7-1.6-3-1.6-1.8 0-3 .9-3 2.2 0 3 6 1.6 6 4.4 0 1.3-1.3 2.2-3 2.2-1.4 0-2.6-.6-3.1-1.6M12 6v1.6M12 16.4V18"/></symbol>
+  <symbol id="i-gift" viewBox="0 0 24 24"><path d="M4 11h16v9H4z"/><path d="M3 7h18v4H3z"/><path d="M12 7v13"/><path d="M12 7C10.5 3.5 7 3.8 7.5 6.2 7.8 7 9.5 7 12 7zM12 7c1.5-3.5 5-3.2 4.5-.8-.3.8-2 .8-4.5.8z"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.5-4.5L4 8"/><path d="M4 3v5h5"/><path d="M4 13a8 8 0 0 0 14.5 4.5L20 16"/><path d="M20 21v-5h-5"/></symbol>
+</svg>
 {% macro topline(post) -%}
 <header class="topline"><b>{{ brand }}</b><span class="mid">{{ post.kicker }} · No.{{ week.no }}</span><span class="end">{{ week.range }}</span></header>
 {%- endmacro %}
 
-{% macro seal(uid, ring, core, top, kr=false) -%}
-<svg class="seal" style="top: {{ top }}px" viewBox="0 0 240 240">
-  <defs><path id="sp{{ uid }}" d="M120,120 m-92,0 a92,92 0 1,1 184,0 a92,92 0 1,1 -184,0"/></defs>
-  <circle cx="120" cy="120" r="118" fill="#ffd60a"/>
-  <circle cx="120" cy="120" r="70" fill="none" stroke="#0b0b0a" stroke-width="3"/>
-  <g class="ring"><text font-size="21" letter-spacing="2.2"><textPath href="#sp{{ uid }}">{{ ring ~ ring ~ ring }}</textPath></text></g>
-  <text class="core{{ ' kr' if kr }}{{ ' sm' if core|length > 3 }}" x="120" y="{{ 138 if kr else 143 }}" text-anchor="middle">{{ core }}</text>
-</svg>
+{% macro fact(icon, text, cls="") -%}
+<span class="fact {{ cls }}"><svg><use href="#i-{{ icon }}"/></svg>{{ text }}</span>
 {%- endmacro %}
 
-{% macro billing(d, post) -%}
-<p class="billing">
-  <span><b>{{ d.store|store_name|upper }}</b> 한국 판매가 ₩{{ d.price|won }}</span>
-  {% if d.platforms %}<span>플랫폼 <b>{{ d.platforms|join(' / ') }}</b></span>{% endif %}
-  {% if d.pc_compare %}<span>{{ d.pc_compare.store|store_name }} ₩{{ d.pc_compare.price|won }} <b>{% if d.pc_compare.diff < 0 %}(PC보다 ₩{{ (0 - d.pc_compare.diff)|won }} 쌈){% elif d.pc_compare.diff > 0 %}(PC가 ₩{{ d.pc_compare.diff|won }} 더 쌈){% else %}(PC와 같음){% endif %}</b></span>{% endif %}
-  <span>정가 ₩{{ d.regular|won }}</span>
-  <span>한국어 <b>{{ d.korean or '미확인' }}</b></span>
-  {% if d.review_pct is not none %}<span>평가 <b>{{ d.review_desc or (d.review_pct ~ '%') }}</b> {{ d.review_pct }}%{% if d.review_count %} · {{ d.review_count|compact }}명{% endif %}</span>{% endif %}
-  {% if d.history_low %}<span>역대 최저 ₩{{ d.history_low|won }}</span>{% endif %}
-  {% if d.developer %}<span>개발 {{ d.developer }}</span>{% endif %}
-  {% if d.release_year %}<span>{{ d.release_year }}</span>{% endif %}
-  {% if d.ends_at %}<span>할인 종료 <b>{{ d.ends_at|kdatetime }}</b></span>{% endif %}
-  {% if d.currency_note %}<span>{{ d.currency_note }}</span>{% endif %}
-</p>
-{%- endmacro %}
-
-{% macro deal_panel(d, post, label="지금") -%}
-<div class="panel">
-  <div class="deal">
-    <div class="pct"><span data-count-from="0" data-count-to="{{ d.discount }}" data-count-start=".75" data-count-dur=".5" data-prefix="−" data-suffix="%">−{{ d.discount }}%</span></div>
-    <div class="price"><small>{{ label }}</small><b data-count-from="{{ d.regular }}" data-count-to="{{ d.price }}" data-count-start=".6" data-count-dur="1.2" data-prefix="₩" data-round="10">₩{{ d.price|won }}</b><s>₩{{ d.regular|won }}</s></div>
-  </div>
-  <div class="titlebar"><h2>{{ d.title }}</h2>{% if post.key == 'ending' and d.ends_at %}<span class="ends">~{{ d.ends_at|kdatetime }}</span>{% elif d.platforms %}<span class="plats">{% for pf in d.platforms|sort(reverse=true) %}<i>{{ pf }}</i>{% endfor %}</span>{% endif %}</div>
-  {{ billing(d, post) }}
+{% macro facts(d, post) -%}
+<div class="facts">
+  {% if d.verdict == 'best' %}{{ fact('down', '역대 최저가', 'hot') }}{% elif d.verdict == 'near' %}{{ fact('down', '최저가 근접', 'hot') }}{% endif %}
+  {% if d.ends_at %}{{ fact('clock', (d.ends_at|kdatetime) ~ ' 종료', 'hot' if post.key == 'ending' else '') }}{% endif %}
+  {% if d.korean %}<span class="fact{{ ' dim' if d.korean == '미지원' }}"><i class="ko">가</i>{{ '한국어 미지원' if d.korean == '미지원' else '한국어 ' ~ d.korean }}</span>{% endif %}
+  {% if d.review_pct is not none %}{{ fact('thumb', d.review_pct ~ '% 추천') }}{% endif %}
+  {% if d.currency_note %}{{ fact('dollar', d.currency_note.split(' ')[0] ~ ' 결제') }}{% endif %}
 </div>
 {%- endmacro %}
 
-{% macro deal_seal(d, post, uid, top) -%}
-{% if post.key == 'ending' and d.ends_at %}{{ seal(uid, "ENDING SOON · 곧 마감 · ", d.ends_at|dday, top) }}
-{% elif d.verdict in verdict_seal %}{{ seal(uid, verdict_seal[d.verdict][0], verdict_seal[d.verdict][1], top, true) }}
-{% elif d.pc_compare and d.pc_compare.diff < 0 %}{{ seal(uid, "CHEAPER THAN PC · PC보다 쌈 · ", "−" ~ (0 - d.pc_compare.diff)|short_won, top, true) }}
-{% elif d.platforms %}{{ seal(uid, "YOU SAVE · 정가 대비 절약 · ", (d.regular - d.price)|short_won, top, true) }}{% endif %}
+{% macro offers(d) -%}
+{% if d.offers %}<ul class="offers">{% for o in d.offers %}<li class="{{ 'low' if o.price < d.price }}"><span>{{ o.platform or (o.store|store_short) }}</span><b>₩{{ o.price|won }}</b></li>{% endfor %}</ul>{% endif %}
+{%- endmacro %}
+
+{% macro deal_panel(d, post) -%}
+<div class="panel">
+  <div class="deal">
+    <div class="pct"><span data-count-from="0" data-count-to="{{ d.discount }}" data-count-start=".75" data-count-dur=".5" data-prefix="−" data-suffix="%">−{{ d.discount }}%</span></div>
+    <div class="price"><small>{{ d.store|store_name|upper }}{% if d.platforms %} · {{ d.platforms|sort(reverse=true)|join('/') }}{% endif %}</small><b data-count-from="{{ d.regular }}" data-count-to="{{ d.price }}" data-count-start=".6" data-count-dur="1.2" data-prefix="₩" data-round="10">₩{{ d.price|won }}</b><s>₩{{ d.regular|won }}</s>{{ offers(d) }}</div>
+  </div>
+  <div class="titlebar"><h2>{{ d.title }}</h2></div>
+  {{ facts(d, post) }}
+</div>
 {%- endmacro %}
 
 {% for s in slides %}{% set n = loop.index %}{% set post = s.post %}
@@ -225,7 +217,6 @@
   {{ topline(post) }}
   <div class="art"><img src="{{ d.art_tall or d.image }}" alt=""></div>
   <div class="rank">{{ s.rank|pad2 }}</div>
-  {{ deal_seal(d, post, n, 112) }}
   {{ deal_panel(d, post) }}
   {% if sample %}<div class="sample">샘플 데이터</div>{% endif %}
 </section>
@@ -234,8 +225,7 @@
 <section class="slide story stack" style="--accent: {{ d.palette.accent or '#e8412c' }}; --on: {{ d.palette.ink or '#fff' }}">
   {{ topline(post) }}
   <div class="art"><img src="{{ d.art_tall or d.image }}" alt=""></div>
-  {{ deal_seal(d, post, n, 230) }}
-  {{ deal_panel(d, post, "오늘의 할인") }}
+  {{ deal_panel(d, post) }}
   <div class="tail">{{ handle }}</div>
   {% if sample %}<div class="sample">샘플 데이터</div>{% endif %}
 </section>
@@ -244,12 +234,11 @@
 <section class="slide story free stack" style="--accent: #ffd60a; --on: #0b0b0a">
   {{ topline(post) }}
   <div class="art"><img src="{{ g.image_tall or g.image }}" alt=""></div>
-  {{ seal(n, "FREE · 무료 · ", "FREE", 230) }}
   <div class="panel">
     <div class="deal"><div class="pct"><span>{{ 'NEXT' if g.upcoming else 'FREE' }}</span></div>
-      <div class="price"><small>{% if g.upcoming %}{{ g.starts_at|kdatetime }} 공개{% else %}{{ g.ends_at|kdatetime }}까지{% endif %}</small><b>₩0</b><s>₩{{ g.regular|won }}</s></div></div>
+      <div class="price"><small>EPIC GAMES STORE</small><b>₩0</b><s>₩{{ g.regular|won }}</s></div></div>
     <div class="titlebar"><h2>{{ g.title }}</h2></div>
-    <p class="billing"><span><b>EPIC GAMES STORE</b></span><span>계정에 추가하면 영구 소장</span><span>매주 금요일 0시 교체</span></p>
+    <div class="facts">{{ fact('gift', '받으면 영구 소장') }}{% if g.upcoming %}{{ fact('clock', (g.starts_at|kdatetime) ~ ' 공개', 'hot') }}{% else %}{{ fact('clock', (g.ends_at|kdatetime) ~ '까지', 'hot') }}{% endif %}{{ fact('refresh', '매주 금요일 0시 교체') }}</div>
   </div>
   <div class="tail">{{ handle }}</div>
 </section>
@@ -266,7 +255,7 @@
         <span class="n">{{ (s.offset + loop.index)|pad2 }}</span>
         <img src="{{ d.art_tall or d.image }}" alt="">
         <div style="min-width:0"><div class="t">{{ d.title }}</div>
-          <div class="s">{{ d.store|store_name }} · 한국어 {{ d.korean or '미확인' }}{% if d.review_pct is not none %} · 평가 {{ d.review_pct }}%{% endif %}{% if post.key == 'ending' and d.ends_at %} · ~{{ d.ends_at|kdatetime }}{% elif d.verdict == 'best' %} · 역대 최저{% endif %}{% if d.platforms %} · {{ d.platforms|sort(reverse=true)|join('/') }}{% endif %}{% if d.pc_compare and d.pc_compare.diff < 0 %} · PC보다 ₩{{ (0 - d.pc_compare.diff)|won }} 쌈{% endif %}</div></div>
+          <div class="s">{{ d.store|store_name }}{% if d.platforms %} {{ d.platforms|sort(reverse=true)|join('/') }}{% endif %}{% if d.korean and d.korean != '미지원' %} · 한국어{% endif %}{% if post.key == 'ending' and d.ends_at %} · ~{{ d.ends_at|kdatetime }}{% elif d.verdict == 'best' %} · 역대 최저가{% endif %}{% if d.offers and d.offers[0].price < d.price %} · {{ d.offers[0].platform or (d.offers[0].store|store_short) }} ₩{{ d.offers[0].price|won }}{% endif %}</div></div>
         <div class="p"><em>−{{ d.discount }}%</em><b>₩{{ d.price|won }}</b></div>
       </div>
     {% endfor %}
@@ -279,12 +268,11 @@
 <section class="slide free stack" style="--accent: #ffd60a; --on: #0b0b0a">
   {{ topline(post) }}
   <div class="art"><img src="{{ g.image_tall or g.image }}" alt=""></div>
-  {{ seal(n, "FREE · 무료 · ", "FREE", 112) }}
   <div class="panel">
     <div class="deal"><div class="pct"><span>{{ 'NEXT' if g.upcoming else 'FREE' }}</span></div>
-      <div class="price"><small>{% if g.upcoming %}{{ g.starts_at|kdatetime }} 공개{% else %}{{ g.ends_at|kdatetime }}까지{% endif %}</small><b>₩0</b><s>₩{{ g.regular|won }}</s></div></div>
+      <div class="price"><small>EPIC GAMES STORE</small><b>₩0</b><s>₩{{ g.regular|won }}</s></div></div>
     <div class="titlebar"><h2>{{ g.title }}</h2></div>
-    <p class="billing"><span><b>EPIC GAMES STORE</b></span><span>정가 ₩{{ g.regular|won }}</span><span>계정에 추가하면 영구 소장</span><span>매주 금요일 0시 교체</span></p>
+    <div class="facts">{{ fact('gift', '받으면 영구 소장') }}{% if g.upcoming %}{{ fact('clock', (g.starts_at|kdatetime) ~ ' 공개', 'hot') }}{% else %}{{ fact('clock', (g.ends_at|kdatetime) ~ '까지', 'hot') }}{% endif %}{{ fact('refresh', '매주 금요일 0시 교체') }}</div>
   </div>
   {% if sample %}<div class="sample">샘플 데이터</div>{% endif %}
 </section>
@@ -296,9 +284,9 @@
   <div class="legend">
     <h3>할인율보다<br><em>"지금이 제일 싼가"</em></h3>
     <div class="items">
-      <div class="it" style="animation-delay:.2s">{{ seal("lg1", "LOWEST EVER · 역대 최저가 · ", "최저", 0, true) }}<div><b>역대 최저가</b><p>기록된 가격 중 지금이 가장 쌉니다.<br>기다리던 게임이면 지금 사세요.</p></div></div>
-      <div class="it" style="animation-delay:.3s">{{ seal("lg2", "NEAR LOW · 최저가 근접 · ", "근접", 0, true) }}<div><b>최저가 근접</b><p>역대 최저가와 10% 또는 2천 원 이내.<br>사도 손해 보는 가격은 아닙니다.</p></div></div>
-      <div class="it" style="animation-delay:.4s"><div class="dash">WAIT</div><div><b>표시 없음</b><p>더 싸진 적이 있습니다.<br>급하지 않으면 다음 세일을 기다려도 됩니다.</p></div></div>
+      <div class="it" style="animation-delay:.2s"><div class="ic"><svg><use href="#i-down"/></svg></div><div><b>역대 최저가</b><p>노란 화살표. 기록된 가격 중 지금이 가장 쌉니다.<br>기다리던 게임이면 지금 사세요.</p></div></div>
+      <div class="it" style="animation-delay:.3s"><div class="ic"><svg><use href="#i-down"/></svg></div><div><b>최저가 근접</b><p>역대 최저가와 10% 또는 2천 원 이내.<br>사도 손해 보는 가격은 아닙니다.</p></div></div>
+      <div class="it" style="animation-delay:.4s"><div class="ic off">WAIT</div><div><b>표시 없음</b><p>더 싸진 적이 있습니다.<br>급하지 않으면 다음 세일을 기다려도 됩니다.</p></div></div>
     </div>
     <div class="foot"><span>가격 기록: 매일 자동 수집 · 스팀은 IsThereAnyDeal 역대 최저가 참고</span><span>{{ n|pad2 }} / {{ total|pad2 }}</span></div>
   </div>

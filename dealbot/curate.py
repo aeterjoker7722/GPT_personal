@@ -58,6 +58,28 @@ def compare_console(console: list[Deal], pc: list[Deal]) -> None:
             c.pc_compare = {"store": match.store, "price": match.price, "diff": c.price - match.price}
 
 
+def offer_key(title: str) -> str:
+    return re.sub(r"\s+", " ", PLATFORM_WORDS.sub(" ", normalize_title(title))).strip()
+
+
+def attach_offers(deals: list[Deal], limit: int = 2) -> None:
+    """같은 게임이 다른 스토어·플랫폼에서도 할인 중이면 그 가격들을 붙인다 (가격 아래 목록으로 표시)."""
+    groups: dict[str, list[Deal]] = {}
+    for d in deals:
+        groups.setdefault(offer_key(d.title), []).append(d)
+    for group in groups.values():
+        if len(group) < 2:
+            continue
+        cheapest_by_store: dict[str, Deal] = {}
+        for d in group:
+            if d.store not in cheapest_by_store or d.price < cheapest_by_store[d.store].price:
+                cheapest_by_store[d.store] = d
+        offers = sorted(({"store": s, "price": x.price, "platform": "/".join(sorted(x.platforms, reverse=True))}
+                         for s, x in cheapest_by_store.items()), key=lambda o: o["price"])
+        for d in group:
+            d.offers = [o for o in offers if o["store"] != d.store][:limit]
+
+
 def pick_console(deals: list[Deal], n: int, min_discount: int = 30) -> list[Deal]:
     """콘솔은 평가 데이터가 없으므로 판매 순위와 할인율로 고른다."""
     cands = [d for d in deals if d.store in CONSOLE_STORES and d.discount >= min_discount]
