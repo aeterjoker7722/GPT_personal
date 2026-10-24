@@ -22,6 +22,11 @@ def _image(e: dict) -> str:
     return ""
 
 
+def _image_tall(e: dict) -> str:
+    imgs = {i["type"]: i["url"] for i in e.get("keyImages", [])}
+    return imgs.get("OfferImageTall") or imgs.get("DieselStoreFrontTall") or ""
+
+
 def _offers(e: dict, kind: str) -> list[dict]:
     p = e.get("promotions") or {}
     return [o for g in p.get(kind) or [] for o in g.get("promotionalOffers", [])]
@@ -39,11 +44,13 @@ def fetch() -> tuple[list[FreeGame], list[Deal]]:
         regular, final = price["originalPrice"] // div, price["discountPrice"] // div
         for o in _offers(e, "promotionalOffers"):
             if final == 0 and regular > 0:
-                free.append(FreeGame("epic", e["title"], url, _image(e), o["startDate"], o["endDate"], regular))
+                free.append(FreeGame("epic", e["title"], url, _image(e), o["startDate"], o["endDate"], regular,
+                                      image_tall=_image_tall(e)))
             elif final < regular:
                 deals.append(Deal("epic", e["id"], e["title"], url, final, regular,
                                   round((1 - final / regular) * 100), image=_image(e), ends_at=o["endDate"]))
         for o in _offers(e, "upcomingPromotionalOffers"):
             if o.get("discountSetting", {}).get("discountPercentage") == 0:
-                free.append(FreeGame("epic", e["title"], url, _image(e), o["startDate"], o["endDate"], regular, upcoming=True))
+                free.append(FreeGame("epic", e["title"], url, _image(e), o["startDate"], o["endDate"], regular,
+                                      upcoming=True, image_tall=_image_tall(e)))
     return free, deals

@@ -30,7 +30,7 @@
   /* 인트로 */
   .intro h1 { position: absolute; left: 60px; top: 260px; font-size: 150px; font-weight: 900; letter-spacing: -.06em; line-height: 1.0; }
   .intro h1 span { display: block; animation: up .6s cubic-bezier(.2,.8,.2,1) both; }
-  .intro h1 em { font-style: normal; font-family: var(--num); font-weight: 400; letter-spacing: 0; color: #ff4a2a; }
+  .intro h1 em { font-style: normal; font-family: var(--num); font-weight: 400; letter-spacing: 0; color: #ffd60a; }
   .intro .row { position: absolute; left: 60px; right: 60px; top: 800px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
   .intro .row div { height: 470px; overflow: hidden; animation: rise .7s cubic-bezier(.6,0,.2,1) both; }
   .intro .row img { width: 100%; height: 100%; object-fit: cover; animation: kb 3s both; }
@@ -42,17 +42,24 @@
   .shade { position: absolute; left: 0; right: 0; top: 0; height: 520px; background: linear-gradient(rgba(0,0,0,.5), transparent); }
   .rank { position: absolute; left: 56px; top: 210px; font-family: var(--num); font-size: 210px; line-height: .9; color: transparent; -webkit-text-stroke: 4px #fff; animation: up .5s .1s both; z-index: 3; }
   .store { position: absolute; left: 60px; top: 430px; font-size: 32px; font-weight: 800; background: var(--paper); color: var(--black); padding: 8px 18px; animation: wipe .5s .3s both; z-index: 3; }
-  .band { position: absolute; left: 0; right: 0; bottom: 340px; background: var(--accent); color: var(--on); padding: 34px 150px 38px 56px; animation: rise .6s .2s cubic-bezier(.7,0,.2,1) both; z-index: 3; }
-  .band .pct { font-family: var(--num); font-size: 270px; line-height: .8; animation: pop .45s .7s cubic-bezier(.2,1.4,.4,1) both; white-space: nowrap; }
-  .band .price { display: flex; align-items: baseline; gap: 22px; margin-top: 22px; }
-  .band .price b { font-size: 96px; font-weight: 900; letter-spacing: -.045em; line-height: 1; }
-  .band .price s { font-size: 40px; font-weight: 700; opacity: .6; }
-  .band h2 { font-size: 56px; font-weight: 900; letter-spacing: -.035em; line-height: 1.12; margin-top: 18px; animation: wipe .6s .9s both;
+  .band { position: absolute; left: 0; right: 0; bottom: 340px; z-index: 3; animation: rise .6s .2s cubic-bezier(.7,0,.2,1) both; }
+  .band .deal { display: grid; grid-template-columns: auto 1fr; }
+  .band .pct { background: var(--accent); color: var(--on); font-family: var(--num); font-size: 250px; line-height: .82; padding: 30px 36px 12px 56px; white-space: nowrap; position: relative; overflow: hidden; }
+  .band .pct span { display: inline-block; animation: pop .45s .7s cubic-bezier(.2,1.4,.4,1) both; }
+  .band .pct::after { content: ""; position: absolute; top: 0; bottom: 0; width: 34%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent); animation: shine .9s 1.2s ease-in-out both; }
+  .band .price { background: var(--black); padding: 30px 150px 20px 30px; display: flex; flex-direction: column; justify-content: flex-end; }
+  .band .price small { font-size: 26px; font-weight: 800; letter-spacing: .1em; color: #ffd60a; }
+  .band .price b { font-size: 86px; font-weight: 900; letter-spacing: -.045em; line-height: 1; margin-top: 6px; white-space: nowrap; }
+  .band .price s { font-size: 34px; font-weight: 600; opacity: .55; margin-top: 6px; }
+  .band .bottom { background: var(--black); padding: 22px 150px 30px 56px; }
+  .band h2 { font-size: 58px; font-weight: 900; letter-spacing: -.04em; line-height: 1.1; animation: wipe .6s .9s both;
              display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .band .v { font-size: 32px; font-weight: 800; margin-top: 18px; padding-top: 16px; border-top: 3px solid var(--on); animation: up .5s 1.3s both; }
+  .band .v { font-size: 28px; font-weight: 700; margin-top: 12px; opacity: .78; animation: up .5s 1.3s both; }
+  .logo { position: absolute; left: 60px; top: 510px; max-width: 620px; max-height: 260px; z-index: 3; filter: drop-shadow(0 6px 24px rgba(0,0,0,.6)); animation: up .7s .4s both; }
+  @keyframes shine { from { transform: translateX(-130%) skewX(-18deg) } to { transform: translateX(260%) skewX(-18deg) } }
 
   /* 아웃트로 */
-  .outro { background: var(--paper); color: var(--black); }
+  .outro { background: #ffd60a; color: var(--black); }
   .outro h1 { position: absolute; left: 60px; right: 140px; top: 360px; font-size: 140px; font-weight: 900; letter-spacing: -.06em; line-height: 1.02; }
   .outro h1 span { display: block; animation: up .55s cubic-bezier(.2,.8,.2,1) both; }
   .outro .lines { position: absolute; left: 60px; right: 140px; top: 1000px; border-top: 5px solid var(--black); animation: up .5s .6s both; }
@@ -69,7 +76,7 @@
 {% if sc.kind == "intro" %}
 <section class="scene opaque intro" style="--dur: {{ sc.duration }}s">
   {{ bars(i) }}
-  <h1><span>이번 주</span><span style="animation-delay:.12s">할인</span><span style="animation-delay:.24s"><em>TOP {{ sc.deals|length }}</em></span></h1>
+  <h1><span>{{ sc.lines[0] }}</span><span style="animation-delay:.12s">{{ sc.lines[1] }}</span><span style="animation-delay:.24s"><em>TOP {{ sc.deals|length }}</em></span></h1>
   <div class="row">{% for d in sc.deals %}<div style="animation-delay: {{ 0.35 + loop.index0 * 0.12 }}s"><img src="{{ d.art_tall or d.image }}" alt=""></div>{% endfor %}</div>
   <div class="meta">{{ brand }} · {{ week.issue }} · {{ handle }}</div>
   {% if sample %}<div class="sample">샘플 데이터</div>{% endif %}
@@ -82,11 +89,16 @@
   {{ bars(i) }}
   <div class="rank">{{ sc.rank|pad2 }}</div>
   <div class="store">{{ d.store|store_name }}</div>
+  {% if d.logo %}<img class="logo" src="{{ d.logo }}" alt="" onerror="this.remove()">{% endif %}
   <div class="band">
-    <div class="pct" data-count-from="0" data-count-to="{{ d.discount }}" data-count-start=".7" data-count-dur=".5" data-prefix="−" data-suffix="%">−{{ d.discount }}%</div>
-    <div class="price"><b data-count-from="{{ d.regular }}" data-count-to="{{ d.price }}" data-count-start=".6" data-count-dur="1.2" data-prefix="₩" data-round="10">₩{{ d.price|won }}</b><s>₩{{ d.regular|won }}</s></div>
-    <h2>{{ d.title }}</h2>
-    <div class="v">{{ {"best": "역대 최저가", "near": "최저가 근접", "wait": "더 싸진 적 있음", "unknown": "가격 기록 중"}[d.verdict] }} · 한국어 {{ d.korean or '미확인' }}{% if d.review_pct is not none %} · 평가 {{ d.review_pct }}%{% endif %}</div>
+    <div class="deal">
+      <div class="pct"><span data-count-from="0" data-count-to="{{ d.discount }}" data-count-start=".7" data-count-dur=".5" data-prefix="−" data-suffix="%">−{{ d.discount }}%</span></div>
+      <div class="price"><small>{{ {"best": "역대 최저가", "near": "최저가 근접"}.get(d.verdict, "지금") }}</small><b data-count-from="{{ d.regular }}" data-count-to="{{ d.price }}" data-count-start=".6" data-count-dur="1.2" data-prefix="₩" data-round="10">₩{{ d.price|won }}</b><s>₩{{ d.regular|won }}</s></div>
+    </div>
+    <div class="bottom">
+      <h2>{{ d.title }}</h2>
+      <div class="v">한국어 {{ d.korean or '미확인' }}{% if d.review_pct is not none %} · 평가 {{ d.review_desc or '' }} {{ d.review_pct }}%{% endif %}{% if d.ends_at %} · {{ d.ends_at|kdatetime }} 종료{% endif %}</div>
+    </div>
   </div>
 </section>
 

@@ -27,6 +27,13 @@ def _parse_iso(s: str) -> datetime:
     return datetime.fromisoformat(s.replace("Z", "+00:00")).astimezone(KST)
 
 
+def _dday(iso: str) -> str:
+    """종료 시각까지 남은 시간: 24시간 이상이면 D-n, 미만이면 nH."""
+    left = (_parse_iso(iso) - datetime.now(KST)).total_seconds()
+    hours = max(0, int(left // 3600))
+    return f"D-{hours // 24}" if hours >= 24 else f"{hours}H"
+
+
 def chart(history: list, w: float, h: float, pad: float = 6) -> dict | None:
     """가격 이력 → SVG path. 점이 2개 미만이면 None."""
     if not history or len(history) < 2:
@@ -64,6 +71,7 @@ def _env() -> Environment:
         "short_url": lambda u: urlparse(u).netloc.replace("www.", ""),
         "pad2": lambda n: f"{int(n):02d}",
         "ord": ord,
+        "dday": _dday,
     })
     env.globals["chart"] = chart
     return env
@@ -116,10 +124,14 @@ def render_html(slides: list[dict], theme: str, *, sample: bool = False, affilia
     )
 
 
-def render_theme(slides: list[dict], theme: str, out_dir: Path, *, motion_slides: str = "",
-                 sample: bool = False, affiliate: bool = False) -> dict:
-    """테마 하나를 렌더링. motion_slides: "" (정지만) / "key" (표지+메인카드) / "all"."""
-    out = out_dir / theme
+MOTION_KINDS = {"cover": {"cover", "story", "story_free"},
+                "key": {"cover", "hero", "story", "story_free", "free"}}
+
+
+def render_theme(slides: list[dict], theme: str, out_dir: Path, *, name: str | None = None,
+                 motion_slides: str = "", sample: bool = False, affiliate: bool = False) -> dict:
+    """테마 하나를 렌더링. motion_slides: "" (정지만) / "cover" / "key" (표지+메인카드) / "all"."""
+    out = out_dir / (name or theme)
     out.mkdir(parents=True, exist_ok=True)
     html_path = out / "carousel.html"
     html_path.write_text(render_html(slides, theme, sample=sample, affiliate=affiliate), encoding="utf-8")
@@ -128,23 +140,27 @@ def render_theme(slides: list[dict], theme: str, out_dir: Path, *, motion_slides
         result["png"] = motion.stills(page, out)
         if motion_slides:
             for i, (el, s) in enumerate(zip(page.query_selector_all("section.slide"), slides), 1):
-                if motion_slides == "key" and s["kind"] not in ("cover", "hero"):
+                if motion_slides in MOTION_KINDS and s["kind"] not in MOTION_KINDS[motion_slides]:
                     continue
                 mp4 = motion.clip(page, el, out / f"slide_{i:02d}.mp4", duration=float(s.get("duration", 4.0)))
                 result["mp4"].append(mp4)
     return result
 
 
-def render_reel(picks: list[Deal], out_dir: Path, *, count: int = 3, sample: bool = False) -> Path:
+REEL_TITLES = {"weekly": ("이번 주", "할인"), "ending": ("곧 끝나는", "할인")}
+
+
+def render_reel(picks: list[Deal], out_dir: Path, *, count: int = 3, sample: bool = False,
+                source: str = "weekly") -> Path:
     """9:16 릴스: 인트로 → 게임별 트레일러 위 가격 오버레이 → 아웃트로."""
-    out = out_dir / "reel"
+    out = out_dir / ("reel" if source == "weekly" else f"reel-{source}")
     out.mkdir(parents=True, exist_ok=True)
     games = picks[:count]
     trailers = {}
     for i, d in enumerate(games):
         clip_path = motion.fetch_trailer(d.trailer, out / f"trailer_{i + 1}.mp4") if d.trailer else None
         trailers[d.key] = clip_path
-    scenes = [{"kind": "intro", "duration": 2.4, "deals": games}]
+    scenes = [{"kind": "intro", "duration": 2.4, "deals": games, "lines": REEL_TITLES.get(source, REEL_TITLES["weekly"])}]
     scenes += [{"kind": "game", "deal": d, "rank": i + 1, "duration": 3.8, "video": bool(trailers[d.key])}
                for i, d in enumerate(games)]
     scenes += [{"kind": "outro", "duration": 2.6}]

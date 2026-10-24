@@ -35,4 +35,4 @@ HERO_SLIDES = int(os.getenv("DEALBOT_HERO_SLIDES", "5"))
 LIST_SLIDE_ITEMS = 6
 ACCOUNT_HANDLE = os.getenv("DEALBOT_HANDLE", "@your_handle")
 BRAND = os.getenv("DEALBOT_BRAND", "주간 게임 세일")
-THEME = os.getenv("DEALBOT_THEME", "editorial")
+THEME = os.getenv("DEALBOT_THEME", "poster")

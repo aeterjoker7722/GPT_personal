@@ -1,13 +1,15 @@
 """Steam 할인 수집.
 
 - 목록: 스토어 검색(specials=1, 인기순) JSON. 리뷰 점수는 영어 평가 기준 툴팁에서 파싱.
-- 상세: appdetails(cc=kr, l=koreana) 로 한국어 이름, 한국어 지원, 헤더 이미지 보강.
+- 상세: IStoreBrowseService/GetItems(KR) 로 종료일, 전체 리뷰, 한국어 지원, 로고/키아트, 트레일러 보강.
 """
 from __future__ import annotations
 
 import html
+import json
 import re
 import time
+from datetime import datetime, timezone
 
 from bs4 import BeautifulSoup
 
@@ -16,7 +18,7 @@ from ..http import get
 from ..models import Deal
 
 SEARCH_URL = "https://store.steampowered.com/search/results/"
-APPDETAILS_URL = "https://store.steampowered.com/api/appdetails"
+STOREBROWSE_URL = "https://api.steampowered.com/IStoreBrowseService/GetItems/v1"
 REVIEW_RE = re.compile(r"(\d+)% of the ([\d,]+) user reviews")
 
 
@@ -77,43 +79,73 @@ def fetch_specials(pages: int = config.STEAM_PAGES) -> list[Deal]:
     return unique
 
 
-def korean_support(supported_languages: str) -> str:
-    """appdetails(l=koreana) 의 supported_languages 에서 한국어 지원 수준 판정."""
-    if not supported_languages:
-        return "미지원"
-    m = re.search(r"한국어(<strong>\*</strong>)?", supported_languages)
-    if not m:
-        return "미지원"
-    return "음성" if m.group(1) else "자막"
+ASSET_BASE = "https://shared.akamai.steamstatic.com/store_item_assets/"
+TRAILER_BASE = "https://video.akamai.steamstatic.com/store_trailers/"
+KOREAN = 4  # Steam ELanguage: 한국어
 
 
-def enrich(deal: Deal) -> Deal:
-    r = get(APPDETAILS_URL, params={"appids": deal.store_id, "cc": "kr", "l": "koreana"})
-    body = r.json().get(deal.store_id) or {}
-    if not body.get("success"):
-        return deal
-    data = body["data"]
-    deal.korean = korean_support(data.get("supported_languages", ""))
-    deal.image = data.get("header_image") or deal.image
-    if data.get("name"):
-        deal.title = data["name"]
-    deal.tags = [g["description"] for g in data.get("genres", [])][:3]
-    art = f"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/{deal.store_id}"
-    deal.art_tall, deal.art_wide = f"{art}/library_600x900_2x.jpg", f"{art}/library_hero.jpg"
-    movies = data.get("movies") or []
-    movie = next((m for m in movies if m.get("highlight")), movies[0] if movies else None)
-    if movie:
-        deal.trailer = movie.get("dash_h264", "")
-    po = data.get("price_overview")
-    if po:  # 검색 결과보다 정확한 최신 가격
-        deal.price, deal.regular, deal.discount = po["final"] // 100, po["initial"] // 100, po["discount_percent"]
-    return deal
+def korean_support(languages: list[dict]) -> str:
+    for lang in languages or []:
+        if lang.get("elanguage") == KOREAN and lang.get("supported"):
+            return "음성" if lang.get("full_audio") else "자막"
+    return "미지원"
+
+
+def _apply(deal: Deal, it: dict) -> None:
+    """IStoreBrowseService/GetItems 결과를 Deal 에 반영."""
+    deal.title = it.get("name") or deal.title
+    po = it.get("best_purchase_option") or {}
+    if po.get("final_price_in_cents"):
+        deal.price = int(po["final_price_in_cents"]) // 100
+        deal.regular = int(po.get("original_price_in_cents") or po["final_price_in_cents"]) // 100
+        deal.discount = po.get("discount_pct") or deal.discount
+    ends = [a["discount_end_date"] for a in po.get("active_discounts", []) if a.get("discount_end_date")]
+    if ends:
+        deal.ends_at = datetime.fromtimestamp(min(ends), timezone.utc).isoformat()
+    rv = (it.get("reviews") or {}).get("summary_filtered") or {}
+    if rv.get("review_count"):
+        deal.review_pct, deal.review_count = rv.get("percent_positive"), rv["review_count"]
+        deal.review_desc = rv.get("review_score_label", "")
+    deal.korean = korean_support(it.get("supported_languages"))
+    assets = it.get("assets") or {}
+    fmt = assets.get("asset_url_format", "")
+    asset = lambda name: ASSET_BASE + fmt.replace("${FILENAME}", name) if fmt and name else ""
+    deal.image = asset(assets.get("header")) or deal.image
+    deal.art_tall = asset(assets.get("library_capsule_2x") or assets.get("library_capsule"))
+    deal.art_wide = asset(assets.get("library_hero"))
+    deal.logo = asset("logo.png")
+    info = it.get("basic_info") or {}
+    deal.developer = ", ".join(x["name"] for x in info.get("developers", [])[:1])
+    deal.publisher = ", ".join(x["name"] for x in info.get("publishers", [])[:1])
+    rel = (it.get("release") or {}).get("steam_release_date")
+    if rel:
+        deal.release_year = datetime.fromtimestamp(rel, timezone.utc).year
+    for tr in (it.get("trailers") or {}).get("highlights", []):
+        dash = next((a["cdn_path"] for a in tr.get("adaptive_trailers", []) if a.get("encoding") == "dash_h264"), None)
+        if dash:
+            deal.trailer = TRAILER_BASE + dash
+            break
 
 
 def enrich_many(deals: list[Deal], limit: int = config.STEAM_ENRICH_TOP) -> None:
-    for d in deals[:limit]:
+    """상위 후보를 50개씩 묶어 한 번에 상세 조회 (가격, 종료일, 리뷰, 한국어, 아트, 트레일러)."""
+    targets = deals[:limit]
+    for i in range(0, len(targets), 50):
+        chunk = targets[i:i + 50]
+        req = {
+            "ids": [{"appid": int(d.store_id)} for d in chunk],
+            "context": {"language": "koreana", "country_code": "KR"},
+            "data_request": {"include_assets": True, "include_all_purchase_options": True, "include_reviews": True,
+                             "include_basic_info": True, "include_supported_languages": True,
+                             "include_trailers": True, "include_release": True},
+        }
         try:
-            enrich(d)
-        except Exception as e:  # 한 건 실패로 전체를 멈추지 않음
-            print(f"[steam] appdetails 실패 {d.store_id}: {e}")
-        time.sleep(1.5)  # appdetails 는 5분 200회 정도 제한
+            items = get(STOREBROWSE_URL, params={"input_json": json.dumps(req)}).json()["response"]["store_items"]
+        except Exception as e:
+            print(f"[steam] 상세 조회 실패: {e}")
+            continue
+        by_id = {str(it.get("appid") or it.get("id")): it for it in items if it.get("success") == 1}
+        for d in chunk:
+            if d.store_id in by_id:
+                _apply(d, by_id[d.store_id])
+        time.sleep(1)

@@ -1,0 +1,44 @@
+# 매일 아침 오늘 편성표대로 게시물 초안(이미지/영상/캡션)을 만들어 Artifacts 로 올린다.
+# 금요일 0시 10분에는 에픽 무료 게임만 따로 만든다 (에픽은 금요일 0시 KST 교체).
+# 계정명/브랜드는 저장소 Settings → Variables 의 DEALBOT_HANDLE, DEALBOT_BRAND 로 정한다.
+name: daily-drafts
+
+on:
+  schedule:
+    - cron: "37 23 * * *"   # 매일 08:37 KST
+    - cron: "10 15 * * 4"   # 금요일 00:10 KST
+  workflow_dispatch:
+    inputs:
+      kinds:
+        description: "만들 포맷 (비우면 오늘 편성표). 예: weekly lowest reel"
+        required: false
+
+jobs:
+  drafts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      ITAD_API_KEY: ${{ secrets.ITAD_API_KEY }}
+      DEALBOT_HANDLE: ${{ vars.DEALBOT_HANDLE }}
+      DEALBOT_BRAND: ${{ vars.DEALBOT_BRAND }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-noto-cjk
+      - run: pip install -r requirements.txt && playwright install --with-deps chromium
+      - name: Render drafts
+        run: |
+          if [ -n "${{ github.event.inputs.kinds }}" ]; then
+            python -m dealbot post ${{ github.event.inputs.kinds }} --motion
+          elif [ "${{ github.event.schedule }}" = "10 15 * * 4" ]; then
+            python -m dealbot post free --motion
+          else
+            python -m dealbot today --motion
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: drafts-${{ github.run_id }}
+          path: output/
+          retention-days: 7

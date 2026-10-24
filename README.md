@@ -3,10 +3,11 @@
 Steam, Epic, GOG, 다이렉트게임즈(+스토브 수동 입력)의 할인을 모아서 처리합니다.
 **가격 추적과 최저가 판정, 한국어 지원, 스토어 간 가격 비교**를 붙인 뒤 다음을 만듭니다.
 
-- 인스타그램 캐러셀: 디자인 시안 4종(editorial / receipt / ticker / poster), PNG와 MP4
-- 스팀 트레일러를 합성한 9:16 릴스 MP4
-- 캡션
+- 요일별 게시물: 주간 TOP, 역대 최저가, 마감 임박, 큐레이션, 무료 게임, 스토리, 계정 안내 (poster 디자인, PNG와 MP4)
+- 스팀 트레일러와 공식 로고를 합성한 9:16 릴스 MP4
+- 포맷별 캡션과 해시태그
 
+- 주간 운영 계획(편성표): [docs/weekly_plan.md](docs/weekly_plan.md)
 - 운영 전략: [docs/strategy.md](docs/strategy.md)
 - 경쟁 조사: [docs/competitor_research.md](docs/competitor_research.md)
 - 템플릿 시안과 모션: [docs/template_design.md](docs/template_design.md)
@@ -22,12 +23,13 @@ playwright install chromium
 ## 사용
 
 ```bash
-python -m dealbot run                          # 수집 → 판정 → 선별 → output/YYYY-MM-DD/<theme>/ 에 PNG
-python -m dealbot run --theme all --motion     # 4개 시안 전부, 표지와 메인 카드는 MP4 도
-python -m dealbot run --reel                   # 트레일러 릴스 (output/.../reel/reel.mp4)
-python -m dealbot run --affiliate              # 제휴 링크를 쓸 때 [광고] 표기 추가
+python -m dealbot today --motion               # 오늘 요일 편성표대로 전부 생성 → output/YYYY-MM-DD/<포맷>/
+python -m dealbot post weekly lowest           # 원하는 포맷만 (weekly, lowest, ending, under5k, korean, aaa, free, story, guide, reel, reel:ending)
+python -m dealbot post weekly --motion key     # 표지와 메인 카드를 MP4 로도
+python -m dealbot post weekly --affiliate      # 제휴 링크를 쓸 때 [광고] 표기 추가
+python -m dealbot run --theme receipt          # 다른 시안(editorial/receipt/ticker)으로 주간 TOP
 python -m dealbot collect          # 가격 기록만 쌓기 (매일)
-python -m dealbot sample           # 네트워크 없이 샘플 데이터로 템플릿 미리보기
+python -m dealbot sample --post weekly free     # 네트워크 없이 샘플 데이터로 미리보기
 ```
 
 결과물의 `carousel.html`을 브라우저로 열면 PNG 렌더링 전에 확인할 수 있습니다.
@@ -48,7 +50,9 @@ python -m dealbot sample           # 네트워크 없이 샘플 데이터로 템
 1. `ITAD_API_KEY`(IsThereAnyDeal 무료 키)가 있으면 스팀 게임은 KR 기준 역대 최저가로 판정합니다. *키가 없어 이 경로는 실제 호출로 검증하지 못했습니다.*
 2. 그 외에는 `data/price_history.sqlite`의 자체 기록을 씁니다. **7일 이상 쌓여야 판정이 켜지고**, 그전에는 "가격 추적 중"으로 표시됩니다.
 
-`.github/workflows/collect-prices.yml`이 매일 가격을 수집해 sqlite를 커밋합니다. 스케줄 실행은 **기본 브랜치에 머지된 뒤부터** 동작합니다.
+`.github/workflows/collect-prices.yml`이 매일 가격을 수집해 sqlite를 커밋합니다.
+`.github/workflows/daily-drafts.yml`은 매일 아침 오늘 게시물 초안을 만들어 Actions의 Artifacts로 올립니다(금요일 0시 10분에는 무료 게임만 따로).
+두 워크플로 모두 스케줄 실행은 **기본 브랜치에 머지된 뒤부터** 동작합니다.
 
 ## 주요 설정 (환경변수)
 
@@ -56,7 +60,7 @@ python -m dealbot sample           # 네트워크 없이 샘플 데이터로 템
 |---|---|---|
 | `DEALBOT_HANDLE` | `@your_handle` | 카드에 찍힐 계정명 |
 | `DEALBOT_BRAND` | `주간 게임 세일` | 카드에 찍힐 브랜드명 |
-| `DEALBOT_THEME` | `editorial` | 기본 시안 |
+| `DEALBOT_THEME` | `poster` | `run` 명령의 기본 시안 |
 | `DEALBOT_MIN_DISCOUNT` | 50 | 최소 할인율 |
 | `DEALBOT_MIN_REVIEW_PCT` / `_COUNT` | 75 / 500 | 최소 평가 비율과 리뷰 수 |
 | `DEALBOT_HERO_SLIDES` | 5 | 메인 카드 장수 |

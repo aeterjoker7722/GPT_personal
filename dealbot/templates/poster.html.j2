@@ -5,159 +5,312 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 <link href="https://fonts.googleapis.com/css2?family=Anton&display=block" rel="stylesheet">
 <style>
-  :root { --black: #0d0d0c; --paper: #f2eee5; --sans: Pretendard, sans-serif; --num: "Anton", Pretendard, sans-serif; }
+  /* poster v2: 키아트 풀블리드 + 영화 포스터 문법(빌링 블록, 씰, 상단 크레딧 라인).
+     브랜드 고정색은 시그널 옐로(--brand) 하나, 할인 블록은 게임마다 키아트에서 뽑은 --accent. */
+  :root {
+    --black: #0b0b0a; --ink: #151513; --paper: #f4f0e6; --brand: #ffd60a; --brand-ink: #0b0b0a;
+    --sans: Pretendard, "Apple SD Gothic Neo", sans-serif; --num: "Anton", Pretendard, sans-serif;
+  }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #444; font-family: var(--sans); color: var(--paper); -webkit-font-smoothing: antialiased; }
-  .slide { width: 1080px; height: 1350px; background: var(--black); position: relative; overflow: hidden; margin-bottom: 24px; }
-  .slide::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .3; mix-blend-mode: overlay; z-index: 9;
+  body { background: #3a3a3a; font-family: var(--sans); color: var(--paper); -webkit-font-smoothing: antialiased; font-feature-settings: "tnum"; }
+  .slide { width: 1080px; height: 1350px; background: var(--black); position: relative; overflow: hidden; margin-bottom: 24px; isolation: isolate; }
+  .slide.story { height: 1920px; }
+  .slide::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .28; mix-blend-mode: overlay; z-index: 20;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='240' height='240' filter='url(%23n)'/></svg>"); }
-  .sample { position: absolute; left: 50px; bottom: 18px; font-size: 16px; opacity: .6; z-index: 10; }
-  @keyframes kb { from { transform: scale(1.16) translateY(-2%) } to { transform: scale(1.02) } }
-  @keyframes rise { from { transform: translateY(101%) } to { transform: none } }
-  @keyframes wipe { from { clip-path: inset(0 100% 0 0) } to { clip-path: inset(0 0 0 0) } }
-  @keyframes pop { 0% { transform: scale(1.5); opacity: 0 } 100% { transform: none; opacity: 1 } }
-  @keyframes in { from { opacity: 0; transform: translateY(24px) } to { opacity: 1; transform: none } }
-  .in { animation: in .7s cubic-bezier(.2,.8,.2,1) both; }
+  .sample { position: absolute; right: 48px; bottom: 14px; font-size: 15px; opacity: .55; z-index: 21; }
+
+  @keyframes kb { from { transform: scale(1.14) translateY(-1.5%) } to { transform: scale(1.02) } }
+  @keyframes drift-up { from { transform: translateY(9%) } to { transform: translateY(0) } }
+  @keyframes drift-down { from { transform: translateY(-9%) } to { transform: translateY(0) } }
+  @keyframes rise { from { transform: translateY(102%) } to { transform: none } }
+  @keyframes pop { 0% { transform: scale(1.45); opacity: 0 } 100% { transform: none; opacity: 1 } }
+  @keyframes wipe { from { clip-path: inset(0 100% 0 0) } to { clip-path: inset(0 -2% 0 0) } }
+  @keyframes fade { from { opacity: 0 } to { opacity: 1 } }
+  @keyframes up { from { opacity: 0; transform: translateY(40px) } to { opacity: 1; transform: none } }
+  @keyframes shine { from { transform: translateX(-130%) skewX(-18deg) } to { transform: translateX(260%) skewX(-18deg) } }
+  @keyframes spin { to { transform: rotate(360deg) } }
+  @keyframes seal-in { 0% { transform: scale(0) rotate(-90deg) } 70% { transform: scale(1.08) rotate(6deg) } 100% { transform: scale(1) rotate(0) } }
+
+  /* 상단 크레딧 라인 */
+  .topline { position: absolute; left: 48px; right: 48px; top: 40px; z-index: 6; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+             font-size: 21px; font-weight: 700; letter-spacing: .02em; padding-bottom: 14px; border-bottom: 2px solid rgba(244,240,230,.85); animation: fade .6s both; }
+  .topline b { font-weight: 900; font-size: 25px; letter-spacing: -.02em; }
+  .topline .mid { font-family: var(--num); font-weight: 400; font-size: 24px; letter-spacing: .14em; color: var(--brand); }
+  .topline .end { text-align: right; }
+  .story .topline { top: 150px; }
+  .scrim { position: absolute; left: 0; right: 0; top: 0; height: 360px; z-index: 2; background: linear-gradient(rgba(0,0,0,.62), rgba(0,0,0,0)); }
+
+  /* 세로 배치형(메인 카드/무료/스토리): 검은 크레딧 바 → 키아트 → 패널. 키아트 하단에 박힌 로고가 패널에 반쯤 잘리지 않게 */
+  .stack { display: flex; flex-direction: column; }
+  .stack > .topline { position: relative; left: auto; right: auto; top: auto; flex: none; margin: 0; padding: 34px 48px 18px; border: 0; background: var(--black); }
+  .story.stack > .topline { padding-top: 130px; }
+  .stack > .art { position: relative; inset: auto; flex: 1 1 auto; overflow: hidden; min-height: 0; }
+  .stack > .art img { object-position: 50% 0%; transform-origin: 50% 0%; }
+  .stack > .art::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--brand); transform-origin: left; animation: wipe .8s .1s both; }
+  .stack > .panel { position: relative; bottom: auto; flex: none; }
+  .story.stack > .panel { bottom: auto; }
+  .story.stack .tail { flex: none; height: 250px; background: var(--black); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; opacity: .5; }
+  .stack .rank { top: 112px; }
+  .story.stack .rank { top: 210px; }
 
   /* 메인 카드 */
-  .art { position: absolute; inset: 0; }
-  .art img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 0%; animation: kb 6s cubic-bezier(.2,.6,.3,1) both; }
-  .rank { position: absolute; left: 50px; top: 44px; font-family: var(--num); font-size: 150px; line-height: .9; color: transparent; -webkit-text-stroke: 3px var(--paper); z-index: 2; animation: in .6s .2s both; }
-  .vert { position: absolute; right: 44px; top: 50px; writing-mode: vertical-rl; font-size: 22px; font-weight: 700; letter-spacing: .2em; z-index: 2; text-shadow: 0 1px 8px rgba(0,0,0,.5); }
-  .band { position: absolute; left: 0; right: 0; bottom: 0; background: var(--accent); color: var(--on); padding: 36px 50px 40px; z-index: 3;
-          animation: rise .75s .25s cubic-bezier(.7,0,.2,1) both; }
-  .band .row1 { display: flex; justify-content: space-between; align-items: flex-end; gap: 30px; }
-  .pct { font-family: var(--num); font-size: 236px; line-height: .8; white-space: nowrap; letter-spacing: -.01em; animation: pop .45s .8s cubic-bezier(.2,1.4,.4,1) both; }
-  .price { text-align: right; padding-bottom: 8px; flex-shrink: 0; }
-  .price s { display: block; font-size: 34px; font-weight: 600; opacity: .6; }
-  .price b { display: block; font-size: 78px; white-space: nowrap; font-weight: 900; letter-spacing: -.04em; line-height: 1; }
-  .band h2 { font-size: 54px; font-weight: 900; letter-spacing: -.035em; line-height: 1.1; margin-top: 26px; animation: wipe .7s 1s cubic-bezier(.6,0,.2,1) both;
-             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .band .meta { display: flex; gap: 0; margin-top: 22px; font-size: 25px; font-weight: 700; border-top: 3px solid var(--on); padding-top: 16px; }
-  .band .meta span { flex: 1; }
-  .band .meta span + span { border-left: 2px solid color-mix(in srgb, var(--on) 35%, transparent); padding-left: 18px; }
-  .band .meta small { display: block; font-size: 18px; font-weight: 600; opacity: .65; margin-bottom: 2px; }
+  .art { position: absolute; inset: 0; z-index: 1; }
+  .art img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 12%; animation: kb 6s cubic-bezier(.2,.6,.3,1) both; }
+  .rank { position: absolute; left: 44px; top: 98px; z-index: 6; font-family: var(--num); font-size: 168px; line-height: 1; color: transparent; -webkit-text-stroke: 3px var(--paper); animation: up .6s .15s both; }
+  .story .rank { top: 210px; }
+  .seal { position: absolute; right: 40px; z-index: 7; width: 236px; height: 236px; animation: seal-in .7s 1.25s cubic-bezier(.3,1.4,.5,1) both; }
+  .seal .ring { transform-origin: 120px 120px; animation: spin 14s linear infinite; }
+  .seal text { font-family: var(--sans); font-weight: 800; fill: var(--brand-ink); }
+  .seal .core { font-family: var(--num); font-weight: 400; font-size: 64px; letter-spacing: .01em; }
+  .seal .core.kr { font-family: var(--sans); font-weight: 900; font-size: 50px; letter-spacing: -.04em; }
 
-  /* 표지 */
-  .mosaic { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); }
-  .mosaic > div { overflow: hidden; position: relative; }
-  .mosaic img { width: 100%; height: 100%; object-fit: cover; animation: kb 6s both; }
-  .mosaic .tile { background: var(--accent); color: var(--on); padding: 36px 34px; display: flex; flex-direction: column; justify-content: flex-start; gap: 28px; }
-  .mosaic .tile .big { font-family: var(--num); font-size: 170px; line-height: .82; }
-  .mosaic .tile .k { font-size: 40px; font-weight: 900; letter-spacing: -.04em; line-height: 1.12; }
-  .mosaic .tile .s { font-size: 21px; font-weight: 700; opacity: .75; }
-  .mosaic .tag { position: absolute; left: 0; bottom: 0; background: var(--black); color: var(--paper); font-family: var(--num); font-size: 46px; padding: 6px 16px 2px; }
-  .cover-head { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); z-index: 4; background: var(--black); padding: 26px 50px; display: flex; justify-content: space-between; align-items: center; animation: wipe .8s .3s cubic-bezier(.6,0,.2,1) both; }
-  .cover-head b { font-size: 64px; font-weight: 900; letter-spacing: -.04em; }
-  .cover-head span { font-size: 24px; font-weight: 700; text-align: right; opacity: .8; line-height: 1.4; }
+  .panel { position: absolute; left: 0; right: 0; bottom: 0; z-index: 5; animation: rise .75s .2s cubic-bezier(.7,0,.2,1) both; }
+  .story .panel { bottom: 250px; }
+  .deal { display: grid; grid-template-columns: auto 1fr; align-items: stretch; }
+  .pct { background: var(--accent); color: var(--on); font-family: var(--num); font-size: 236px; line-height: .82; padding: 30px 40px 14px 44px; position: relative; overflow: hidden; white-space: nowrap; }
+  .pct span { display: inline-block; animation: pop .45s .75s cubic-bezier(.2,1.4,.4,1) both; }
+  .pct::after { content: ""; position: absolute; top: 0; bottom: 0; width: 34%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent); animation: shine .9s 1.3s ease-in-out both; }
+  .price { background: var(--black); padding: 30px 44px 22px 34px; display: flex; flex-direction: column; justify-content: flex-end; text-align: right; }
+  .price small { font-size: 22px; font-weight: 800; letter-spacing: .1em; color: var(--brand); }
+  .price b { font-size: 84px; font-weight: 900; letter-spacing: -.045em; line-height: 1; margin-top: 6px; white-space: nowrap; }
+  .price s { font-size: 30px; font-weight: 600; opacity: .55; margin-top: 8px; }
+  .titlebar { background: var(--black); padding: 26px 44px 0; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
+  .titlebar h2 { font-size: 60px; font-weight: 900; letter-spacing: -.04em; line-height: 1.08; animation: wipe .7s 1s cubic-bezier(.6,0,.2,1) both;
+                 display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .titlebar .ends { flex: none; font-family: var(--num); font-size: 34px; letter-spacing: .04em; color: var(--brand); padding-bottom: 6px; }
+  /* 영화 포스터 하단 빌링 블록: 세로로 늘린 좁은 글자 */
+  .billing { background: var(--black); padding: 18px 44px 34px; font-size: 19px; font-weight: 600; line-height: 1.25; letter-spacing: -.01em; color: rgba(244,240,230,.72);
+             transform-origin: top left; animation: fade .8s 1.4s both; }
+  .billing span { display: inline-block; transform: scaleY(1.45); transform-origin: bottom; margin-right: 18px; }
+  .billing b { color: var(--paper); font-weight: 800; }
+
+  /* 표지: 키아트 세로 띠 */
+  .strips { position: absolute; inset: -6% 0; z-index: 1; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; background: var(--black); }
+  .strips div { overflow: hidden; }
+  .strips img { width: 100%; height: 100%; object-fit: cover; }
+  .strips div:nth-child(odd) img { animation: drift-up 6s cubic-bezier(.2,.6,.3,1) both; }
+  .strips div:nth-child(even) img { animation: drift-down 6s cubic-bezier(.2,.6,.3,1) both; }
+  .fadebottom { position: absolute; left: 0; right: 0; bottom: 0; height: 74%; z-index: 2; background: linear-gradient(rgba(11,11,10,0), rgba(11,11,10,.86) 42%, var(--black) 70%); }
+  .coverbox { position: absolute; left: 48px; right: 48px; bottom: 56px; z-index: 5; }
+  .story .coverbox { bottom: 300px; }
+  .kicker { font-family: var(--num); font-size: 46px; letter-spacing: .12em; color: var(--brand); animation: up .6s .25s both; }
+  .headline { font-size: 138px; font-weight: 900; letter-spacing: -.065em; line-height: .98; margin-top: 14px; white-space: pre-line; animation: up .7s .35s both; }
+  .statrow { display: flex; align-items: flex-end; justify-content: space-between; margin-top: 34px; padding-top: 22px; border-top: 3px solid var(--paper); animation: up .7s .55s both; }
+  .statrow .stat { font-family: var(--num); font-size: 120px; line-height: .85; color: var(--brand); }
+  .statrow .stat small { display: block; font-family: var(--sans); font-size: 22px; font-weight: 800; color: var(--paper); letter-spacing: .02em; margin-top: 10px; }
+  .statrow .who { text-align: right; font-size: 22px; font-weight: 700; line-height: 1.5; opacity: .8; }
 
   /* 목록 */
-  .pad { padding: 56px 50px; height: 100%; display: flex; flex-direction: column; }
-  .pad > * { flex-shrink: 0; }
-  .head { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 4px solid var(--paper); padding-bottom: 18px; }
-  .head b { font-size: 76px; font-weight: 900; letter-spacing: -.045em; line-height: 1; }
-  .head span { font-size: 22px; font-weight: 700; opacity: .7; text-align: right; }
-  .li { display: grid; grid-template-columns: 96px 1fr auto; gap: 26px; align-items: center; padding: 18px 0; border-bottom: 1px solid rgba(242,238,229,.25); }
-  .li img { width: 96px; height: 144px; object-fit: cover; }
-  .li .t { font-size: 36px; font-weight: 800; letter-spacing: -.03em; line-height: 1.15; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .li .s { font-size: 21px; font-weight: 600; opacity: .6; margin-top: 6px; }
-  .li .p { text-align: right; }
-  .li .p em { font-style: normal; font-family: var(--num); font-size: 78px; line-height: .9; color: var(--accent); display: block; }
-  .li .p b { font-size: 28px; font-weight: 800; }
-  .foot { margin-top: auto; display: flex; justify-content: space-between; font-size: 20px; font-weight: 700; opacity: .6; padding-top: 16px; }
+  .listwrap { position: absolute; inset: 0; padding: 120px 48px 48px; display: flex; flex-direction: column; z-index: 3; }
+  .listwrap h3 { font-size: 74px; font-weight: 900; letter-spacing: -.05em; line-height: 1; margin-top: 34px; animation: up .6s .1s both; }
+  .listwrap h3 em { font-style: normal; color: var(--brand); }
+  .rows { margin-top: 30px; border-top: 3px solid var(--paper); }
+  .row { display: grid; grid-template-columns: 70px 120px 1fr auto; gap: 24px; align-items: center; padding: 16px 0; border-bottom: 1px solid rgba(244,240,230,.22); animation: up .55s both; }
+  .row .n { font-family: var(--num); font-size: 54px; color: transparent; -webkit-text-stroke: 2px var(--paper); }
+  .row img { width: 120px; height: 160px; object-fit: cover; display: block; }
+  .row .t { font-size: 36px; font-weight: 800; letter-spacing: -.03em; line-height: 1.15; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .row .s { font-size: 20px; font-weight: 600; opacity: .62; margin-top: 8px; }
+  .row .p { text-align: right; }
+  .row .p em { font-style: normal; display: block; font-family: var(--num); font-size: 84px; line-height: .9; color: var(--accent); }
+  .row .p b { font-size: 30px; font-weight: 900; letter-spacing: -.03em; }
+  .foot { margin-top: auto; display: flex; justify-content: space-between; font-size: 19px; font-weight: 700; opacity: .55; padding-top: 14px; }
+  .bgblur { position: absolute; inset: -40px; z-index: 1; }
+  .bgblur img { width: 100%; height: 100%; object-fit: cover; filter: blur(40px) brightness(.32) saturate(1.2); }
 
   /* 무료 */
-  .freebox { position: relative; height: 520px; margin-top: 30px; overflow: hidden; }
-  .freebox img { width: 100%; height: 100%; object-fit: cover; animation: kb 6s both; }
-  .freebox .lab { position: absolute; left: 0; bottom: 0; right: 0; background: var(--paper); color: var(--black); padding: 20px 26px; display: flex; justify-content: space-between; align-items: center; }
-  .freebox .lab b { font-size: 38px; font-weight: 900; letter-spacing: -.03em; }
-  .freebox .lab span { font-size: 21px; font-weight: 700; opacity: .7; display: block; }
-  .freebox .free { font-family: var(--num); font-size: 96px; line-height: .8; color: #d8312a; }
+  .free .pct { background: var(--brand); color: var(--brand-ink); }
 
-  /* 마지막 */
-  .cta { background: var(--paper); color: var(--black); }
-  .cta .big { font-size: 150px; font-weight: 900; letter-spacing: -.06em; line-height: .98; margin-top: 70px; }
-  .cta .lines { margin-top: 70px; border-top: 4px solid var(--black); }
-  .cta .lines div { display: grid; grid-template-columns: 90px 1fr; padding: 24px 0; border-bottom: 2px solid var(--black); font-size: 32px; font-weight: 700; letter-spacing: -.02em; }
-  .cta .lines i { font-style: normal; font-family: var(--num); font-size: 40px; }
-  .cta .legal { font-size: 19px; line-height: 1.6; opacity: .65; margin-top: 26px; font-weight: 500; }
+  /* 판정 기준 안내 (guide) */
+  .legend { position: absolute; inset: 0; padding: 130px 48px 48px; display: flex; flex-direction: column; z-index: 3; }
+  .legend h3 { font-size: 80px; font-weight: 900; letter-spacing: -.05em; line-height: 1.02; margin-top: 30px; animation: up .6s .1s both; }
+  .legend h3 em { font-style: normal; color: var(--brand); }
+  .legend .items { margin-top: 40px; border-top: 3px solid var(--paper); }
+  .legend .it { display: grid; grid-template-columns: 170px 1fr; gap: 30px; align-items: center; padding: 26px 0; border-bottom: 1px solid rgba(244,240,230,.25); animation: up .55s both; }
+  .legend .it svg { width: 170px; height: 170px; }
+  .legend .it .seal { position: static; animation: none; width: 170px; height: 170px; }
+  .legend .it b { font-size: 46px; font-weight: 900; letter-spacing: -.04em; display: block; }
+  .legend .it p { font-size: 27px; font-weight: 600; opacity: .75; line-height: 1.45; margin-top: 6px; }
+  .legend .it .dash { width: 170px; height: 170px; border-radius: 50%; border: 4px dashed rgba(244,240,230,.5); display: grid; place-items: center; font-family: var(--num); font-size: 44px; }
+
+  /* 마지막 장 */
+  .cta { background: var(--brand); color: var(--brand-ink); }
+  .cta .inner { position: absolute; inset: 0; padding: 48px; display: flex; flex-direction: column; }
+  .cta .topline { position: static; border-color: var(--brand-ink); color: var(--brand-ink); }
+  .cta .topline .mid { color: var(--brand-ink); }
+  .cta .headline { font-size: 132px; margin-top: 70px; }
+  .sched { margin-top: 56px; border-top: 4px solid var(--brand-ink); animation: up .6s .5s both; }
+  .sched div { display: grid; grid-template-columns: 210px 1fr; align-items: baseline; padding: 18px 0; border-bottom: 2px solid var(--brand-ink); font-size: 34px; font-weight: 800; letter-spacing: -.02em; }
+  .sched i { font-style: normal; font-family: var(--num); font-size: 40px; letter-spacing: .04em; }
+  .legal { font-size: 19px; font-weight: 600; line-height: 1.55; opacity: .7; margin-top: 24px; }
+  .cta .handle { margin-top: auto; font-family: var(--num); font-size: 72px; letter-spacing: .01em; }
 </style>
 </head>
 <body>
-{% for s in slides %}{% set n = loop.index %}
+{% set verdict_seal = {"best": ("LOWEST EVER · 역대 최저가 · ", "최저"), "near": ("NEAR LOW · 최저가 근접 · ", "근접")} %}
 
-{% if s.kind == "cover" %}{% set p0 = s.deals[0].palette if s.deals else {} %}
-<section class="slide" style="--accent: {{ p0.accent or '#e8412c' }}; --on: {{ p0.ink or '#fff' }}">
-  <div class="mosaic">
-    {% for d in s.deals[:2] %}<div><img src="{{ d.art_tall or d.image }}" alt=""><span class="tag">−{{ d.discount }}%</span></div>{% endfor %}
-    <div class="tile"><div class="s">{{ week.range }}<br>No.{{ week.no }}</div><div><div class="big" data-count-from="0" data-count-to="{{ s.max_pct }}" data-count-start=".6" data-count-dur="1.1">{{ s.max_pct }}</div><div class="k">% 까지<br>할인 중</div></div></div>
-    {% for d in s.deals[2:5] %}<div><img src="{{ d.art_tall or d.image }}" alt=""><span class="tag">−{{ d.discount }}%</span></div>{% endfor %}
+{% macro topline(post) -%}
+<header class="topline"><b>{{ brand }}</b><span class="mid">{{ post.kicker }} · No.{{ week.no }}</span><span class="end">{{ week.range }}</span></header>
+{%- endmacro %}
+
+{% macro seal(uid, ring, core, top, kr=false) -%}
+<svg class="seal" style="top: {{ top }}px" viewBox="0 0 240 240">
+  <defs><path id="sp{{ uid }}" d="M120,120 m-92,0 a92,92 0 1,1 184,0 a92,92 0 1,1 -184,0"/></defs>
+  <circle cx="120" cy="120" r="118" fill="#ffd60a"/>
+  <circle cx="120" cy="120" r="70" fill="none" stroke="#0b0b0a" stroke-width="3"/>
+  <g class="ring"><text font-size="21" letter-spacing="2.2"><textPath href="#sp{{ uid }}">{{ ring ~ ring ~ ring }}</textPath></text></g>
+  <text class="core{{ ' kr' if kr }}" x="120" y="{{ 138 if kr else 143 }}" text-anchor="middle">{{ core }}</text>
+</svg>
+{%- endmacro %}
+
+{% macro billing(d, post) -%}
+<p class="billing">
+  <span><b>{{ d.store|store_name|upper }}</b> 한국 판매가 ₩{{ d.price|won }}</span>
+  <span>정가 ₩{{ d.regular|won }}</span>
+  <span>한국어 <b>{{ d.korean or '미확인' }}</b></span>
+  {% if d.review_pct is not none %}<span>평가 <b>{{ d.review_desc or (d.review_pct ~ '%') }}</b> {{ d.review_pct }}%{% if d.review_count %} · {{ d.review_count|compact }}명{% endif %}</span>{% endif %}
+  {% if d.history_low %}<span>역대 최저 ₩{{ d.history_low|won }}</span>{% endif %}
+  {% if d.developer %}<span>개발 {{ d.developer }}</span>{% endif %}
+  {% if d.release_year %}<span>{{ d.release_year }}</span>{% endif %}
+  {% if d.ends_at %}<span>할인 종료 <b>{{ d.ends_at|kdatetime }}</b></span>{% endif %}
+  {% if d.currency_note %}<span>{{ d.currency_note }}</span>{% endif %}
+</p>
+{%- endmacro %}
+
+{% macro deal_panel(d, post, label="지금") -%}
+<div class="panel">
+  <div class="deal">
+    <div class="pct"><span data-count-from="0" data-count-to="{{ d.discount }}" data-count-start=".75" data-count-dur=".5" data-prefix="−" data-suffix="%">−{{ d.discount }}%</span></div>
+    <div class="price"><small>{{ label }}</small><b data-count-from="{{ d.regular }}" data-count-to="{{ d.price }}" data-count-start=".6" data-count-dur="1.2" data-prefix="₩" data-round="10">₩{{ d.price|won }}</b><s>₩{{ d.regular|won }}</s></div>
   </div>
-  <div class="cover-head"><b>이번 주 할인 {{ s.deal_count }}</b><span>{{ brand }}<br>{{ handle }}</span></div>
+  <div class="titlebar"><h2>{{ d.title }}</h2>{% if post.key == 'ending' and d.ends_at %}<span class="ends">~{{ d.ends_at|kdatetime }}</span>{% endif %}</div>
+  {{ billing(d, post) }}
+</div>
+{%- endmacro %}
+
+{% macro deal_seal(d, post, uid, top) -%}
+{% if post.key == 'ending' and d.ends_at %}{{ seal(uid, "ENDING SOON · 곧 마감 · ", d.ends_at|dday, top) }}
+{% elif d.verdict in verdict_seal %}{{ seal(uid, verdict_seal[d.verdict][0], verdict_seal[d.verdict][1], top, true) }}{% endif %}
+{%- endmacro %}
+
+{% for s in slides %}{% set n = loop.index %}{% set post = s.post %}
+
+{% if s.kind == "cover" %}
+{% set arts = (s.deals|map(attribute='art_tall')|select|list) or [] %}
+{% if not arts and s.free_games %}{% set arts = s.free_games|map(attribute='image_tall')|select|list %}{% endif %}
+{% if not arts %}{% set arts = s.deals|map(attribute='image')|list %}{% endif %}
+<section class="slide">
+  <div class="strips">{% for a in (arts * 5)[:5] %}<div><img src="{{ a }}" alt=""></div>{% endfor %}</div>
+  <div class="fadebottom"></div><div class="scrim"></div>
+  {{ topline(post) }}
+  <div class="coverbox">
+    <div class="kicker">{{ post.kicker }}</div>
+    <div class="headline">{{ post.headline }}</div>
+    <div class="statrow">
+      <div class="stat">{{ s.stat }}<small>{{ s.stat_label }}</small></div>
+      <div class="who">{{ handle }}<br>넘겨서 보기 →</div>
+    </div>
+  </div>
   {% if sample %}<div class="sample">샘플 데이터</div>{% endif %}
 </section>
 
 {% elif s.kind == "hero" %}{% set d = s.deal %}
-<section class="slide" style="--accent: {{ d.palette.accent or '#e8412c' }}; --on: {{ d.palette.ink or '#fff' }}">
+<section class="slide stack" style="--accent: {{ d.palette.accent or '#e8412c' }}; --on: {{ d.palette.ink or '#fff' }}">
+  {{ topline(post) }}
   <div class="art"><img src="{{ d.art_tall or d.image }}" alt=""></div>
   <div class="rank">{{ s.rank|pad2 }}</div>
-  <div class="vert">{{ brand }} · No.{{ week.no }} · {{ handle }}</div>
-  <div class="band">
-    <div class="row1">
-      <div class="pct" data-count-from="0" data-count-to="{{ d.discount }}" data-count-start=".8" data-count-dur=".6" data-prefix="−" data-suffix="%">−{{ d.discount }}%</div>
-      <div class="price"><s>₩{{ d.regular|won }}</s><b>₩{{ d.price|won }}</b></div>
+  {{ deal_seal(d, post, n, 112) }}
+  {{ deal_panel(d, post) }}
+  {% if sample %}<div class="sample">샘플 데이터</div>{% endif %}
+</section>
+
+{% elif s.kind == "story" %}{% set d = s.deal %}
+<section class="slide story stack" style="--accent: {{ d.palette.accent or '#e8412c' }}; --on: {{ d.palette.ink or '#fff' }}">
+  {{ topline(post) }}
+  <div class="art"><img src="{{ d.art_tall or d.image }}" alt=""></div>
+  {{ deal_seal(d, post, n, 230) }}
+  {{ deal_panel(d, post, "오늘의 할인") }}
+  <div class="tail">{{ handle }}</div>
+  {% if sample %}<div class="sample">샘플 데이터</div>{% endif %}
+</section>
+
+{% elif s.kind == "story_free" %}{% set g = s.game %}
+<section class="slide story free stack" style="--accent: #ffd60a; --on: #0b0b0a">
+  {{ topline(post) }}
+  <div class="art"><img src="{{ g.image_tall or g.image }}" alt=""></div>
+  {{ seal(n, "FREE · 무료 · ", "FREE", 230) }}
+  <div class="panel">
+    <div class="deal"><div class="pct"><span>{{ 'NEXT' if g.upcoming else 'FREE' }}</span></div>
+      <div class="price"><small>{% if g.upcoming %}{{ g.starts_at|kdatetime }} 공개{% else %}{{ g.ends_at|kdatetime }}까지{% endif %}</small><b>₩0</b><s>₩{{ g.regular|won }}</s></div></div>
+    <div class="titlebar"><h2>{{ g.title }}</h2></div>
+    <p class="billing"><span><b>EPIC GAMES STORE</b></span><span>계정에 추가하면 영구 소장</span><span>매주 금요일 0시 교체</span></p>
+  </div>
+  <div class="tail">{{ handle }}</div>
+</section>
+
+{% elif s.kind == "list" %}{% set bg = s.deals[0] if s.deals else none %}
+<section class="slide">
+  {% if bg %}<div class="bgblur"><img src="{{ bg.art_tall or bg.image }}" alt=""></div>{% endif %}
+  {{ topline(post) }}
+  <div class="listwrap">
+    <h3>이것도 <em>놓치지 마세요</em></h3>
+    <div class="rows">
+    {% for d in s.deals %}
+      <div class="row" style="--accent: {{ d.palette.accent or '#ffd60a' }}; animation-delay: {{ 0.15 + loop.index0 * 0.1 }}s">
+        <span class="n">{{ (s.offset + loop.index)|pad2 }}</span>
+        <img src="{{ d.art_tall or d.image }}" alt="">
+        <div style="min-width:0"><div class="t">{{ d.title }}</div>
+          <div class="s">{{ d.store|store_name }} · 한국어 {{ d.korean or '미확인' }}{% if d.review_pct is not none %} · 평가 {{ d.review_pct }}%{% endif %}{% if post.key == 'ending' and d.ends_at %} · ~{{ d.ends_at|kdatetime }}{% elif d.verdict == 'best' %} · 역대 최저{% endif %}</div></div>
+        <div class="p"><em>−{{ d.discount }}%</em><b>₩{{ d.price|won }}</b></div>
+      </div>
+    {% endfor %}
     </div>
-    <h2>{{ d.title }}</h2>
-    <div class="meta">
-      <span><small>판정</small>{{ {"best": "역대 최저가", "near": "최저가 근접", "wait": "더 싸진 적 있음", "unknown": "기록 중"}[d.verdict] }}</span>
-      <span><small>한국어</small>{{ d.korean or '미확인' }}</span>
-      <span><small>평가</small>{% if d.review_pct is not none %}{{ d.review_pct }}%{% else %}-{% endif %}</span>
-      <span><small>스토어</small>{{ d.store|store_name }}</span>
-    </div>
+    <div class="foot"><span>가격은 게시 시점 기준</span><span>{{ n|pad2 }} / {{ total|pad2 }}</span></div>
+  </div>
+</section>
+
+{% elif s.kind == "free" %}{% set g = s.game %}
+<section class="slide free stack" style="--accent: #ffd60a; --on: #0b0b0a">
+  {{ topline(post) }}
+  <div class="art"><img src="{{ g.image_tall or g.image }}" alt=""></div>
+  {{ seal(n, "FREE · 무료 · ", "FREE", 112) }}
+  <div class="panel">
+    <div class="deal"><div class="pct"><span>{{ 'NEXT' if g.upcoming else 'FREE' }}</span></div>
+      <div class="price"><small>{% if g.upcoming %}{{ g.starts_at|kdatetime }} 공개{% else %}{{ g.ends_at|kdatetime }}까지{% endif %}</small><b>₩0</b><s>₩{{ g.regular|won }}</s></div></div>
+    <div class="titlebar"><h2>{{ g.title }}</h2></div>
+    <p class="billing"><span><b>EPIC GAMES STORE</b></span><span>정가 ₩{{ g.regular|won }}</span><span>계정에 추가하면 영구 소장</span><span>매주 금요일 0시 교체</span></p>
   </div>
   {% if sample %}<div class="sample">샘플 데이터</div>{% endif %}
 </section>
 
-{% elif s.kind == "list" %}{% set p0 = s.deals[0].palette if s.deals else {} %}
-<section class="slide" style="--accent: {{ p0.accent or '#e8412c' }}">
-  <div class="pad">
-    <div class="head in"><b>이것도 싸다</b><span>{{ brand }}<br>No.{{ week.no }}</span></div>
-    {% for d in s.deals %}
-    <div class="li in" style="animation-delay: {{ loop.index * 0.1 }}s; --accent: {{ d.palette.accent or '#e8412c' }}">
-      <img src="{{ d.art_tall or d.image }}" alt="">
-      <div style="min-width:0"><div class="t">{{ d.title }}</div><div class="s">{{ d.store|store_name }} · 한국어 {{ d.korean or '미확인' }}{% if d.verdict == 'best' %} · 역대 최저{% endif %}</div></div>
-      <div class="p"><em>−{{ d.discount }}%</em><b>₩{{ d.price|won }}</b></div>
-    </div>
-    {% endfor %}
-    <div class="foot"><span>가격은 게시 시점 기준</span><span>{{ n|pad2 }}/{{ total|pad2 }}</span></div>
-  </div>
-</section>
-
-{% elif s.kind == "free" %}
+{% elif s.kind == "legend" %}{% set bg = s.deals[0] if s.deals else none %}
 <section class="slide">
-  <div class="pad">
-    <div class="head in"><b>공짜입니다</b><span>Epic Games Store<br>목요일 자정 교체</span></div>
-    {% for g in s.games %}
-    <div class="freebox in" style="animation-delay: {{ loop.index * 0.15 }}s; height: {{ 520 if s.games|length > 1 else 900 }}px">
-      <img src="{{ g.image }}" alt="">
-      <div class="lab"><div><b>{{ g.title }}</b><span>{% if g.upcoming %}{{ g.starts_at|kdate }}부터{% else %}{{ g.ends_at|kdatetime }}까지{% endif %}{% if g.regular %} · 정가 ₩{{ g.regular|won }}{% endif %}</span></div><div class="free">{{ 'NEXT' if g.upcoming else 'FREE' }}</div></div>
+  {% if bg %}<div class="bgblur"><img src="{{ bg.art_tall or bg.image }}" alt=""></div>{% endif %}
+  {{ topline(post) }}
+  <div class="legend">
+    <h3>할인율보다<br><em>"지금이 제일 싼가"</em></h3>
+    <div class="items">
+      <div class="it" style="animation-delay:.2s">{{ seal("lg1", "LOWEST EVER · 역대 최저가 · ", "최저", 0, true) }}<div><b>역대 최저가</b><p>기록된 가격 중 지금이 가장 쌉니다.<br>기다리던 게임이면 지금 사세요.</p></div></div>
+      <div class="it" style="animation-delay:.3s">{{ seal("lg2", "NEAR LOW · 최저가 근접 · ", "근접", 0, true) }}<div><b>최저가 근접</b><p>역대 최저가와 10% 또는 2천 원 이내.<br>사도 손해 보는 가격은 아닙니다.</p></div></div>
+      <div class="it" style="animation-delay:.4s"><div class="dash">WAIT</div><div><b>표시 없음</b><p>더 싸진 적이 있습니다.<br>급하지 않으면 다음 세일을 기다려도 됩니다.</p></div></div>
     </div>
-    {% endfor %}
+    <div class="foot"><span>가격 기록: 매일 자동 수집 · 스팀은 IsThereAnyDeal 역대 최저가 참고</span><span>{{ n|pad2 }} / {{ total|pad2 }}</span></div>
   </div>
 </section>
 
 {% elif s.kind == "cta" %}
 <section class="slide cta">
-  <div class="pad">
-    <div class="head in" style="border-color: var(--black)"><b style="font-size:40px">{{ brand }}</b><span>{{ handle }}</span></div>
-    <div class="big in" style="animation-delay:.15s">저장.<br>댓글.<br>목요일 자정.</div>
-    <div class="lines in" style="animation-delay:.3s">
-      <div><i>01</i>저장해 두고 세일 끝나기 전에 다시 보기</div>
-      <div><i>02</i>기다리는 게임을 댓글로 남기면 할인 때 알림</div>
-      <div><i>03</i>에픽 무료 게임은 목요일 자정 스토리로</div>
+  <div class="inner">
+    {{ topline(post) }}
+    <div class="headline">저장해 두고<br>끝나기 전에<br>사세요.</div>
+    <div class="sched">
+      <div><i>MON</i>이번 주 할인 TOP</div>
+      <div><i>TUE</i>역대 최저가 갱신</div>
+      <div><i>WED·SAT</i>주제별 큐레이션</div>
+      <div><i>FRI 00:00</i>에픽 무료 게임</div>
+      <div><i>FRI</i>주말에 끝나는 할인</div>
     </div>
-    <p class="legal">공식 스토어와 공인 키셀러만 소개합니다. 가격은 게시 시점 기준이며 바뀔 수 있습니다.{% if affiliate %} 이 게시물에는 제휴 링크가 포함되어 있으며, 구매 시 수수료를 받을 수 있습니다.{% endif %}</p>
-    <div class="foot"><span>{{ handle }}</span><span>{{ n|pad2 }}/{{ total|pad2 }}</span></div>
+    <p class="legal">공식 스토어와 공인 키셀러만 소개합니다. 가격은 게시 시점 기준이며 바뀔 수 있습니다. 기다리는 게임은 댓글로 남겨 주세요.{% if affiliate %}<br>이 게시물에는 제휴 링크가 포함되어 있으며, 구매 시 수수료를 받을 수 있습니다.{% endif %}</p>
+    <div class="handle">{{ handle }}</div>
   </div>
 </section>
 {% endif %}

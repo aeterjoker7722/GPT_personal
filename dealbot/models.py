@@ -25,6 +25,10 @@ class Deal:
     art_tall: str = ""              # 세로 키아트 (600x900)
     art_wide: str = ""              # 와이드 키아트 (library hero)
     trailer: str = ""               # 트레일러 DASH(h264) manifest URL
+    logo: str = ""                  # 공식 로고 (투명 PNG)
+    developer: str = ""
+    publisher: str = ""
+    release_year: Optional[int] = None
 
     # 가공 단계에서 채움
     verdict: str = "unknown"        # best / near / wait / unknown
@@ -53,6 +57,7 @@ class FreeGame:
     ends_at: str
     regular: int = 0
     upcoming: bool = False
+    image_tall: str = ""
 
     def to_dict(self) -> dict:
         return asdict(self)
