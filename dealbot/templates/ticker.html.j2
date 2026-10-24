@@ -11,11 +11,11 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: #999; font-family: var(--font); color: var(--text); -webkit-font-smoothing: antialiased; font-feature-settings: "tnum"; }
-  .slide { width: 1080px; height: 1350px; background: var(--bg); position: relative; overflow: hidden; padding: 56px 56px 48px; display: flex; flex-direction: column; gap: 22px; margin-bottom: 24px; }
+  .slide { width: 1080px; height: 1350px; background: var(--bg); position: relative; overflow: hidden; padding: 56px 56px 48px; display: flex; flex-direction: column; gap: 18px; margin-bottom: 24px; }
   .slide > * { flex-shrink: 0; }
   .bar { display: flex; justify-content: space-between; align-items: center; font-size: 26px; color: var(--sub); font-weight: 600; }
   .bar b { color: var(--text); font-weight: 800; font-size: 30px; letter-spacing: -.02em; }
-  .card { background: var(--card); border-radius: 36px; padding: 40px 44px; }
+  .card { background: var(--card); border-radius: 36px; padding: 34px 44px; }
   .foot { margin-top: auto; display: flex; justify-content: space-between; font-size: 21px; color: var(--sub); }
   .in { animation: in .7s cubic-bezier(.2,.8,.2,1) both; }
   .d1 { animation-delay: .1s } .d2 { animation-delay: .2s } .d3 { animation-delay: .3s } .d4 { animation-delay: .4s }
@@ -122,7 +122,7 @@
 
 {% elif s.kind == "hero" %}{% set d = s.deal %}{% set op = opinion[d.verdict] %}
 {% set hist = d.history if d.history|length > 1 else [["정가", d.regular], ["현재", d.price]] %}
-{% set c = chart(hist, 900, 230, 10) %}
+{% set c = chart(hist, 900, 200, 10) %}
 <section class="slide">
   <div class="bar in"><b>{{ brand }}</b><span>{{ s.rank }}위 · {{ handle }}</span></div>
   <div class="card in d1">
@@ -134,7 +134,7 @@
     <div class="chg down">▼ {{ (d.regular - d.price)|won }}원 (−{{ d.discount }}.0%)<span style="color:var(--sub);font-weight:600;font-size:26px">&nbsp;&nbsp;정가 대비</span></div>
   </div>
   <div class="card chart in d2" style="padding:36px 40px 26px">
-    <svg width="900" height="280">
+    <svg width="900" height="250">
       <defs><linearGradient id="fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a6be6" stop-opacity=".2"/><stop offset="1" stop-color="#2a6be6" stop-opacity="0"/></linearGradient></defs>
       <line class="reg" x1="0" x2="900" y1="10" y2="10"/>
       <text x="900" y="0" text-anchor="end">정가 {{ d.regular|won }}</text>
@@ -142,8 +142,8 @@
       <path class="line" d="{{ c.path }}"/>
       <circle class="ring" cx="{{ c.last[0] }}" cy="{{ c.last[1] }}" r="9"/>
       <circle cx="{{ c.last[0] }}" cy="{{ c.last[1] }}" r="10" fill="#2a6be6" stroke="#fff" stroke-width="4"/>
-      {% if d.history|length > 1 %}<text class="lo-t" x="{{ [[c.low[0], 110]|max, 760]|min }}" y="{{ c.low[1] + 40 if c.low[1] < 190 else c.low[1] - 22 }}" text-anchor="middle">최저 {{ c.min|won }}</text>{% endif %}
-      <text x="0" y="276">{{ hist[0][0] if d.history|length > 1 else '' }}</text><text x="900" y="276" text-anchor="end">{% if d.history|length > 1 %}{{ hist[-1][0] }}{% else %}가격 기록 수집 중{% endif %}</text>
+      {% if d.history|length > 1 %}<text class="lo-t" x="{{ [[c.low[0], 110]|max, 760]|min }}" y="{{ c.low[1] + 40 if c.low[1] < 160 else c.low[1] - 22 }}" text-anchor="middle">최저 {{ c.min|won }}</text>{% endif %}
+      <text x="0" y="246">{{ hist[0][0] if d.history|length > 1 else '' }}</text><text x="900" y="246" text-anchor="end">{% if d.history|length > 1 %}{{ hist[-1][0] }}{% else %}가격 기록 수집 중{% endif %}</text>
     </svg>
     <div class="tabs"><span>1주</span><span>1개월</span><span>3개월</span><span class="on">6개월</span><span>전체</span></div>
   </div>
