@@ -31,6 +31,9 @@ class Deal:
     release_year: Optional[int] = None
     platforms: list[str] = field(default_factory=list)  # 콘솔: ["PS5", "PS4"]
     popularity: Optional[int] = None                    # 스토어 판매 순위 (콘솔은 평가 대신 사용)
+    review_pct_ko: Optional[int] = None                 # 한국어 리뷰만의 긍정 비율 (review_pct 는 전세계)
+    review_count_ko: Optional[int] = None
+    indie: bool = False                                 # 스팀 '인디' 태그
 
     # 가공 단계에서 채움
     verdict: str = "unknown"        # best / near / wait / unknown
@@ -62,6 +65,7 @@ class FreeGame:
     regular: int = 0
     upcoming: bool = False
     image_tall: str = ""
+    kr_blocked: bool = False   # 에픽이 한국을 제공 국가에서 제외한 경우
 
     def to_dict(self) -> dict:
         return asdict(self)

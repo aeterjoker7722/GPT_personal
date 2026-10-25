@@ -123,13 +123,14 @@ def build_slides(picks: list[Deal], more: list[Deal], free: list[FreeGame], stor
 def render_html(slides: list[dict], theme: str, *, sample: bool = False, affiliate: bool = False) -> str:
     return _env().get_template(f"{theme}.html.j2").render(
         slides=slides, total=len(slides), week=week_info(), brand=config.BRAND,
-        handle=config.ACCOUNT_HANDLE, affiliate=affiliate, sample=sample,
+        handle=config.ACCOUNT_HANDLE, affiliate=affiliate, sample=sample, show_verdict=config.SHOW_VERDICT,
         min_review=config.MIN_REVIEW_PCT, min_discount=config.MIN_DISCOUNT,
     )
 
 
 MOTION_KINDS = {"cover": {"cover", "story", "story_free"},
-                "key": {"cover", "hero", "story", "story_free", "free"}}
+                "key": {"cover", "hero", "cinema", "grid", "duo", "story", "story_free", "free", "report_stats",
+                        "recap_ledger"}}
 
 
 def render_theme(slides: list[dict], theme: str, out_dir: Path, *, name: str | None = None,

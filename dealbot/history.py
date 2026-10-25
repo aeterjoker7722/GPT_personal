@@ -18,6 +18,10 @@ CREATE TABLE IF NOT EXISTS prices (
     store TEXT, store_id TEXT, title TEXT, price INTEGER, regular INTEGER, discount INTEGER,
     seen_at TEXT, PRIMARY KEY (store, store_id, seen_at)
 );
+CREATE TABLE IF NOT EXISTS reviews (
+    appid TEXT, title TEXT, total INTEGER, pct INTEGER, label TEXT, total_ko INTEGER, pct_ko INTEGER,
+    seen_at TEXT, PRIMARY KEY (appid, seen_at)
+);
 """
 
 
@@ -33,6 +37,17 @@ def record(con: sqlite3.Connection, deals: list[Deal]) -> None:
     con.executemany(
         "INSERT OR REPLACE INTO prices VALUES (?,?,?,?,?,?,?)",
         [(d.store, d.store_id, d.title, d.price, d.regular, d.discount, today) for d in deals],
+    )
+    con.commit()
+
+
+def record_reviews(con: sqlite3.Connection, deals: list[Deal]) -> None:
+    """스팀 리뷰 수·비율 일별 스냅샷. 나중에 '금주의 추천(평가 급상승·역전)'을 계산하는 데 쓴다."""
+    today = datetime.now(timezone.utc).date().isoformat()
+    con.executemany(
+        "INSERT OR REPLACE INTO reviews VALUES (?,?,?,?,?,?,?,?)",
+        [(d.store_id, d.title, d.review_count, d.review_pct, d.review_desc, d.review_count_ko, d.review_pct_ko, today)
+         for d in deals if d.store == "steam" and d.review_count],
     )
     con.commit()
 

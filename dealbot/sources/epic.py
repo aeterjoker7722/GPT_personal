@@ -27,6 +27,14 @@ def _image_tall(e: dict) -> str:
     return imgs.get("OfferImageTall") or imgs.get("DieselStoreFrontTall") or ""
 
 
+def kr_blocked(e: dict) -> bool:
+    """customAttributes 의 com.epicgames.app.blacklist 에 KR 이 있으면 한국 계정에서 받을 수 없다."""
+    for a in e.get("customAttributes") or []:
+        if a.get("key") == "com.epicgames.app.blacklist" and "KR" in (a.get("value") or ""):
+            return True
+    return False
+
+
 def _offers(e: dict, kind: str) -> list[dict]:
     p = e.get("promotions") or {}
     return [o for g in p.get(kind) or [] for o in g.get("promotionalOffers", [])]
@@ -45,12 +53,12 @@ def fetch() -> tuple[list[FreeGame], list[Deal]]:
         for o in _offers(e, "promotionalOffers"):
             if final == 0 and regular > 0:
                 free.append(FreeGame("epic", e["title"], url, _image(e), o["startDate"], o["endDate"], regular,
-                                      image_tall=_image_tall(e)))
+                                      image_tall=_image_tall(e), kr_blocked=kr_blocked(e)))
             elif final < regular:
                 deals.append(Deal("epic", e["id"], e["title"], url, final, regular,
                                   round((1 - final / regular) * 100), image=_image(e), ends_at=o["endDate"]))
         for o in _offers(e, "upcomingPromotionalOffers"):
             if o.get("discountSetting", {}).get("discountPercentage") == 0:
                 free.append(FreeGame("epic", e["title"], url, _image(e), o["startDate"], o["endDate"], regular,
-                                      upcoming=True, image_tall=_image_tall(e)))
+                                      upcoming=True, image_tall=_image_tall(e), kr_blocked=kr_blocked(e)))
     return free, deals

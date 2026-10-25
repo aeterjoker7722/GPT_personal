@@ -82,6 +82,7 @@ def fetch_specials(pages: int = config.STEAM_PAGES) -> list[Deal]:
 ASSET_BASE = "https://shared.akamai.steamstatic.com/store_item_assets/"
 TRAILER_BASE = "https://video.akamai.steamstatic.com/store_trailers/"
 KOREAN = 4  # Steam ELanguage: 한국어
+INDIE_TAG = 492
 
 
 def korean_support(languages: list[dict]) -> str:
@@ -102,10 +103,15 @@ def _apply(deal: Deal, it: dict) -> None:
     ends = [a["discount_end_date"] for a in po.get("active_discounts", []) if a.get("discount_end_date")]
     if ends:
         deal.ends_at = datetime.fromtimestamp(min(ends), timezone.utc).isoformat()
-    rv = (it.get("reviews") or {}).get("summary_filtered") or {}
+    reviews = it.get("reviews") or {}
+    rv = reviews.get("summary_filtered") or {}          # 전세계(모든 언어)
     if rv.get("review_count"):
         deal.review_pct, deal.review_count = rv.get("percent_positive"), rv["review_count"]
         deal.review_desc = rv.get("review_score_label", "")
+    ko = reviews.get("summary_language_specific") or {}  # context.language=koreana → 한국어 리뷰만
+    if ko.get("review_count", 0) >= 30:
+        deal.review_pct_ko, deal.review_count_ko = ko.get("percent_positive"), ko["review_count"]
+    deal.indie = INDIE_TAG in (it.get("tagids") or [])
     deal.korean = korean_support(it.get("supported_languages"))
     assets = it.get("assets") or {}
     fmt = assets.get("asset_url_format", "")
@@ -137,7 +143,7 @@ def enrich_many(deals: list[Deal], limit: int = config.STEAM_ENRICH_TOP) -> None
             "context": {"language": "koreana", "country_code": "KR"},
             "data_request": {"include_assets": True, "include_all_purchase_options": True, "include_reviews": True,
                              "include_basic_info": True, "include_supported_languages": True,
-                             "include_trailers": True, "include_release": True},
+                             "include_trailers": True, "include_release": True, "include_tag_count": 20},
         }
         try:
             items = get(STOREBROWSE_URL, params={"input_json": json.dumps(req)}).json()["response"]["store_items"]

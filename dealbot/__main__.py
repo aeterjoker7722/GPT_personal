@@ -12,9 +12,9 @@ import argparse
 import json
 from datetime import datetime
 
-from . import config, curate, history, motion, posts, render
+from . import config, curate, history, motion, posts, render, state
 from .models import Deal, FreeGame
-from .sources import directg, epic, gog, playstation, steam, stove
+from .sources import directg, epic, gog, playstation, steam, steam_events, stove
 
 
 def collect() -> tuple[list[Deal], list[FreeGame], list[str]]:
@@ -97,13 +97,15 @@ def cmd_collect(_args) -> None:
     deals, _, _ = collect()
     con = history.connect()
     history.record(con, deals)
-    print("가격 기록 저장 완료")
+    history.record_reviews(con, deals)
+    print("가격·리뷰 기록 저장 완료")
 
 
 def prepare():
     deals, free, stores = collect()
     con = history.connect()
     history.record(con, deals)
+    history.record_reviews(con, deals)
     history.apply_verdicts(con, deals)
     pc = [d for d in deals if d.store not in curate.CONSOLE_STORES]
     curate.compare_stores(pc)
@@ -115,38 +117,77 @@ def prepare():
 POST_KINDS = [*posts.POSTS, "reel", "reel:ending", "reel:console", "story:upcoming-free"]
 
 
+def build_ctx(kind: str, deals, free, picks, sample: bool) -> dict:
+    """리포트/결산에 필요한 부가 정보: 스팀 일정, 기획전, 통계, 누적 장부."""
+    ctx: dict = {}
+    if kind not in ("report", "recap"):
+        return ctx
+    try:
+        ctx["events"] = steam_events.calendar()
+        ctx["spotlights"] = steam_events.spotlights()
+    except Exception as e:
+        print(f"[steam-events] 조회 실패: {e}")
+        ctx["events"], ctx["spotlights"] = [], []
+    if kind == "report":
+        ctx["stats"] = posts.report_stats(deals, picks, free)
+    if kind == "recap":
+        rows = state.ledger()
+        ctx["ledger_rows"], ctx["ledger"] = rows, state.ledger_summary(rows)
+        ctx["events"] = posts.next_week_events(ctx["events"]) or ctx["events"][:3]
+        ctx["week_count"] = len(state.used_keys())
+    return ctx
+
+
 def make_post(kind: str, deals, free, stores, con, out, args, sample: bool = False) -> None:
     """포맷 하나를 poster 디자인으로 렌더링: out/<kind>/ 에 PNG(+MP4), caption.txt."""
     if kind.startswith("reel"):
-        src = kind.split(":", 1)[1] if ":" in kind else "weekly"
+        src = kind.split(":", 1)[1] if ":" in kind else "report"
         picks = posts.select(src, deals, 3)
         if len(picks) < 3:
-            picks = posts.select("weekly", deals, 3)
+            src, picks = "report", posts.select("report", deals, 3)
         render.decorate(picks)
-        reel = render.render_reel(picks, out, sample=sample, source=src if len(posts.select(src, deals, 3)) >= 3 else "weekly")
+        reel = render.render_reel(picks, out, sample=sample, source="weekly" if src == "report" else src)
         if args.gif:
             motion.to_gif(reel, width=270, fps=10)
         print(f"[reel] {reel}")
         return
+    if kind == "console" and not posts.console_ready(deals):
+        alt = posts.console_fallback()
+        print(f"[console] 콘솔 할인이 기준(인기 {posts.CONSOLE_MAX_RANK}위 안 {posts.CONSOLE_MIN_DISCOUNT}% 이상 "
+              f"{posts.CONSOLE_MIN_GAMES}개)에 못 미쳐 '{alt}'로 대체")
+        kind = alt
     if kind == "story:upcoming-free":
         games = [g for g in free if g.upcoming] or free
-        post = {"key": "free", "kicker": "FREE NEXT", "headline": ""}
+        post = {"key": "free", "kicker": "FREE NEXT", "headline": "", "layout": "poster"}
         slides = [{"kind": "story_free", "game": g, "post": post} for g in games[:1]]
-        picks, name = [], "story-free"
+        picks, name, ctx = [], "story-free", {}
     else:
-        if kind == "free" and not free:
-            print("[free] 무료 배포 게임이 없어 건너뜀")
-            return
-        picks = posts.trim(kind, posts.select(kind, deals)) if kind not in ("free", "story", "guide") else (
-            posts.select(kind, deals) if kind != "free" else [])
-        if kind not in ("free",) and not picks:
+        if kind == "free":
+            if not free:
+                print("[free] 무료 배포 게임이 없어 건너뜀")
+                return
+            if all(g.kr_blocked for g in free if not g.upcoming):
+                print("[free] 이번 주 무료 게임이 모두 한국 미제공 → 피드는 건너뛰고 스토리만 만듦")
+                make_post("story:upcoming-free", deals, free, stores, con, out, args, sample)
+                return
+        exclude = set() if sample else state.used_keys()
+        picks = [] if kind == "free" else posts.select(kind, deals, exclude=exclude)
+        if kind not in ("story", "guide", "recap"):
+            picks = posts.trim(kind, picks)
+        if kind not in ("free", "recap") and not picks:
             print(f"[{kind}] 조건에 맞는 게임이 없어 건너뜀")
             return
         for d in picks:
             if con is not None and not d.history:
                 d.history = history.series(con, d)
         render.decorate(picks)
-        slides = posts.build(kind, picks, free, stores)
+        ctx = build_ctx(kind, deals, free, picks, sample)
+        if kind == "report" and picks:
+            rows = state.ledger() + [{"week": state.week_id(), "title": picks[0].title, "store": picks[0].store,
+                                      "price": picks[0].price, "regular": picks[0].regular}] if sample \
+                else state.add_to_ledger(picks[0])
+            ctx["ledger"] = state.ledger_summary(rows)
+        slides = posts.build(kind, picks, free, stores, ctx)
         name = kind
     if not slides:
         print(f"[{kind}] 만들 슬라이드가 없어 건너뜀")
@@ -154,10 +195,12 @@ def make_post(kind: str, deals, free, stores, con, out, args, sample: bool = Fal
     r = render.render_theme(slides, "poster", out, name=name, motion_slides=args.motion,
                             sample=sample, affiliate=args.affiliate)
     text = posts.story_caption(picks[0]) if kind == "story" and picks else posts.caption(
-        "free" if name == "story-free" else kind, picks, free, args.affiliate)
+        "free" if name == "story-free" else kind, picks, free, args.affiliate, ctx)
     (out / name / "caption.txt").write_text(text, encoding="utf-8")
     (out / name / "deals.json").write_text(json.dumps([d.to_dict() for d in picks], ensure_ascii=False, indent=2),
                                            encoding="utf-8")
+    if not sample and kind not in ("ending", "story", "guide", "recap"):
+        state.mark_used(kind, picks)
     if args.gif:
         for mp4 in r["mp4"]:
             motion.to_gif(mp4)

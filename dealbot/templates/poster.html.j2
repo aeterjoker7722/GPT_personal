@@ -136,14 +136,108 @@
   .legend .it b { font-size: 46px; font-weight: 900; letter-spacing: -.04em; display: block; }
   .legend .it p { font-size: 27px; font-weight: 600; opacity: .75; line-height: 1.45; margin-top: 6px; }
 
+  /* ── 요일별 레이아웃 ─────────────────────────────────────────────
+     공통 문법(크레딧 라인, 시그널 옐로, Anton 숫자, 아이콘 정보 줄)은 유지하고 배치만 바꾼다.
+     월 report(숫자판) · 화 cinema(와이드 레터박스) · 수 grid(노란 바탕 4칸) · 목 duo(2단 분할) · 일 recap(장부) */
+  .boxpad { position: absolute; inset: 0; padding: 120px 48px 44px; display: flex; flex-direction: column; z-index: 3; }
+  .boxpad > * { flex-shrink: 0; }
+  .boxpad h3 { font-size: 72px; font-weight: 900; letter-spacing: -.05em; line-height: 1.02; margin-top: 30px; animation: up .6s .1s both; }
+  .boxpad h3 em { font-style: normal; color: var(--brand); }
+  .note { font-size: 21px; font-weight: 600; opacity: .6; line-height: 1.5; }
+
+  /* 월: 숫자판 */
+  .tiles { margin-top: 36px; display: grid; grid-template-columns: 1fr 1fr; border-top: 3px solid var(--paper); }
+  .tile { padding: 26px 0 28px; border-bottom: 1px solid rgba(244,240,230,.25); animation: up .55s both; }
+  .tile:nth-child(odd) { padding-right: 24px; border-right: 1px solid rgba(244,240,230,.25); }
+  .tile:nth-child(even) { padding-left: 28px; }
+  .tile b { display: block; font-family: var(--num); font-weight: 400; font-size: 132px; line-height: .9; color: var(--brand); }
+  .tile span { display: block; font-size: 29px; font-weight: 800; margin-top: 10px; letter-spacing: -.02em; }
+  .ev { margin-top: 26px; border-top: 3px solid var(--paper); }
+  .ev div { display: grid; grid-template-columns: 150px 1fr auto; gap: 22px; align-items: center; padding: 18px 0; border-bottom: 1px solid rgba(244,240,230,.25); font-size: 31px; font-weight: 800; letter-spacing: -.02em; animation: up .5s both; }
+  .ev i { font-style: normal; font-family: var(--num); font-size: 28px; letter-spacing: .04em; padding: 6px 0 4px; text-align: center; border: 2px solid var(--paper); }
+  .ev i.on { background: var(--brand); color: var(--brand-ink); border-color: var(--brand); }
+  .ev small { font-size: 24px; font-weight: 600; opacity: .65; }
+  .spots { margin-top: 30px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .spots div { animation: up .55s both; min-width: 0; }
+  .spots img { width: 100%; aspect-ratio: 2 / 3; object-fit: cover; display: block; }
+  .spots span { display: block; font-size: 22px; font-weight: 800; margin-top: 10px; line-height: 1.3; letter-spacing: -.02em; }
+  .sublabel { font-family: var(--num); font-size: 26px; letter-spacing: .12em; color: var(--brand); margin-top: 34px; }
+
+  /* 화: 와이드 레터박스 */
+  .cinema-bg { position: absolute; inset: 0; z-index: 0; background: var(--black); }
+  .cin { position: absolute; left: 0; right: 0; top: 104px; z-index: 2; }
+  .cin .no { padding: 22px 48px 18px; display: flex; align-items: baseline; justify-content: space-between; }
+  .cin .no b { font-family: var(--num); font-weight: 400; font-size: 46px; letter-spacing: .08em; color: var(--brand); }
+  .cin .no span { font-size: 24px; font-weight: 700; opacity: .7; }
+  .wide { position: relative; height: 560px; overflow: hidden; }
+  .wide img.bg { width: 100%; height: 100%; object-fit: cover; animation: kb 6s cubic-bezier(.2,.6,.3,1) both; }
+  .wide::after { content: ""; position: absolute; inset: 0; background: linear-gradient(rgba(11,11,10,0) 55%, rgba(11,11,10,.75)); }
+  .wide img.logo { position: absolute; left: 48px; bottom: 34px; z-index: 2; max-width: 520px; max-height: 190px; filter: drop-shadow(0 6px 20px rgba(0,0,0,.7)); animation: up .7s .5s both; }
+  .cin .body { padding: 26px 48px 0; }
+  .cin h2 { font-size: 58px; font-weight: 900; letter-spacing: -.04em; line-height: 1.08; animation: wipe .7s .7s both; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .cin .row { display: flex; align-items: flex-end; gap: 34px; margin-top: 20px; }
+  .cin .row em { font-style: normal; font-family: var(--num); font-size: 150px; line-height: .8; color: var(--accent2); animation: pop .45s .8s cubic-bezier(.2,1.4,.4,1) both; }
+  .cin .row .pr b { display: block; font-size: 80px; font-weight: 900; letter-spacing: -.045em; line-height: .95; }
+  .cin .row .pr s { font-size: 30px; font-weight: 600; opacity: .55; }
+  .cin .row .pr small { display: block; font-size: 22px; font-weight: 800; letter-spacing: .1em; color: var(--brand); margin-bottom: 4px; }
+  .cin .offers { margin-top: 16px; }
+  .cin .facts { background: none; padding: 20px 0 0; }
+
+  /* 수: 노란 바탕 4칸 */
+  .yellow { background: var(--brand); color: var(--brand-ink); }
+  .yellow .topline { border-color: var(--brand-ink); color: var(--brand-ink); }
+  .yellow .topline .mid { color: var(--brand-ink); }
+  .yellow .boxpad h3 em { color: var(--brand-ink); text-decoration: underline; text-decoration-thickness: 6px; text-underline-offset: 10px; }
+  .grid4 { margin-top: 26px; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; flex: 1 1 auto; min-height: 0; }
+  .card { background: var(--black); color: var(--paper); display: flex; flex-direction: column; overflow: hidden; animation: up .55s both; min-width: 0; }
+  .card .im { flex: 1 1 auto; min-height: 0; overflow: hidden; position: relative; }
+  .card .im img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 15%; }
+  .card .im em { position: absolute; left: 0; bottom: 0; font-style: normal; font-family: var(--num); font-size: 64px; line-height: .9; padding: 10px 16px 4px; background: var(--brand); color: var(--brand-ink); }
+  .card .tx { flex: none; padding: 16px 18px 18px; }
+  .card .t { font-size: 29px; font-weight: 900; letter-spacing: -.03em; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card .p { display: flex; justify-content: space-between; align-items: baseline; margin-top: 8px; }
+  .card .p b { font-size: 36px; font-weight: 900; letter-spacing: -.03em; }
+  .card .p span { font-size: 22px; font-weight: 700; opacity: .7; }
+
+  /* 목: 2단 분할 */
+  .duo { position: absolute; left: 0; right: 0; top: 104px; bottom: 0; display: grid; grid-template-rows: 1fr 1fr; z-index: 2; }
+  .half { display: grid; grid-template-columns: 400px 1fr; border-top: 4px solid var(--brand); min-height: 0; animation: up .55s both; }
+  .half .im { overflow: hidden; }
+  .half .im img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 10%; animation: kb 6s both; }
+  .half .tx { padding: 28px 44px 24px 36px; display: flex; flex-direction: column; min-width: 0; }
+  .half .n { font-family: var(--num); font-size: 30px; letter-spacing: .1em; color: var(--brand); }
+  .half h2 { font-size: 46px; font-weight: 900; letter-spacing: -.04em; line-height: 1.1; margin-top: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .half .row { display: flex; align-items: flex-end; gap: 22px; margin-top: auto; }
+  .half .row em { font-style: normal; font-family: var(--num); font-size: 104px; line-height: .82; color: var(--accent2); }
+  .half .row b { font-size: 60px; font-weight: 900; letter-spacing: -.04em; line-height: .95; }
+  .half .row s { display: block; font-size: 24px; opacity: .55; font-weight: 600; }
+  .half .facts { background: none; padding: 16px 0 0; gap: 10px 24px; }
+  .half .fact { font-size: 26px; } .half .fact svg, .half .fact .ko { width: 30px; height: 30px; }
+  .half .offers { margin-top: 10px; } .half .offers li { font-size: 25px; } .half .offers li b { font-size: 27px; }
+
+  /* 일: 장부 */
+  .big-num { font-family: var(--num); font-size: 210px; line-height: .86; margin-top: 18px; letter-spacing: -.01em; animation: pop .5s .3s cubic-bezier(.2,1.4,.4,1) both; }
+  .kv { display: flex; gap: 46px; margin-top: 20px; font-size: 30px; font-weight: 800; letter-spacing: -.02em; }
+  .kv small { display: block; font-size: 20px; font-weight: 700; opacity: .65; letter-spacing: 0; }
+  .ledger { margin-top: 30px; border-top: 4px solid var(--brand-ink); }
+  .ledger div { display: grid; grid-template-columns: 120px 1fr auto; gap: 20px; align-items: baseline; padding: 15px 0; border-bottom: 2px solid var(--brand-ink); font-size: 28px; font-weight: 800; letter-spacing: -.02em; }
+  .ledger i { font-style: normal; font-family: var(--num); font-size: 26px; letter-spacing: .04em; }
+  .ledger span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ledger b { font-weight: 800; } .ledger b s { opacity: .5; font-weight: 600; font-size: 22px; margin-left: 8px; }
+  .yellow .note { opacity: .7; }
+
+  /* 무료: 한국 미제공 */
+  .blocked .art img { filter: grayscale(1) brightness(.7); }
+  .fact.warn { color: #ff6b5a; }
+
   /* 마지막 장 */
   .cta { background: var(--brand); color: var(--brand-ink); }
   .cta .inner { position: absolute; inset: 0; padding: 48px; display: flex; flex-direction: column; }
   .cta .topline { position: static; border-color: var(--brand-ink); color: var(--brand-ink); }
   .cta .topline .mid { color: var(--brand-ink); }
-  .cta .headline { font-size: 132px; margin-top: 70px; }
-  .sched { margin-top: 56px; border-top: 4px solid var(--brand-ink); animation: up .6s .5s both; }
-  .sched div { display: grid; grid-template-columns: 210px 1fr; align-items: baseline; padding: 18px 0; border-bottom: 2px solid var(--brand-ink); font-size: 34px; font-weight: 800; letter-spacing: -.02em; }
+  .cta .headline { font-size: 116px; margin-top: 48px; }
+  .sched { margin-top: 40px; border-top: 4px solid var(--brand-ink); animation: up .6s .5s both; }
+  .sched div { display: grid; grid-template-columns: 150px 1fr; align-items: baseline; padding: 13px 0; border-bottom: 2px solid var(--brand-ink); font-size: 31px; font-weight: 800; letter-spacing: -.02em; }
   .sched i { font-style: normal; font-family: var(--num); font-size: 40px; letter-spacing: .04em; }
   .legal { font-size: 19px; font-weight: 600; line-height: 1.55; opacity: .7; margin-top: 24px; }
   .cta .handle { margin-top: auto; font-family: var(--num); font-size: 72px; letter-spacing: .01em; }
@@ -156,6 +250,10 @@
   <symbol id="i-thumb" viewBox="0 0 24 24"><path d="M7 10v10H4V10h3z"/><path d="M7 10l4-7c1.6 0 2.6 1.3 2.2 2.8L12.6 9H19a2 2 0 0 1 2 2.3l-1.2 6.9A2.2 2.2 0 0 1 17.6 20H7"/></symbol>
   <symbol id="i-dollar" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 9.2c-.5-1-1.7-1.6-3-1.6-1.8 0-3 .9-3 2.2 0 3 6 1.6 6 4.4 0 1.3-1.3 2.2-3 2.2-1.4 0-2.6-.6-3.1-1.6M12 6v1.6M12 16.4V18"/></symbol>
   <symbol id="i-gift" viewBox="0 0 24 24"><path d="M4 11h16v9H4z"/><path d="M3 7h18v4H3z"/><path d="M12 7v13"/><path d="M12 7C10.5 3.5 7 3.8 7.5 6.2 7.8 7 9.5 7 12 7zM12 7c1.5-3.5 5-3.2 4.5-.8-.3.8-2 .8-4.5.8z"/></symbol>
+  <symbol id="i-ban" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="1.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.5"/></symbol>
+  <symbol id="i-stack" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></symbol>
   <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.5-4.5L4 8"/><path d="M4 3v5h5"/><path d="M4 13a8 8 0 0 0 14.5 4.5L20 16"/><path d="M20 21v-5h-5"/></symbol>
 </svg>
 {% macro topline(post) -%}
@@ -168,10 +266,10 @@
 
 {% macro facts(d, post) -%}
 <div class="facts">
-  {% if d.verdict == 'best' %}{{ fact('down', '역대 최저가', 'hot') }}{% elif d.verdict == 'near' %}{{ fact('down', '최저가 근접', 'hot') }}{% endif %}
+  {% if show_verdict and d.verdict == 'best' %}{{ fact('down', '역대 최저가 (ITAD)', 'hot') }}{% elif show_verdict and d.verdict == 'near' %}{{ fact('down', '최저가 근접', 'hot') }}{% endif %}
   {% if d.ends_at %}{{ fact('clock', (d.ends_at|kdatetime) ~ ' 종료', 'hot' if post.key == 'ending' else '') }}{% endif %}
   {% if d.korean %}<span class="fact{{ ' dim' if d.korean == '미지원' }}"><i class="ko">가</i>{{ '한국어 미지원' if d.korean == '미지원' else '한국어 ' ~ d.korean }}</span>{% endif %}
-  {% if d.review_pct is not none %}{{ fact('thumb', d.review_pct ~ '% 추천') }}{% endif %}
+  {% if d.review_pct is not none %}{{ fact('thumb', '전세계 ' ~ d.review_pct ~ '%' ~ (' · 한국 ' ~ d.review_pct_ko ~ '%' if d.review_pct_ko is not none else '')) }}{% endif %}
   {% if d.currency_note %}{{ fact('dollar', d.currency_note.split(' ')[0] ~ ' 결제') }}{% endif %}
 </div>
 {%- endmacro %}
@@ -238,7 +336,7 @@
     <div class="deal"><div class="pct"><span>{{ 'NEXT' if g.upcoming else 'FREE' }}</span></div>
       <div class="price"><small>EPIC GAMES STORE</small><b>₩0</b><s>₩{{ g.regular|won }}</s></div></div>
     <div class="titlebar"><h2>{{ g.title }}</h2></div>
-    <div class="facts">{{ fact('gift', '받으면 영구 소장') }}{% if g.upcoming %}{{ fact('clock', (g.starts_at|kdatetime) ~ ' 공개', 'hot') }}{% else %}{{ fact('clock', (g.ends_at|kdatetime) ~ '까지', 'hot') }}{% endif %}{{ fact('refresh', '매주 금요일 0시 교체') }}</div>
+    <div class="facts">{% if g.kr_blocked %}{{ fact('ban', '한국 계정 미제공', 'warn') }}{% else %}{{ fact('gift', '받으면 영구 소장') }}{% endif %}{% if g.upcoming %}{{ fact('clock', (g.starts_at|kdatetime) ~ ' 공개', 'hot') }}{% else %}{{ fact('clock', (g.ends_at|kdatetime) ~ '까지', 'hot') }}{% endif %}{{ fact('refresh', '매주 금요일 0시 교체') }}</div>
   </div>
   <div class="tail">{{ handle }}</div>
 </section>
@@ -265,14 +363,14 @@
 </section>
 
 {% elif s.kind == "free" %}{% set g = s.game %}
-<section class="slide free stack" style="--accent: #ffd60a; --on: #0b0b0a">
+<section class="slide free stack{{ ' blocked' if g.kr_blocked }}" style="--accent: {{ '#5a5853' if g.kr_blocked else '#ffd60a' }}; --on: {{ '#f4f0e6' if g.kr_blocked else '#0b0b0a' }}">
   {{ topline(post) }}
   <div class="art"><img src="{{ g.image_tall or g.image }}" alt=""></div>
   <div class="panel">
     <div class="deal"><div class="pct"><span>{{ 'NEXT' if g.upcoming else 'FREE' }}</span></div>
       <div class="price"><small>EPIC GAMES STORE</small><b>₩0</b><s>₩{{ g.regular|won }}</s></div></div>
     <div class="titlebar"><h2>{{ g.title }}</h2></div>
-    <div class="facts">{{ fact('gift', '받으면 영구 소장') }}{% if g.upcoming %}{{ fact('clock', (g.starts_at|kdatetime) ~ ' 공개', 'hot') }}{% else %}{{ fact('clock', (g.ends_at|kdatetime) ~ '까지', 'hot') }}{% endif %}{{ fact('refresh', '매주 금요일 0시 교체') }}</div>
+    <div class="facts">{% if g.kr_blocked %}{{ fact('ban', '한국 계정 미제공', 'warn') }}{% else %}{{ fact('gift', '받으면 영구 소장') }}{% endif %}{% if g.upcoming %}{{ fact('clock', (g.starts_at|kdatetime) ~ ' 공개', 'hot') }}{% else %}{{ fact('clock', (g.ends_at|kdatetime) ~ '까지', 'hot') }}{% endif %}{{ fact('refresh', '매주 금요일 0시 교체') }}</div>
   </div>
   {% if sample %}<div class="sample">샘플 데이터</div>{% endif %}
 </section>
@@ -282,13 +380,138 @@
   {% if bg %}<div class="bgblur"><img src="{{ bg.art_tall or bg.image }}" alt=""></div>{% endif %}
   {{ topline(post) }}
   <div class="legend">
-    <h3>할인율보다<br><em>"지금이 제일 싼가"</em></h3>
+    <h3>카드는<br><em>이렇게 읽어요</em></h3>
     <div class="items">
-      <div class="it" style="animation-delay:.2s"><div class="ic"><svg><use href="#i-down"/></svg></div><div><b>역대 최저가</b><p>노란 화살표. 기록된 가격 중 지금이 가장 쌉니다.<br>기다리던 게임이면 지금 사세요.</p></div></div>
-      <div class="it" style="animation-delay:.3s"><div class="ic"><svg><use href="#i-down"/></svg></div><div><b>최저가 근접</b><p>역대 최저가와 10% 또는 2천 원 이내.<br>사도 손해 보는 가격은 아닙니다.</p></div></div>
-      <div class="it" style="animation-delay:.4s"><div class="ic off">WAIT</div><div><b>표시 없음</b><p>더 싸진 적이 있습니다.<br>급하지 않으면 다음 세일을 기다려도 됩니다.</p></div></div>
+      <div class="it" style="animation-delay:.2s"><div class="ic"><svg><use href="#i-tag"/></svg></div><div><b>할인가와 스토어</b><p>큰 숫자가 지금 가격, 위에 적힌 곳이 판매처입니다.<br>그 아래 취소선이 정가예요.</p></div></div>
+      <div class="it" style="animation-delay:.3s"><div class="ic"><svg><use href="#i-stack"/></svg></div><div><b>다른 플랫폼 가격</b><p>같은 게임을 다른 스토어·콘솔에서도 할인하면 함께 적고,<br>더 싼 곳은 노란색 "최저"로 표시합니다.</p></div></div>
+      <div class="it" style="animation-delay:.4s"><div class="ic"><svg><use href="#i-thumb"/></svg></div><div><b>아이콘 줄</b><p>할인 종료 시각 · 한국어 지원 · 전세계/한국 평가.<br>스토어에서 확인되는 정보만 적습니다.</p></div></div>
     </div>
-    <div class="foot"><span>가격 기록: 매일 자동 수집 · 스팀은 IsThereAnyDeal 역대 최저가 참고</span><span>{{ n|pad2 }} / {{ total|pad2 }}</span></div>
+    <div class="foot"><span>가격은 게시 시점 기준이며 바뀔 수 있습니다</span><span>{{ n|pad2 }} / {{ total|pad2 }}</span></div>
+  </div>
+</section>
+
+{% elif s.kind == "report_stats" %}{% set st = s.stats %}{% set bg = s.deals[0] if s.deals else none %}
+<section class="slide">
+  {% if bg %}<div class="bgblur"><img src="{{ bg.art_tall or bg.image }}" alt=""></div>{% endif %}
+  {{ topline(post) }}
+  <div class="boxpad">
+    <h3>숫자로 본<br><em>이번 주 스팀</em></h3>
+    <div class="tiles">
+      <div class="tile" style="animation-delay:.15s"><b data-count-from="0" data-count-to="{{ st.good_count or 0 }}" data-count-start=".3" data-count-dur="1">{{ st.good_count or 0 }}</b><span>평가 좋은 할인 게임</span></div>
+      <div class="tile" style="animation-delay:.25s"><b>{{ st.avg_pct or 0 }}%</b><span>평균 할인율</span></div>
+      <div class="tile" style="animation-delay:.35s"><b>{{ st.korean_count or 0 }}</b><span>그중 한국어 지원</span></div>
+      <div class="tile" style="animation-delay:.45s"><b>{{ st.ending_count or 0 }}</b><span>7일 안에 끝나는 할인</span></div>
+    </div>
+    <p class="note" style="margin-top:22px">평가 좋은 할인: 할인 {{ min_discount }}% 이상, 전세계 평가 {{ min_review }}% 이상(스팀은 리뷰 500개 이상). 수집 시점 기준.</p>
+    {% if s.deals %}<div class="sublabel">THIS WEEK'S TOP 3</div>
+    <div class="spots">{% for d in s.deals[:3] %}<div style="animation-delay: {{ 0.5 + loop.index0 * 0.1 }}s; position: relative"><img src="{{ d.art_tall or d.image }}" alt="" style="aspect-ratio: 3 / 2.3"><em style="position:absolute; left:0; top:0; font-style:normal; font-family:var(--num); font-size:44px; padding:6px 12px 2px; background:var(--brand); color:var(--brand-ink)">−{{ d.discount }}%</em><span>{{ d.title }}</span></div>{% endfor %}</div>{% endif %}
+    <div class="foot"><span>{{ handle }}</span><span>{{ n|pad2 }} / {{ total|pad2 }}</span></div>
+  </div>
+</section>
+
+{% elif s.kind == "report_events" %}
+<section class="slide">
+  {% if s.spotlights %}<div class="bgblur"><img src="{{ s.spotlights[0].image }}" alt=""></div>{% endif %}
+  {{ topline(post) }}
+  <div class="boxpad">
+    <h3>이번 주<br><em>세일·페스티벌</em></h3>
+    {% if s.events %}<div class="ev">
+      {% for e in s.events[:4] %}<div style="animation-delay: {{ 0.15 + loop.index0 * 0.08 }}s"><i class="{{ 'on' if e.status == '진행 중' else '' }}">{{ e.status }}</i><span>{{ e.name }}</span><small>{{ e.start.month }}/{{ e.start.day }}–{{ e.end.month }}/{{ e.end.day }}</small></div>{% endfor %}
+    </div>{% endif %}
+    {% if s.spotlights %}<div class="sublabel">NOW ON STEAM · 진행 중인 기획전</div>
+    <div class="spots">{% for sp in s.spotlights[:3] %}<div style="animation-delay: {{ 0.4 + loop.index0 * 0.1 }}s"><img src="{{ sp.image }}" alt=""><span>{{ sp.title }}</span></div>{% endfor %}</div>{% endif %}
+    <div class="foot"><span>출처: Steamworks 공식 일정 · 스팀 메인</span><span>{{ n|pad2 }} / {{ total|pad2 }}</span></div>
+  </div>
+</section>
+
+{% elif s.kind == "cinema" %}{% set d = s.deal %}
+<section class="slide" style="--accent2: {{ d.palette.accent or '#ffd60a' }}">
+  <div class="cinema-bg"></div>
+  {{ topline(post) }}
+  <div class="cin">
+    <div class="no"><b>No.{{ s.rank|pad2 }}</b><span>{% if d.developer %}{{ d.developer }}{% endif %}{% if d.release_year %} · {{ d.release_year }}{% endif %}</span></div>
+    <div class="wide"><img class="bg" src="{{ d.art_wide or d.art_tall or d.image }}" alt="">{% if d.logo %}<img class="logo" src="{{ d.logo }}" alt="" onerror="this.remove()">{% endif %}</div>
+    <div class="body">
+      <h2>{{ d.title }}</h2>
+      <div class="row">
+        <em data-count-from="0" data-count-to="{{ d.discount }}" data-count-start=".8" data-count-dur=".5" data-prefix="−" data-suffix="%">−{{ d.discount }}%</em>
+        <div class="pr"><small>{{ d.store|store_name|upper }}{% if d.platforms %} · {{ d.platforms|sort(reverse=true)|join('/') }}{% endif %}</small><b data-count-from="{{ d.regular }}" data-count-to="{{ d.price }}" data-count-start=".6" data-count-dur="1.2" data-prefix="₩" data-round="10">₩{{ d.price|won }}</b><s>₩{{ d.regular|won }}</s></div>
+      </div>
+      {{ offers(d) }}
+      {{ facts(d, post) }}
+    </div>
+  </div>
+  {% if sample %}<div class="sample">샘플 데이터</div>{% endif %}
+</section>
+
+{% elif s.kind == "grid" %}
+<section class="slide yellow">
+  {{ topline(post) }}
+  <div class="boxpad">
+    <h3 style="font-size:60px">금주의 <em>인디</em></h3>
+    <div class="grid4">
+    {% for d in s.deals %}
+      <div class="card" style="animation-delay: {{ 0.15 + loop.index0 * 0.1 }}s">
+        <div class="im"><img src="{{ d.art_tall or d.image }}" alt=""><em>−{{ d.discount }}%</em></div>
+        <div class="tx"><div class="t">{{ d.title }}</div>
+          <div class="p"><b>₩{{ d.price|won }}</b><span>{% if d.review_pct is not none %}전세계 {{ d.review_pct }}%{% endif %}{% if d.korean and d.korean != '미지원' %} · 한국어{% endif %}</span></div></div>
+      </div>
+    {% endfor %}
+    </div>
+    <div class="foot" style="opacity:.7"><span>스팀 인디 태그 · 전세계 평가 85% 이상</span><span>{{ n|pad2 }} / {{ total|pad2 }}</span></div>
+  </div>
+  {% if sample %}<div class="sample">샘플 데이터</div>{% endif %}
+</section>
+
+{% elif s.kind == "duo" %}
+<section class="slide">
+  {{ topline(post) }}
+  <div class="duo">
+  {% for d in s.deals %}
+    <div class="half" style="--accent2: {{ d.palette.accent or '#ffd60a' }}; animation-delay: {{ 0.1 + loop.index0 * 0.2 }}s">
+      <div class="im"><img src="{{ d.art_tall or d.image }}" alt=""></div>
+      <div class="tx">
+        <span class="n">{{ (s.offset + loop.index)|pad2 }} · {{ d.store|store_name|upper }}</span>
+        <h2>{{ d.title }}</h2>
+        <div class="row"><em>−{{ d.discount }}%</em><div><s>₩{{ d.regular|won }}</s><b>₩{{ d.price|won }}</b></div></div>
+        {{ offers(d) }}
+        {{ facts(d, post) }}
+      </div>
+    </div>
+  {% endfor %}
+  </div>
+  {% if sample %}<div class="sample">샘플 데이터</div>{% endif %}
+</section>
+
+{% elif s.kind == "recap_ledger" %}{% set L = s.ledger %}
+<section class="slide yellow">
+  {{ topline(post) }}
+  <div class="boxpad">
+    <h3 style="font-size:64px">주간 1위만<br>매주 샀다면</h3>
+    <div class="big-num" data-count-from="0" data-count-to="{{ L.saved or 0 }}" data-count-start=".4" data-count-dur="1.4" data-prefix="₩">₩{{ (L.saved or 0)|won }}</div>
+    <div class="kv"><div><small>아낀 돈 (정가 대비)</small>{{ L.count or 0 }}주 누적</div><div><small>쓴 돈</small>₩{{ (L.spent or 0)|won }}</div><div><small>늘어난 라이브러리</small>{{ L.count or 0 }}개</div></div>
+    <div class="ledger">
+      {% for r in (s.rows or [])[-6:]|reverse %}<div><i>{{ r.week[-3:] }}</i><span>{{ r.title }}</span><b>₩{{ r.price|won }}<s>₩{{ r.regular|won }}</s></b></div>{% endfor %}
+    </div>
+    <p class="note" style="margin-top:auto">기준: 매주 월요일 리포트 1위를 그 주 할인가로 샀다고 가정한 기록입니다. {{ L.since }}부터 집계.</p>
+  </div>
+</section>
+
+{% elif s.kind == "recap_next" %}
+<section class="slide">
+  {% if s.spotlights %}<div class="bgblur"><img src="{{ s.spotlights[0].image }}" alt=""></div>{% endif %}
+  {{ topline(post) }}
+  <div class="boxpad">
+    <h3>다음 주<br><em>미리 보기</em></h3>
+    <div class="ev">
+      {% for e in s.events[:4] %}<div style="animation-delay: {{ 0.15 + loop.index0 * 0.08 }}s"><i class="{{ 'on' if e.status == '진행 중' else '' }}">{{ e.status }}</i><span>{{ e.name }}</span><small>{{ e.start.month }}/{{ e.start.day }}–{{ e.end.month }}/{{ e.end.day }}</small></div>{% endfor %}
+      {% if not s.events %}<div><i>—</i><span>다음 주에 시작하는 스팀 공식 행사는 없습니다</span><small></small></div>{% endif %}
+    </div>
+    <div class="tiles" style="margin-top:34px">
+      <div class="tile"><b>{{ s.week_count }}</b><span>이번 주 소개한 게임</span></div>
+      <div class="tile"><b>MON</b><span>다음 리포트 12:00</span></div>
+    </div>
+    <div class="foot"><span>{{ handle }}</span><span>{{ n|pad2 }} / {{ total|pad2 }}</span></div>
   </div>
 </section>
 
@@ -298,12 +521,13 @@
     {{ topline(post) }}
     <div class="headline">저장해 두고<br>끝나기 전에<br>사세요.</div>
     <div class="sched">
-      <div><i>MON</i>이번 주 할인 TOP</div>
-      <div><i>TUE</i>역대 최저가 갱신</div>
-      <div><i>WED</i>주제별 큐레이션</div>
-      <div><i>FRI 00:00</i>에픽 무료 게임</div>
-      <div><i>FRI</i>주말에 끝나는 할인</div>
-      <div><i>SAT</i>주말 콘솔 세일</div>
+      <div><i>MON</i>이번 주 스팀 리포트</div>
+      <div><i>TUE</i>대작 할인</div>
+      <div><i>WED</i>금주의 인디</div>
+      <div><i>THU</i>5천 원 이하 · 한국어 지원</div>
+      <div><i>FRI</i>0시 에픽 무료 · 마감 임박</div>
+      <div><i>SAT</i>콘솔 세일 (할인할 때)</div>
+      <div><i>SUN</i>주간 결산</div>
     </div>
     <p class="legal">공식 스토어와 공인 키셀러만 소개합니다. 가격은 게시 시점 기준이며 바뀔 수 있습니다. 기다리는 게임은 댓글로 남겨 주세요.{% if affiliate %}<br>이 게시물에는 제휴 링크가 포함되어 있으며, 구매 시 수수료를 받을 수 있습니다.{% endif %}</p>
     <div class="handle">{{ handle }}</div>

@@ -3,6 +3,9 @@
 # 계정명/브랜드는 저장소 Settings → Variables 의 DEALBOT_HANDLE, DEALBOT_BRAND 로 정한다.
 name: daily-drafts
 
+permissions:
+  contents: write
+
 on:
   schedule:
     - cron: "37 23 * * *"   # 매일 08:37 KST
@@ -12,6 +15,10 @@ on:
       kinds:
         description: "만들 포맷 (비우면 오늘 편성표). 예: weekly lowest reel"
         required: false
+
+concurrency:
+  group: dealbot-data
+  cancel-in-progress: false
 
 jobs:
   drafts:
@@ -37,6 +44,17 @@ jobs:
           else
             python -m dealbot today --motion
           fi
+      - name: Commit weekly state (shown games, savings ledger)
+        # 요일별 게시물이 같은 게임을 반복하지 않도록 이번 주 소개 기록과 누적 장부를 저장소에 남긴다.
+        # 가격 DB(sqlite)는 collect-prices 워크플로가 커밋하므로 여기서는 되돌린다 (바이너리 충돌 방지).
+        run: |
+          git checkout -- data/price_history.sqlite 2>/dev/null || true
+          git config user.name "dealbot"
+          git config user.email "dealbot@users.noreply.github.com"
+          for f in data/week_state.json data/ledger.json; do [ -f "$f" ] && git add "$f"; done
+          git diff --cached --quiet || git commit -m "data: weekly state $(date -u +%F)"
+          git pull --rebase --autostash || true
+          git push || true
       - uses: actions/upload-artifact@v4
         with:
           name: drafts-${{ github.run_id }}

@@ -18,10 +18,13 @@ ITAD_API_KEY = os.getenv("ITAD_API_KEY", "")
 
 # 수집/선별 기준
 STEAM_PAGES = int(os.getenv("DEALBOT_STEAM_PAGES", "4"))      # 페이지당 100개, 인기순
-STEAM_ENRICH_TOP = int(os.getenv("DEALBOT_STEAM_ENRICH", "40")) # 한국어/이미지 상세조회 개수
+STEAM_ENRICH_TOP = int(os.getenv("DEALBOT_STEAM_ENRICH", "100")) # 한국어/이미지 상세조회 개수
 MIN_DISCOUNT = int(os.getenv("DEALBOT_MIN_DISCOUNT", "50"))
 MIN_REVIEW_PCT = int(os.getenv("DEALBOT_MIN_REVIEW_PCT", "75"))
 MIN_REVIEW_COUNT = int(os.getenv("DEALBOT_MIN_REVIEW_COUNT", "500"))
+
+# 판정('역대 최저가')을 카드·캡션에 보여 줄지. 틀리면 역풍이 크므로 기본은 끔 (ITAD 키를 쓸 때만 켜는 것을 권장)
+SHOW_VERDICT = os.getenv("DEALBOT_SHOW_VERDICT", "0") == "1"
 
 # 판정 기준: 역대최저가 대비 이 범위 안이면 "최저가 근접"
 NEAR_LOW_RATIO = 1.10
