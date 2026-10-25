@@ -87,6 +87,7 @@ def week_info(now: datetime | None = None) -> dict:
     sunday = monday + timedelta(days=6)
     return {
         "range": f"{monday:%Y.%m.%d} — {sunday:%m.%d}",
+        "range_short": f"{monday.month}.{monday.day}–{sunday.month}.{sunday.day}",
         "issue": f"{monday.month}월 {(monday.day - 1) // 7 + 1}주차",
         "no": monday.isocalendar().week,
         "year": monday.year,

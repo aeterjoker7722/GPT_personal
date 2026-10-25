@@ -139,8 +139,9 @@ def select(kind: str, deals: list[Deal], n: int = 9, exclude: set[str] | None = 
         return curate.series(pool, kind, 8)
     if kind == "console":
         return curate.pick_console(deals, n)
-    if kind == "story":
-        return curate.pick(pool, 1) or curate.pick(deals, 1)
+    if kind == "story":  # 9:16 이라 세로 키아트가 있는 게임만 (가로 이미지를 늘리면 깨져 보임)
+        tall = [d for d in deals if d.art_tall]
+        return curate.pick([d for d in tall if d.key not in (exclude or set())], 1) or curate.pick(tall, 1)
     if kind in ("guide", "recap"):
         return curate.pick(deals, 5)  # 표지 그림용
     return []

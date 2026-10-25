@@ -1,6 +1,19 @@
 # 템플릿 디자인
 
-## 요일별 레이아웃 (현재)
+## 디자인 원칙: "가격이 곧 포스터" (현재)
+
+규칙 전체는 `.claude/skills/dealbot-design/SKILL.md`에 있습니다. 요약하면:
+
+- **대담함은 할인 숫자 한 곳에만.** 그림은 키아트, 헤드라인은 할인율, 나머지는 포스터 하단 크레딧처럼 조용히.
+- **신호색(노랑)은 돈을 아끼는 정보에만**: 더 싼 스토어 "최저", 강조된 종료 시각, 결산·인디 바탕, 마지막 장.
+- **글꼴은 두 가지**: Pretendard(글) + Anton(숫자). 바탕은 진짜 검정(#000).
+- **생성형 디자인의 흔한 티를 뺐습니다**: 제목 위 영문 대문자 라벨, 가운뎃점으로 이어 붙인 메타 문자열, 한 단어만 색을 바꾸는 강조, 끝에 붙인 화살표, 모든 요소의 페이드업, 장식용 반짝임.
+- **움직임은 슬라이드당 한 번**: 패널이 올라오고 할인율·가격 숫자가 바뀌는 순간. 표지만 키아트 띠가 흐릅니다.
+- 상단 크레딧 줄은 "브랜드 / 44호 10.26–11.1" 두 요소만.
+
+참고한 스킬: Anthropic의 `frontend-design`, `canvas-design`(Apache-2.0, `.claude/skills/`에 포함).
+
+## 요일별 레이아웃
 
 poster의 공통 문법(검은 바탕, 시그널 옐로, Anton 숫자, 상단 크레딧 라인, 아이콘 정보 줄)은 그대로 두고, 요일마다 배치만 바꿉니다.
 
@@ -15,13 +28,17 @@ poster의 공통 문법(검은 바탕, 시그널 옐로, Anton 숫자, 상단 �
 
 샘플(10월 25일 실제 데이터): [`docs/samples/days/`](samples/days/)
 
-| 월 숫자판 | 월 일정 | 화 대작 | 수 인디 | 목 2단 | 일 결산 |
+| 월 표지 | 월 숫자판 | 월 일정 | 메인 카드 | 화 대작 | 수 인디 |
 |---|---|---|---|---|---|
-| ![](samples/days/report_stats.jpg) | ![](samples/days/report_events.jpg) | ![](samples/days/aaa.jpg) | ![](samples/days/indie.jpg) | ![](samples/days/duo.jpg) | ![](samples/days/recap.jpg) |
+| ![](samples/days/report_cover.jpg) | ![](samples/days/report_stats.jpg) | ![](samples/days/report_events.jpg) | ![](samples/days/hero.jpg) | ![](samples/days/aaa.jpg) | ![](samples/days/indie.jpg) |
+
+| 목 2단 | 금 무료 | 토 콘솔 | 일 결산 | 마지막 장 | 스토리 |
+|---|---|---|---|---|---|
+| ![](samples/days/duo.jpg) | ![](samples/days/free.jpg) | ![](samples/days/console.jpg) | ![](samples/days/recap.jpg) | ![](samples/days/schedule.jpg) | ![](samples/days/story.jpg) |
 
 공통 변경:
 - 노란 원형 배지는 없습니다. 판정은 기본으로 숨기고(`DEALBOT_SHOW_VERDICT`), 켜면 아이콘 줄에 "역대 최저가 (ITAD)"로만 나옵니다.
-- 평가는 "전세계 87% · 한국 79%"처럼 함께 보여 줍니다(한국어 리뷰 30개 이상일 때).
+- 평가는 "추천 87% (한국 79%)"처럼 함께 보여 줍니다(한국어 리뷰 30개 이상일 때).
 - 에픽 무료 게임이 한국 계정 미제공이면 키아트를 흑백으로 바꾸고 "한국 계정 미제공"을 붉은색으로 적습니다.
 
 ## 채택안: poster v2

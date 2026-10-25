@@ -8,7 +8,7 @@
   /* poster v2: 키아트 풀블리드 + 영화 포스터 문법(빌링 블록, 씰, 상단 크레딧 라인).
      브랜드 고정색은 시그널 옐로(--brand) 하나, 할인 블록은 게임마다 키아트에서 뽑은 --accent. */
   :root {
-    --black: #0b0b0a; --ink: #151513; --paper: #f4f0e6; --brand: #ffd60a; --brand-ink: #0b0b0a;
+    --black: #000; --ink: #111; --paper: #f4f4ef; --dim: rgba(244,244,239,.62); --brand: #ffd60a; --brand-ink: #000;
     --sans: Pretendard, "Apple SD Gothic Neo", sans-serif; --num: "Anton", Pretendard, sans-serif;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -30,10 +30,10 @@
   @keyframes shine { from { transform: translateX(-130%) skewX(-18deg) } to { transform: translateX(260%) skewX(-18deg) } }
 
   /* 상단 크레딧 라인 */
-  .topline { position: absolute; left: 48px; right: 48px; top: 40px; z-index: 6; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+  .topline { position: absolute; left: 48px; right: 48px; top: 40px; z-index: 6; display: flex; justify-content: space-between; align-items: center;
              font-size: 21px; font-weight: 700; letter-spacing: .02em; padding-bottom: 14px; border-bottom: 2px solid rgba(244,240,230,.85); animation: fade .6s both; }
   .topline b { font-weight: 900; font-size: 25px; letter-spacing: -.02em; }
-  .topline .mid { font-family: var(--num); font-weight: 400; font-size: 24px; letter-spacing: .14em; color: var(--brand); }
+  .topline .mid { display: none; }
   .topline .end { text-align: right; }
   .story .topline { top: 150px; }
   .scrim { position: absolute; left: 0; right: 0; top: 0; height: 360px; z-index: 2; background: linear-gradient(rgba(0,0,0,.62), rgba(0,0,0,0)); }
@@ -44,7 +44,6 @@
   .story.stack > .topline { padding-top: 130px; }
   .stack > .art { position: relative; inset: auto; flex: 1 1 auto; overflow: hidden; min-height: 0; }
   .stack > .art img { object-position: 50% 0%; transform-origin: 50% 0%; }
-  .stack > .art::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--brand); transform-origin: left; animation: wipe .8s .1s both; }
   .stack > .art::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 150px; z-index: 1; background: linear-gradient(rgba(11,11,10,0), var(--black)); }
   .stack > .panel { position: relative; bottom: auto; flex: none; }
   .story.stack > .panel { bottom: auto; }
@@ -64,7 +63,7 @@
   .pct span { display: inline-block; animation: pop .45s .75s cubic-bezier(.2,1.4,.4,1) both; }
   .pct::after { content: ""; position: absolute; top: 0; bottom: 0; width: 34%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent); animation: shine .9s 1.3s ease-in-out both; }
   .price { background: var(--black); padding: 24px 44px 16px 34px; display: flex; flex-direction: column; justify-content: flex-end; text-align: right; }
-  .price small { font-size: 23px; font-weight: 800; letter-spacing: .1em; color: var(--brand); }
+  .price small { font-size: 25px; font-weight: 700; color: var(--dim); }
   .price b { font-size: 84px; font-weight: 900; letter-spacing: -.045em; line-height: 1; margin-top: 6px; white-space: nowrap; }
   .price s { font-size: 30px; font-weight: 600; opacity: .55; margin-top: 4px; }
   .titlebar { background: var(--black); padding: 26px 44px 0; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
@@ -150,36 +149,36 @@
   .tile { padding: 26px 0 28px; border-bottom: 1px solid rgba(244,240,230,.25); animation: up .55s both; }
   .tile:nth-child(odd) { padding-right: 24px; border-right: 1px solid rgba(244,240,230,.25); }
   .tile:nth-child(even) { padding-left: 28px; }
-  .tile b { display: block; font-family: var(--num); font-weight: 400; font-size: 132px; line-height: .9; color: var(--brand); }
+  .tile b { display: block; font-family: var(--num); font-weight: 400; font-size: 132px; line-height: .9; color: var(--paper); }
   .tile span { display: block; font-size: 29px; font-weight: 800; margin-top: 10px; letter-spacing: -.02em; }
   .ev { margin-top: 26px; border-top: 3px solid var(--paper); }
   .ev div { display: grid; grid-template-columns: 150px 1fr auto; gap: 22px; align-items: center; padding: 18px 0; border-bottom: 1px solid rgba(244,240,230,.25); font-size: 31px; font-weight: 800; letter-spacing: -.02em; animation: up .5s both; }
   .ev i { font-style: normal; font-family: var(--num); font-size: 28px; letter-spacing: .04em; padding: 6px 0 4px; text-align: center; border: 2px solid var(--paper); }
-  .ev i.on { background: var(--brand); color: var(--brand-ink); border-color: var(--brand); }
+  .ev i.on { background: var(--paper); color: var(--black); border-color: var(--paper); }
   .ev small { font-size: 24px; font-weight: 600; opacity: .65; }
   .spots { margin-top: 30px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
   .spots div { animation: up .55s both; min-width: 0; }
   .spots img { width: 100%; aspect-ratio: 2 / 3; object-fit: cover; display: block; }
   .spots span { display: block; font-size: 22px; font-weight: 800; margin-top: 10px; line-height: 1.3; letter-spacing: -.02em; }
-  .sublabel { font-family: var(--num); font-size: 26px; letter-spacing: .12em; color: var(--brand); margin-top: 34px; }
+  .sublabel { font-size: 30px; font-weight: 800; letter-spacing: -.02em; margin-top: 36px; padding-top: 18px; border-top: 1px solid rgba(244,244,239,.25); }
 
   /* 화: 와이드 레터박스 */
   .cinema-bg { position: absolute; inset: 0; z-index: 0; background: var(--black); }
   .cin { position: absolute; left: 0; right: 0; top: 104px; z-index: 2; }
   .cin .no { padding: 22px 48px 18px; display: flex; align-items: baseline; justify-content: space-between; }
-  .cin .no b { font-family: var(--num); font-weight: 400; font-size: 46px; letter-spacing: .08em; color: var(--brand); }
+  .cin .no b { font-family: var(--num); font-weight: 400; font-size: 54px; color: transparent; -webkit-text-stroke: 2px var(--paper); }
   .cin .no span { font-size: 24px; font-weight: 700; opacity: .7; }
-  .wide { position: relative; height: 560px; overflow: hidden; }
+  .wide { position: relative; height: 660px; overflow: hidden; }
   .wide img.bg { width: 100%; height: 100%; object-fit: cover; animation: kb 6s cubic-bezier(.2,.6,.3,1) both; }
   .wide::after { content: ""; position: absolute; inset: 0; background: linear-gradient(rgba(11,11,10,0) 55%, rgba(11,11,10,.75)); }
   .wide img.logo { position: absolute; left: 48px; bottom: 34px; z-index: 2; max-width: 520px; max-height: 190px; filter: drop-shadow(0 6px 20px rgba(0,0,0,.7)); animation: up .7s .5s both; }
   .cin .body { padding: 26px 48px 0; }
-  .cin h2 { font-size: 58px; font-weight: 900; letter-spacing: -.04em; line-height: 1.08; animation: wipe .7s .7s both; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .cin h2 { font-size: 64px; font-weight: 900; letter-spacing: -.04em; line-height: 1.08; animation: wipe .7s .7s both; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .cin .row { display: flex; align-items: flex-end; gap: 34px; margin-top: 20px; }
   .cin .row em { font-style: normal; font-family: var(--num); font-size: 150px; line-height: .8; color: var(--accent2); animation: pop .45s .8s cubic-bezier(.2,1.4,.4,1) both; }
   .cin .row .pr b { display: block; font-size: 80px; font-weight: 900; letter-spacing: -.045em; line-height: .95; }
   .cin .row .pr s { font-size: 30px; font-weight: 600; opacity: .55; }
-  .cin .row .pr small { display: block; font-size: 22px; font-weight: 800; letter-spacing: .1em; color: var(--brand); margin-bottom: 4px; }
+  .cin .row .pr small { display: block; font-size: 24px; font-weight: 700; color: var(--dim); margin-bottom: 6px; }
   .cin .offers { margin-top: 16px; }
   .cin .facts { background: none; padding: 20px 0 0; }
 
@@ -205,7 +204,8 @@
   .half .im { overflow: hidden; }
   .half .im img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 10%; animation: kb 6s both; }
   .half .tx { padding: 28px 44px 24px 36px; display: flex; flex-direction: column; min-width: 0; }
-  .half .n { font-family: var(--num); font-size: 30px; letter-spacing: .1em; color: var(--brand); }
+  .half .n { font-family: var(--num); font-size: 40px; color: transparent; -webkit-text-stroke: 1.5px var(--paper); display: flex; align-items: baseline; gap: 14px; }
+  .half .n small { font-family: var(--sans); font-size: 23px; font-weight: 700; color: var(--dim); -webkit-text-stroke: 0; }
   .half h2 { font-size: 46px; font-weight: 900; letter-spacing: -.04em; line-height: 1.1; margin-top: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .half .row { display: flex; align-items: flex-end; gap: 22px; margin-top: auto; }
   .half .row em { font-style: normal; font-family: var(--num); font-size: 104px; line-height: .82; color: var(--accent2); }
@@ -229,6 +229,12 @@
   /* 무료: 한국 미제공 */
   .blocked .art img { filter: grayscale(1) brightness(.7); }
   .fact.warn { color: #ff6b5a; }
+
+  /* 움직임은 슬라이드당 한 번: 패널이 올라오고 할인율·가격 숫자가 바뀐다. 표지만 키아트 띠가 흐른다. */
+  .row, .tile, .ev div, .spots div, .card, .half, .legend .it, .listwrap h3, .boxpad h3, .sched, .head, .facts,
+  .titlebar h2, .rank, .topline, .legal, .cin h2, .wide img.logo, .stack > .art::after, .grid4 .card { animation: none !important; }
+  .pct::after, .band .pct::after { display: none; }
+  .lowtxt { color: var(--brand); font-weight: 800; opacity: 1; }
 
   /* 마지막 장 */
   .cta { background: var(--brand); color: var(--brand-ink); }
@@ -257,7 +263,7 @@
   <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.5-4.5L4 8"/><path d="M4 3v5h5"/><path d="M4 13a8 8 0 0 0 14.5 4.5L20 16"/><path d="M20 21v-5h-5"/></symbol>
 </svg>
 {% macro topline(post) -%}
-<header class="topline"><b>{{ brand }}</b><span class="mid">{{ post.kicker }} · No.{{ week.no }}</span><span class="end">{{ week.range }}</span></header>
+<header class="topline"><b>{{ brand }}</b><span class="mid"></span><span class="end">{{ week.no }}호&emsp;{{ week.range_short }}</span></header>
 {%- endmacro %}
 
 {% macro fact(icon, text, cls="") -%}
@@ -269,7 +275,7 @@
   {% if show_verdict and d.verdict == 'best' %}{{ fact('down', '역대 최저가 (ITAD)', 'hot') }}{% elif show_verdict and d.verdict == 'near' %}{{ fact('down', '최저가 근접', 'hot') }}{% endif %}
   {% if d.ends_at %}{{ fact('clock', (d.ends_at|kdatetime) ~ ' 종료', 'hot' if post.key == 'ending' else '') }}{% endif %}
   {% if d.korean %}<span class="fact{{ ' dim' if d.korean == '미지원' }}"><i class="ko">가</i>{{ '한국어 미지원' if d.korean == '미지원' else '한국어 ' ~ d.korean }}</span>{% endif %}
-  {% if d.review_pct is not none %}{{ fact('thumb', '전세계 ' ~ d.review_pct ~ '%' ~ (' · 한국 ' ~ d.review_pct_ko ~ '%' if d.review_pct_ko is not none else '')) }}{% endif %}
+  {% if d.review_pct is not none %}{{ fact('thumb', '추천 ' ~ d.review_pct ~ '%' ~ (' (한국 ' ~ d.review_pct_ko ~ '%)' if d.review_pct_ko is not none else '')) }}{% endif %}
   {% if d.currency_note %}{{ fact('dollar', d.currency_note.split(' ')[0] ~ ' 결제') }}{% endif %}
 </div>
 {%- endmacro %}
@@ -282,7 +288,7 @@
 <div class="panel">
   <div class="deal">
     <div class="pct"><span data-count-from="0" data-count-to="{{ d.discount }}" data-count-start=".75" data-count-dur=".5" data-prefix="−" data-suffix="%">−{{ d.discount }}%</span></div>
-    <div class="price"><small>{{ d.store|store_name|upper }}{% if d.platforms %} · {{ d.platforms|sort(reverse=true)|join('/') }}{% endif %}</small><b data-count-from="{{ d.regular }}" data-count-to="{{ d.price }}" data-count-start=".6" data-count-dur="1.2" data-prefix="₩" data-round="10">₩{{ d.price|won }}</b><s>₩{{ d.regular|won }}</s>{{ offers(d) }}</div>
+    <div class="price"><small>{{ d.store|store_name }}{% if d.platforms %} {{ d.platforms|sort(reverse=true)|join('/') }}{% endif %} 판매가</small><b data-count-from="{{ d.regular }}" data-count-to="{{ d.price }}" data-count-start=".6" data-count-dur="1.2" data-prefix="₩" data-round="10">₩{{ d.price|won }}</b><s>₩{{ d.regular|won }}</s>{{ offers(d) }}</div>
   </div>
   <div class="titlebar"><h2>{{ d.title }}</h2></div>
   {{ facts(d, post) }}
@@ -300,11 +306,10 @@
   <div class="fadebottom"></div><div class="scrim"></div>
   {{ topline(post) }}
   <div class="coverbox">
-    <div class="kicker">{{ post.kicker }}</div>
     <div class="headline">{{ post.headline }}</div>
     <div class="statrow">
       <div class="stat">{{ s.stat }}<small>{{ s.stat_label }}</small></div>
-      <div class="who">{{ handle }}<br>넘겨서 보기 →</div>
+      <div class="who">{{ handle }}<br>넘겨서 보기</div>
     </div>
   </div>
   {% if sample %}<div class="sample">샘플 데이터</div>{% endif %}
@@ -334,7 +339,7 @@
   <div class="art"><img src="{{ g.image_tall or g.image }}" alt=""></div>
   <div class="panel">
     <div class="deal"><div class="pct"><span>{{ 'NEXT' if g.upcoming else 'FREE' }}</span></div>
-      <div class="price"><small>EPIC GAMES STORE</small><b>₩0</b><s>₩{{ g.regular|won }}</s></div></div>
+      <div class="price"><small>Epic Games Store</small><b>₩0</b><s>₩{{ g.regular|won }}</s></div></div>
     <div class="titlebar"><h2>{{ g.title }}</h2></div>
     <div class="facts">{% if g.kr_blocked %}{{ fact('ban', '한국 계정 미제공', 'warn') }}{% else %}{{ fact('gift', '받으면 영구 소장') }}{% endif %}{% if g.upcoming %}{{ fact('clock', (g.starts_at|kdatetime) ~ ' 공개', 'hot') }}{% else %}{{ fact('clock', (g.ends_at|kdatetime) ~ '까지', 'hot') }}{% endif %}{{ fact('refresh', '매주 금요일 0시 교체') }}</div>
   </div>
@@ -346,14 +351,14 @@
   {% if bg %}<div class="bgblur"><img src="{{ bg.art_tall or bg.image }}" alt=""></div>{% endif %}
   {{ topline(post) }}
   <div class="listwrap">
-    <h3>이것도 <em>놓치지 마세요</em></h3>
+    <h3>이것도 놓치지 마세요</h3>
     <div class="rows">
     {% for d in s.deals %}
       <div class="row" style="--accent: {{ d.palette.accent or '#ffd60a' }}; animation-delay: {{ 0.15 + loop.index0 * 0.1 }}s">
         <span class="n">{{ (s.offset + loop.index)|pad2 }}</span>
         <img src="{{ d.art_tall or d.image }}" alt="">
         <div style="min-width:0"><div class="t">{{ d.title }}</div>
-          <div class="s">{{ d.store|store_name }}{% if d.platforms %} {{ d.platforms|sort(reverse=true)|join('/') }}{% endif %}{% if d.korean and d.korean != '미지원' %} · 한국어{% endif %}{% if post.key == 'ending' and d.ends_at %} · ~{{ d.ends_at|kdatetime }}{% elif d.verdict == 'best' %} · 역대 최저가{% endif %}{% if d.offers and d.offers[0].price < d.price %} · {{ d.offers[0].platform or (d.offers[0].store|store_short) }} ₩{{ d.offers[0].price|won }}{% endif %}</div></div>
+          <div class="s">{{ d.store|store_name }}{% if d.platforms %} {{ d.platforms|sort(reverse=true)|join('/') }}{% endif %}{% if d.korean and d.korean != '미지원' %}, 한국어{% endif %}{% if post.key == 'ending' and d.ends_at %}, {{ d.ends_at|kdatetime }} 종료{% elif show_verdict and d.verdict == 'best' %}, 역대 최저가{% endif %}{% if d.offers and d.offers[0].price < d.price %}<br><span class="lowtxt">{{ d.offers[0].platform or (d.offers[0].store|store_short) }}에서 ₩{{ d.offers[0].price|won }}</span>{% endif %}</div></div>
         <div class="p"><em>−{{ d.discount }}%</em><b>₩{{ d.price|won }}</b></div>
       </div>
     {% endfor %}
@@ -368,7 +373,7 @@
   <div class="art"><img src="{{ g.image_tall or g.image }}" alt=""></div>
   <div class="panel">
     <div class="deal"><div class="pct"><span>{{ 'NEXT' if g.upcoming else 'FREE' }}</span></div>
-      <div class="price"><small>EPIC GAMES STORE</small><b>₩0</b><s>₩{{ g.regular|won }}</s></div></div>
+      <div class="price"><small>Epic Games Store</small><b>₩0</b><s>₩{{ g.regular|won }}</s></div></div>
     <div class="titlebar"><h2>{{ g.title }}</h2></div>
     <div class="facts">{% if g.kr_blocked %}{{ fact('ban', '한국 계정 미제공', 'warn') }}{% else %}{{ fact('gift', '받으면 영구 소장') }}{% endif %}{% if g.upcoming %}{{ fact('clock', (g.starts_at|kdatetime) ~ ' 공개', 'hot') }}{% else %}{{ fact('clock', (g.ends_at|kdatetime) ~ '까지', 'hot') }}{% endif %}{{ fact('refresh', '매주 금요일 0시 교체') }}</div>
   </div>
@@ -380,11 +385,11 @@
   {% if bg %}<div class="bgblur"><img src="{{ bg.art_tall or bg.image }}" alt=""></div>{% endif %}
   {{ topline(post) }}
   <div class="legend">
-    <h3>카드는<br><em>이렇게 읽어요</em></h3>
+    <h3>카드는<br>이렇게 읽어요</h3>
     <div class="items">
       <div class="it" style="animation-delay:.2s"><div class="ic"><svg><use href="#i-tag"/></svg></div><div><b>할인가와 스토어</b><p>큰 숫자가 지금 가격, 위에 적힌 곳이 판매처입니다.<br>그 아래 취소선이 정가예요.</p></div></div>
       <div class="it" style="animation-delay:.3s"><div class="ic"><svg><use href="#i-stack"/></svg></div><div><b>다른 플랫폼 가격</b><p>같은 게임을 다른 스토어·콘솔에서도 할인하면 함께 적고,<br>더 싼 곳은 노란색 "최저"로 표시합니다.</p></div></div>
-      <div class="it" style="animation-delay:.4s"><div class="ic"><svg><use href="#i-thumb"/></svg></div><div><b>아이콘 줄</b><p>할인 종료 시각 · 한국어 지원 · 전세계/한국 평가.<br>스토어에서 확인되는 정보만 적습니다.</p></div></div>
+      <div class="it" style="animation-delay:.4s"><div class="ic"><svg><use href="#i-thumb"/></svg></div><div><b>아이콘 줄</b><p>할인 종료 시각, 한국어 지원, 추천 비율(한국 리뷰).<br>스토어에서 확인되는 정보만 적습니다.</p></div></div>
     </div>
     <div class="foot"><span>가격은 게시 시점 기준이며 바뀔 수 있습니다</span><span>{{ n|pad2 }} / {{ total|pad2 }}</span></div>
   </div>
@@ -395,7 +400,7 @@
   {% if bg %}<div class="bgblur"><img src="{{ bg.art_tall or bg.image }}" alt=""></div>{% endif %}
   {{ topline(post) }}
   <div class="boxpad">
-    <h3>숫자로 본<br><em>이번 주 스팀</em></h3>
+    <h3>숫자로 본<br>이번 주 스팀</h3>
     <div class="tiles">
       <div class="tile" style="animation-delay:.15s"><b data-count-from="0" data-count-to="{{ st.good_count or 0 }}" data-count-start=".3" data-count-dur="1">{{ st.good_count or 0 }}</b><span>평가 좋은 할인 게임</span></div>
       <div class="tile" style="animation-delay:.25s"><b>{{ st.avg_pct or 0 }}%</b><span>평균 할인율</span></div>
@@ -403,7 +408,7 @@
       <div class="tile" style="animation-delay:.45s"><b>{{ st.ending_count or 0 }}</b><span>7일 안에 끝나는 할인</span></div>
     </div>
     <p class="note" style="margin-top:22px">평가 좋은 할인: 할인 {{ min_discount }}% 이상, 전세계 평가 {{ min_review }}% 이상(스팀은 리뷰 500개 이상). 수집 시점 기준.</p>
-    {% if s.deals %}<div class="sublabel">THIS WEEK'S TOP 3</div>
+    {% if s.deals %}<div class="sublabel">이번 주 TOP 3</div>
     <div class="spots">{% for d in s.deals[:3] %}<div style="animation-delay: {{ 0.5 + loop.index0 * 0.1 }}s; position: relative"><img src="{{ d.art_tall or d.image }}" alt="" style="aspect-ratio: 3 / 2.3"><em style="position:absolute; left:0; top:0; font-style:normal; font-family:var(--num); font-size:44px; padding:6px 12px 2px; background:var(--brand); color:var(--brand-ink)">−{{ d.discount }}%</em><span>{{ d.title }}</span></div>{% endfor %}</div>{% endif %}
     <div class="foot"><span>{{ handle }}</span><span>{{ n|pad2 }} / {{ total|pad2 }}</span></div>
   </div>
@@ -414,13 +419,13 @@
   {% if s.spotlights %}<div class="bgblur"><img src="{{ s.spotlights[0].image }}" alt=""></div>{% endif %}
   {{ topline(post) }}
   <div class="boxpad">
-    <h3>이번 주<br><em>세일·페스티벌</em></h3>
+    <h3>이번 주<br>세일과 페스티벌</h3>
     {% if s.events %}<div class="ev">
       {% for e in s.events[:4] %}<div style="animation-delay: {{ 0.15 + loop.index0 * 0.08 }}s"><i class="{{ 'on' if e.status == '진행 중' else '' }}">{{ e.status }}</i><span>{{ e.name }}</span><small>{{ e.start.month }}/{{ e.start.day }}–{{ e.end.month }}/{{ e.end.day }}</small></div>{% endfor %}
     </div>{% endif %}
-    {% if s.spotlights %}<div class="sublabel">NOW ON STEAM · 진행 중인 기획전</div>
+    {% if s.spotlights %}<div class="sublabel">지금 스팀에서 열리는 기획전</div>
     <div class="spots">{% for sp in s.spotlights[:3] %}<div style="animation-delay: {{ 0.4 + loop.index0 * 0.1 }}s"><img src="{{ sp.image }}" alt=""><span>{{ sp.title }}</span></div>{% endfor %}</div>{% endif %}
-    <div class="foot"><span>출처: Steamworks 공식 일정 · 스팀 메인</span><span>{{ n|pad2 }} / {{ total|pad2 }}</span></div>
+    <div class="foot"><span>출처: Steamworks 공식 일정, 스팀 메인</span><span>{{ n|pad2 }} / {{ total|pad2 }}</span></div>
   </div>
 </section>
 
@@ -429,13 +434,13 @@
   <div class="cinema-bg"></div>
   {{ topline(post) }}
   <div class="cin">
-    <div class="no"><b>No.{{ s.rank|pad2 }}</b><span>{% if d.developer %}{{ d.developer }}{% endif %}{% if d.release_year %} · {{ d.release_year }}{% endif %}</span></div>
+    <div class="no"><b>{{ s.rank|pad2 }}</b><span>{% if d.developer %}{{ d.developer }}{% endif %}{% if d.release_year %}, {{ d.release_year }}{% endif %}</span></div>
     <div class="wide"><img class="bg" src="{{ d.art_wide or d.art_tall or d.image }}" alt="">{% if d.logo %}<img class="logo" src="{{ d.logo }}" alt="" onerror="this.remove()">{% endif %}</div>
     <div class="body">
       <h2>{{ d.title }}</h2>
       <div class="row">
         <em data-count-from="0" data-count-to="{{ d.discount }}" data-count-start=".8" data-count-dur=".5" data-prefix="−" data-suffix="%">−{{ d.discount }}%</em>
-        <div class="pr"><small>{{ d.store|store_name|upper }}{% if d.platforms %} · {{ d.platforms|sort(reverse=true)|join('/') }}{% endif %}</small><b data-count-from="{{ d.regular }}" data-count-to="{{ d.price }}" data-count-start=".6" data-count-dur="1.2" data-prefix="₩" data-round="10">₩{{ d.price|won }}</b><s>₩{{ d.regular|won }}</s></div>
+        <div class="pr"><small>{{ d.store|store_name }}{% if d.platforms %} {{ d.platforms|sort(reverse=true)|join('/') }}{% endif %} 판매가</small><b data-count-from="{{ d.regular }}" data-count-to="{{ d.price }}" data-count-start=".6" data-count-dur="1.2" data-prefix="₩" data-round="10">₩{{ d.price|won }}</b><s>₩{{ d.regular|won }}</s></div>
       </div>
       {{ offers(d) }}
       {{ facts(d, post) }}
@@ -448,17 +453,17 @@
 <section class="slide yellow">
   {{ topline(post) }}
   <div class="boxpad">
-    <h3 style="font-size:60px">금주의 <em>인디</em></h3>
+    <h3 style="font-size:60px">금주의 인디</h3>
     <div class="grid4">
     {% for d in s.deals %}
       <div class="card" style="animation-delay: {{ 0.15 + loop.index0 * 0.1 }}s">
         <div class="im"><img src="{{ d.art_tall or d.image }}" alt=""><em>−{{ d.discount }}%</em></div>
         <div class="tx"><div class="t">{{ d.title }}</div>
-          <div class="p"><b>₩{{ d.price|won }}</b><span>{% if d.review_pct is not none %}전세계 {{ d.review_pct }}%{% endif %}{% if d.korean and d.korean != '미지원' %} · 한국어{% endif %}</span></div></div>
+          <div class="p"><b>₩{{ d.price|won }}</b><span>{% if d.review_pct is not none %}추천 {{ d.review_pct }}%{% endif %}{% if d.korean and d.korean != '미지원' %}, 한국어{% endif %}</span></div></div>
       </div>
     {% endfor %}
     </div>
-    <div class="foot" style="opacity:.7"><span>스팀 인디 태그 · 전세계 평가 85% 이상</span><span>{{ n|pad2 }} / {{ total|pad2 }}</span></div>
+    <div class="foot" style="opacity:.7"><span>스팀 인디 태그, 추천 85% 이상</span><span>{{ n|pad2 }} / {{ total|pad2 }}</span></div>
   </div>
   {% if sample %}<div class="sample">샘플 데이터</div>{% endif %}
 </section>
@@ -471,7 +476,7 @@
     <div class="half" style="--accent2: {{ d.palette.accent or '#ffd60a' }}; animation-delay: {{ 0.1 + loop.index0 * 0.2 }}s">
       <div class="im"><img src="{{ d.art_tall or d.image }}" alt=""></div>
       <div class="tx">
-        <span class="n">{{ (s.offset + loop.index)|pad2 }} · {{ d.store|store_name|upper }}</span>
+        <span class="n">{{ (s.offset + loop.index)|pad2 }}<small>{{ d.store|store_name }}</small></span>
         <h2>{{ d.title }}</h2>
         <div class="row"><em>−{{ d.discount }}%</em><div><s>₩{{ d.regular|won }}</s><b>₩{{ d.price|won }}</b></div></div>
         {{ offers(d) }}
@@ -502,7 +507,7 @@
   {% if s.spotlights %}<div class="bgblur"><img src="{{ s.spotlights[0].image }}" alt=""></div>{% endif %}
   {{ topline(post) }}
   <div class="boxpad">
-    <h3>다음 주<br><em>미리 보기</em></h3>
+    <h3>다음 주<br>미리 보기</h3>
     <div class="ev">
       {% for e in s.events[:4] %}<div style="animation-delay: {{ 0.15 + loop.index0 * 0.08 }}s"><i class="{{ 'on' if e.status == '진행 중' else '' }}">{{ e.status }}</i><span>{{ e.name }}</span><small>{{ e.start.month }}/{{ e.start.day }}–{{ e.end.month }}/{{ e.end.day }}</small></div>{% endfor %}
       {% if not s.events %}<div><i>—</i><span>다음 주에 시작하는 스팀 공식 행사는 없습니다</span><small></small></div>{% endif %}
@@ -524,8 +529,8 @@
       <div><i>MON</i>이번 주 스팀 리포트</div>
       <div><i>TUE</i>대작 할인</div>
       <div><i>WED</i>금주의 인디</div>
-      <div><i>THU</i>5천 원 이하 · 한국어 지원</div>
-      <div><i>FRI</i>0시 에픽 무료 · 마감 임박</div>
+      <div><i>THU</i>5천 원 이하, 한국어 지원</div>
+      <div><i>FRI</i>0시 에픽 무료, 마감 임박</div>
       <div><i>SAT</i>콘솔 세일 (할인할 때)</div>
       <div><i>SUN</i>주간 결산</div>
     </div>
