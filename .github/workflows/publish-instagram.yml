@@ -1,0 +1,67 @@
+# GameSaleInsta/<오늘>/schedule.json 의 게시 시각이 지난 칸을 인스타그램에 올린다 (dealbot/instagram.py).
+# 켜는 법: 저장소 Variables 에 DEALBOT_AUTOPUBLISH=true, Secrets 에 IG_USER_ID, IG_ACCESS_TOKEN.
+# 설정 안내는 docs/instagram_setup.md. 스케줄 실행이 늦어져도 게시 시각 3시간 안이면 올리고, 그 뒤면 건너뛴다.
+name: publish-instagram
+
+permissions:
+  contents: write
+
+on:
+  schedule:
+    - cron: "3 0 * * *"     # 09:03 KST  매일 스토리
+    - cron: "3 3 * * *"     # 12:03 KST  월 리포트, 토 콘솔
+    - cron: "3 9 * * *"     # 18:03 KST  금 마감 임박
+    - cron: "3 10 * * *"    # 19:03 KST  화·수·목 피드
+    - cron: "3 11 * * *"    # 20:03 KST  월·금 릴스, 일 결산
+    - cron: "3 14 * * *"    # 23:03 KST  목 에픽 예고 스토리
+    - cron: "30 15 * * 4"   # 금 00:30 KST  에픽 무료 (00:10 초안 뒤)
+  workflow_dispatch:
+    inputs:
+      dir:
+        description: "이 폴더만 지금 올림 (예: report). 비우면 게시 시각이 된 것만"
+        required: false
+      date:
+        description: "YYYY-MM-DD (비우면 오늘 KST)"
+        required: false
+      dry_run:
+        description: "올리지 않고 무엇을 올릴지만 확인"
+        type: boolean
+        default: true
+
+concurrency:
+  group: dealbot-data
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.event_name == 'workflow_dispatch' || vars.DEALBOT_AUTOPUBLISH == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      IG_USER_ID: ${{ secrets.IG_USER_ID }}
+      IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+      IG_GRAPH_HOST: ${{ vars.IG_GRAPH_HOST }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Publish
+        run: |
+          # 이미지 URL 은 지금 커밋에 고정한다 (이후 커밋으로 파일이 바뀌어도 같은 이미지가 올라가게).
+          export DEALBOT_MEDIA_BASE="https://raw.githubusercontent.com/${{ github.repository }}/$(git rev-parse HEAD)/GameSaleInsta"
+          args=()
+          [ -n "${{ github.event.inputs.date }}" ] && args+=(--date "${{ github.event.inputs.date }}")
+          [ -n "${{ github.event.inputs.dir }}" ] && args+=(--dir ${{ github.event.inputs.dir }})
+          [ "${{ github.event.inputs.dry_run }}" = "true" ] && args+=(--dry-run)
+          python -m dealbot publish "${args[@]}"
+      - name: Commit published log
+        if: always()
+        run: |
+          git config user.name "dealbot"
+          git config user.email "dealbot@users.noreply.github.com"
+          git add GameSaleInsta/*/published.json 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "data: published $(TZ=Asia/Seoul date +%F)"
+          git pull --rebase --autostash || true
+          git push || true

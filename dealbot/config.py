@@ -39,3 +39,13 @@ LIST_SLIDE_ITEMS = 6
 ACCOUNT_HANDLE = os.getenv("DEALBOT_HANDLE") or "@your_handle"  # 워크플로에서 변수가 비어 있으면 "" 로 들어온다
 BRAND = os.getenv("DEALBOT_BRAND") or "주간 게임 세일"
 THEME = os.getenv("DEALBOT_THEME", "poster")
+
+# 인스타그램 자동 게시 (dealbot/instagram.py). 시크릿이 없으면 게시하지 않는다.
+DRAFTS_DIR = Path(os.getenv("DEALBOT_DRAFTS_DIR", ROOT / "GameSaleInsta"))  # 매일 결과물이 쌓이는 폴더
+IG_USER_ID = os.getenv("IG_USER_ID", "")            # 인스타 비즈니스/크리에이터 계정 ID (숫자)
+IG_ACCESS_TOKEN = os.getenv("IG_ACCESS_TOKEN", "")  # 장기 액세스 토큰
+IG_GRAPH_HOST = os.getenv("IG_GRAPH_HOST") or "graph.facebook.com"  # 인스타 로그인 토큰이면 graph.instagram.com
+IG_GRAPH_VERSION = os.getenv("IG_GRAPH_VERSION") or "v23.0"
+# 이미지는 공개 URL 로만 넘길 수 있다. 워크플로가 커밋 SHA 로 raw.githubusercontent.com 주소를 만들어 넣는다.
+MEDIA_BASE_URL = os.getenv("DEALBOT_MEDIA_BASE", "").rstrip("/")
+PUBLISH_WINDOW_HOURS = 3  # 게시 시각이 이만큼 지나면 늦게라도 올리지 않는다 (지난 할인 방지)

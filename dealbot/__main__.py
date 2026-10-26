@@ -12,7 +12,7 @@ import argparse
 import json
 from datetime import datetime
 
-from . import config, curate, history, motion, posts, render, state
+from . import config, curate, history, instagram, motion, posts, render, state
 from .models import Deal, FreeGame
 from .sources import directg, epic, gog, playstation, steam, steam_events, stove
 
@@ -138,8 +138,8 @@ def build_ctx(kind: str, deals, free, picks, sample: bool) -> dict:
     return ctx
 
 
-def make_post(kind: str, deals, free, stores, con, out, args, sample: bool = False) -> None:
-    """포맷 하나를 poster 디자인으로 렌더링: out/<kind>/ 에 PNG(+MP4), caption.txt."""
+def make_post(kind: str, deals, free, stores, con, out, args, sample: bool = False) -> str | None:
+    """포맷 하나를 poster 디자인으로 렌더링: out/<폴더>/ 에 PNG(+MP4), caption.txt. 만든 폴더 이름을 돌려준다."""
     if kind.startswith("reel"):
         src = kind.split(":", 1)[1] if ":" in kind else "report"
         picks = posts.select(src, deals, 3)
@@ -150,7 +150,7 @@ def make_post(kind: str, deals, free, stores, con, out, args, sample: bool = Fal
         if args.gif:
             motion.to_gif(reel, width=270, fps=10)
         print(f"[reel] {reel}")
-        return
+        return reel.parent.name
     if kind == "console" and not posts.console_ready(deals):
         alt = posts.console_fallback()
         print(f"[console] 콘솔 할인이 기준(인기 {posts.CONSOLE_MAX_RANK}위 안 {posts.CONSOLE_MIN_DISCOUNT}% 이상 "
@@ -165,18 +165,17 @@ def make_post(kind: str, deals, free, stores, con, out, args, sample: bool = Fal
         if kind == "free":
             if not free:
                 print("[free] 무료 배포 게임이 없어 건너뜀")
-                return
+                return None
             if all(g.kr_blocked for g in free if not g.upcoming):
                 print("[free] 이번 주 무료 게임이 모두 한국 미제공 → 피드는 건너뛰고 스토리만 만듦")
-                make_post("story:upcoming-free", deals, free, stores, con, out, args, sample)
-                return
+                return make_post("story:upcoming-free", deals, free, stores, con, out, args, sample)
         exclude = set() if sample else state.used_keys()
         picks = [] if kind == "free" else posts.select(kind, deals, exclude=exclude)
         if kind not in ("story", "guide", "recap"):
             picks = posts.trim(kind, picks)
         if kind not in ("free", "recap") and not picks:
             print(f"[{kind}] 조건에 맞는 게임이 없어 건너뜀")
-            return
+            return None
         for d in picks:
             if con is not None and not d.history:
                 d.history = history.series(con, d)
@@ -191,7 +190,7 @@ def make_post(kind: str, deals, free, stores, con, out, args, sample: bool = Fal
         name = kind
     if not slides:
         print(f"[{kind}] 만들 슬라이드가 없어 건너뜀")
-        return
+        return None
     r = render.render_theme(slides, "poster", out, name=name, motion_slides=args.motion,
                             sample=sample, affiliate=args.affiliate)
     text = posts.story_caption(picks[0]) if kind == "story" and picks else posts.caption(
@@ -205,6 +204,7 @@ def make_post(kind: str, deals, free, stores, con, out, args, sample: bool = Fal
         for mp4 in r["mp4"]:
             motion.to_gif(mp4)
     print(f"[{name}] 이미지 {len(r['png'])}장, 영상 {len(r['mp4'])}개 → {out / name}")
+    return name
 
 
 def cmd_post(args) -> None:
@@ -215,16 +215,35 @@ def cmd_post(args) -> None:
 
 
 def cmd_today(args) -> None:
+    """오늘 편성표대로 만들고, 게시 시각과 폴더를 schedule.json 에 적는다 (instagram.py 가 읽어 올린다).
+    이미 인스타에 올린 칸은 다시 만들지 않는다 (금요일 0시 에픽 무료 → 아침 재실행 등)."""
+    today = datetime.now(render.KST).strftime("%Y-%m-%d")
     jobs = posts.jobs_for()
+    if not any(kind == "story" for _, kind in jobs):
+        jobs.append((posts.STORY_AT, "story"))  # 스토리는 매일
+    if args.only:
+        jobs = [(at, kind) for at, kind in jobs if kind in args.only]
+    done = instagram.published(today)
+    prev = {e["kind"]: e for e in instagram.schedule(today)}
     print("오늘 편성:", ", ".join(f"{at} {kind}" for at, kind in jobs))
     deals, free, stores, con = prepare()
-    out = config.OUTPUT_DIR / datetime.now(render.KST).strftime("%Y-%m-%d")
-    kinds = [kind for _, kind in jobs]
-    if "story" not in kinds:
-        kinds.append("story")  # 스토리는 매일
-    for kind in kinds:
-        make_post(kind, deals, free, stores, con, out, args)
-    (out / "schedule.txt").write_text("\n".join(f"{at}  {kind}" for at, kind in jobs), encoding="utf-8")
+    out = config.OUTPUT_DIR / today
+    entries = [e for e in prev.values() if e["kind"] not in {k for _, k in jobs} or e.get("dir") in done]
+    for at, kind in jobs:
+        if prev.get(kind, {}).get("dir") in done:
+            print(f"[{kind}] 이미 게시됨, 건너뜀")
+            continue
+        name = make_post(kind, deals, free, stores, con, out, args)
+        if name:
+            entries.append({"at": at, "kind": kind, "dir": name})
+    entries.sort(key=lambda e: e["at"])
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "schedule.json").write_text(json.dumps(entries, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def cmd_publish(args) -> None:
+    instagram.publish_due(args.date or datetime.now(render.KST).strftime("%Y-%m-%d"),
+                          only=args.dir, dry_run=args.dry_run)
 
 
 def cmd_sample(args) -> None:
@@ -245,10 +264,16 @@ def main() -> None:
     ap = argparse.ArgumentParser(prog="dealbot")
     sub = ap.add_subparsers(dest="cmd", required=True)
     for name, fn in (("run", cmd_run), ("collect", cmd_collect), ("sample", cmd_sample),
-                     ("post", cmd_post), ("today", cmd_today)):
+                     ("post", cmd_post), ("today", cmd_today), ("publish", cmd_publish)):
         p = sub.add_parser(name)
         if name == "post":
             p.add_argument("kinds", nargs="+", choices=POST_KINDS)
+        if name == "today":
+            p.add_argument("--only", nargs="*", help="편성표 중 이 포맷만 (예: free)")
+        if name == "publish":
+            p.add_argument("--date", help="YYYY-MM-DD (기본: 오늘 KST)")
+            p.add_argument("--dir", nargs="*", help="이 폴더만 지금 바로 올림 (예: report)")
+            p.add_argument("--dry-run", action="store_true", help="API 호출 없이 무엇을 올릴지만 출력")
         if name == "sample":
             p.add_argument("--post", nargs="*", choices=POST_KINDS, help="poster 포맷으로 샘플 생성")
         p.add_argument("--theme", default=config.THEME, choices=[*render.THEMES, "all"])

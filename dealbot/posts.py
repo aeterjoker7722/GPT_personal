@@ -76,6 +76,8 @@ POSTS = {
 THURSDAY_ROTATION = ["under5k", "korean"]
 
 # 요일(월=0)별 편성. (시각, 포맷). 시각은 업로드 권장 시각(KST)
+STORY_AT = "09:00"  # 매일 스토리 (목요일 23:00 에픽 예고 스토리는 별도)
+
 WEEKLY_PLAN = {
     0: [("12:00", "report"), ("20:00", "reel")],
     1: [("19:00", "aaa")],
