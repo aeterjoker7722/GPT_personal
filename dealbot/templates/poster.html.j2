@@ -30,34 +30,35 @@
   @keyframes shine { from { transform: translateX(-130%) skewX(-18deg) } to { transform: translateX(260%) skewX(-18deg) } }
 
   /* 상단 크레딧 라인 */
-  .topline { position: absolute; left: 48px; right: 48px; top: 40px; z-index: 6; display: flex; justify-content: space-between; align-items: center;
+  /* 오른쪽 위는 인스타 캐러셀 장수 표시(1/10)가 덮으므로 비워 둔다: 브랜드와 호수를 왼쪽에 모은다 */
+  .topline { position: absolute; left: 48px; right: 48px; top: 40px; z-index: 6; display: flex; justify-content: flex-start; gap: 26px; align-items: baseline;
              font-size: 21px; font-weight: 700; letter-spacing: .02em; padding-bottom: 14px; border-bottom: 2px solid rgba(244,240,230,.85); animation: fade .6s both; }
   .topline b { font-weight: 900; font-size: 25px; letter-spacing: -.02em; }
   .topline .mid { display: none; }
-  .topline .end { text-align: right; }
-  .story .topline { top: 150px; }
+  .topline .end { opacity: .62; }
+  .story .topline { top: 260px; }  /* 스토리 위 250px 은 진행 막대·프로필 자리 */
   .scrim { position: absolute; left: 0; right: 0; top: 0; height: 360px; z-index: 2; background: linear-gradient(rgba(0,0,0,.62), rgba(0,0,0,0)); }
 
   /* 세로 배치형(메인 카드/무료/스토리): 검은 크레딧 바 → 키아트 → 패널. 키아트 하단에 박힌 로고가 패널에 반쯤 잘리지 않게 */
   .stack { display: flex; flex-direction: column; }
   .stack > .topline { position: relative; left: auto; right: auto; top: auto; flex: none; margin: 0; padding: 34px 48px 18px; border: 0; background: var(--black); }
-  .story.stack > .topline { padding-top: 130px; }
+  .story.stack > .topline { padding-top: 260px; }
   .stack > .art { position: relative; inset: auto; flex: 1 1 auto; overflow: hidden; min-height: 0; }
   .stack > .art img { object-position: 50% 0%; transform-origin: 50% 0%; }
   .stack > .art::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 150px; z-index: 1; background: linear-gradient(rgba(11,11,10,0), var(--black)); }
   .stack > .panel { position: relative; bottom: auto; flex: none; }
   .story.stack > .panel { bottom: auto; }
-  .story.stack .tail { flex: none; height: 250px; background: var(--black); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; opacity: .5; }
+  .story.stack .tail { flex: none; height: 300px;  /* 아래 300px 은 답장 칸 */ background: var(--black); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; opacity: .5; }
   .stack .rank { top: 112px; }
-  .story.stack .rank { top: 210px; }
+  .story.stack .rank { top: 330px; }
 
   /* 메인 카드 */
   .art { position: absolute; inset: 0; z-index: 1; }
   .art img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 12%; animation: kb 6s cubic-bezier(.2,.6,.3,1) both; }
   .rank { position: absolute; left: 44px; top: 98px; z-index: 6; font-family: var(--num); font-size: 168px; line-height: 1; color: transparent; -webkit-text-stroke: 3px var(--paper); animation: up .6s .15s both; }
-  .story .rank { top: 210px; }
+  .story .rank { top: 330px; }
   .panel { position: absolute; left: 0; right: 0; bottom: 0; z-index: 5; animation: rise .75s .2s cubic-bezier(.7,0,.2,1) both; }
-  .story .panel { bottom: 250px; }
+  .story .panel { bottom: 300px; }
   .deal { display: grid; grid-template-columns: auto 1fr; align-items: stretch; }
   .pct { background: var(--accent); color: var(--on); font-family: var(--num); font-size: 236px; line-height: .82; padding: 30px 40px 14px 44px; position: relative; overflow: hidden; white-space: nowrap; min-width: max-content; }
   .pct span { display: inline-block; animation: pop .45s .75s cubic-bezier(.2,1.4,.4,1) both; }
@@ -101,7 +102,8 @@
   .statrow { display: flex; align-items: flex-end; justify-content: space-between; margin-top: 34px; padding-top: 22px; border-top: 3px solid var(--paper); animation: up .7s .55s both; }
   .statrow .stat { font-family: var(--num); font-size: 120px; line-height: .85; color: var(--brand); }
   .statrow .stat small { display: block; font-family: var(--sans); font-size: 22px; font-weight: 800; color: var(--paper); letter-spacing: .02em; margin-top: 10px; }
-  .statrow .who { text-align: right; font-size: 22px; font-weight: 700; line-height: 1.5; opacity: .8; }
+  /* 표지는 영상이라 오른쪽 아래에 음소거 버튼이 뜬다: 숫자 위쪽 높이에 맞춰 올려 둔다 */
+  .statrow .who { align-self: flex-start; text-align: right; font-size: 22px; font-weight: 700; line-height: 1.5; opacity: .8; }
 
   /* 목록 */
   .listwrap { position: absolute; inset: 0; padding: 120px 48px 48px; display: flex; flex-direction: column; z-index: 3; }
@@ -329,7 +331,7 @@
   {{ topline(post) }}
   <div class="art"><img src="{{ d.art_tall or d.image }}" alt=""></div>
   {{ deal_panel(d, post) }}
-  <div class="tail">{{ handle }}</div>
+  <div class="tail"></div>
   {% if sample %}<div class="sample">샘플 데이터</div>{% endif %}
 </section>
 
@@ -343,7 +345,7 @@
     <div class="titlebar"><h2>{{ g.title }}</h2></div>
     <div class="facts">{% if g.kr_blocked %}{{ fact('ban', '한국 계정 미제공', 'warn') }}{% else %}{{ fact('gift', '받으면 영구 소장') }}{% endif %}{% if g.upcoming %}{{ fact('clock', (g.starts_at|kdatetime) ~ ' 공개', 'hot') }}{% else %}{{ fact('clock', (g.ends_at|kdatetime) ~ '까지', 'hot') }}{% endif %}{{ fact('refresh', '매주 금요일 0시 교체') }}</div>
   </div>
-  <div class="tail">{{ handle }}</div>
+  <div class="tail"></div>
 </section>
 
 {% elif s.kind == "list" %}{% set bg = s.deals[0] if s.deals else none %}
@@ -363,7 +365,7 @@
       </div>
     {% endfor %}
     </div>
-    <div class="foot"><span>가격은 게시 시점 기준</span><span>{{ n|pad2 }} / {{ total|pad2 }}</span></div>
+    <div class="foot"><span>가격은 게시 시점 기준</span></div>
   </div>
 </section>
 
@@ -391,7 +393,7 @@
       <div class="it" style="animation-delay:.3s"><div class="ic"><svg><use href="#i-stack"/></svg></div><div><b>다른 플랫폼 가격</b><p>같은 게임을 다른 스토어·콘솔에서도 할인하면 함께 적고,<br>더 싼 곳은 노란색 "최저"로 표시합니다.</p></div></div>
       <div class="it" style="animation-delay:.4s"><div class="ic"><svg><use href="#i-thumb"/></svg></div><div><b>아이콘 줄</b><p>할인 종료 시각, 한국어 지원, 추천 비율(한국 리뷰).<br>스토어에서 확인되는 정보만 적습니다.</p></div></div>
     </div>
-    <div class="foot"><span>가격은 게시 시점 기준이며 바뀔 수 있습니다</span><span>{{ n|pad2 }} / {{ total|pad2 }}</span></div>
+    <div class="foot"><span>가격은 게시 시점 기준이며 바뀔 수 있습니다</span></div>
   </div>
 </section>
 
@@ -410,7 +412,7 @@
     <p class="note" style="margin-top:22px">평가 좋은 할인: 할인 {{ min_discount }}% 이상, 전세계 평가 {{ min_review }}% 이상(스팀은 리뷰 500개 이상). 수집 시점 기준.</p>
     {% if s.deals %}<div class="sublabel">이번 주 TOP 3</div>
     <div class="spots">{% for d in s.deals[:3] %}<div style="animation-delay: {{ 0.5 + loop.index0 * 0.1 }}s; position: relative"><img src="{{ d.art_tall or d.image }}" alt="" style="aspect-ratio: 3 / 2.3"><em style="position:absolute; left:0; top:0; font-style:normal; font-family:var(--num); font-size:44px; padding:6px 12px 2px; background:var(--brand); color:var(--brand-ink)">−{{ d.discount }}%</em><span>{{ d.title }}</span></div>{% endfor %}</div>{% endif %}
-    <div class="foot"><span>{{ handle }}</span><span>{{ n|pad2 }} / {{ total|pad2 }}</span></div>
+    <div class="foot"><span>{{ handle }}</span></div>
   </div>
 </section>
 
@@ -425,7 +427,7 @@
     </div>{% endif %}
     {% if s.spotlights %}<div class="sublabel">지금 스팀에서 열리는 기획전</div>
     <div class="spots">{% for sp in s.spotlights[:3] %}<div style="animation-delay: {{ 0.4 + loop.index0 * 0.1 }}s"><img src="{{ sp.image }}" alt=""><span>{{ sp.title }}</span></div>{% endfor %}</div>{% endif %}
-    <div class="foot"><span>출처: Steamworks 공식 일정, 스팀 메인</span><span>{{ n|pad2 }} / {{ total|pad2 }}</span></div>
+    <div class="foot"><span>출처: Steamworks 공식 일정, 스팀 메인</span></div>
   </div>
 </section>
 
@@ -463,7 +465,7 @@
       </div>
     {% endfor %}
     </div>
-    <div class="foot" style="opacity:.7"><span>스팀 인디 태그, 추천 85% 이상</span><span>{{ n|pad2 }} / {{ total|pad2 }}</span></div>
+    <div class="foot" style="opacity:.7"><span>스팀 인디 태그, 추천 85% 이상</span></div>
   </div>
   {% if sample %}<div class="sample">샘플 데이터</div>{% endif %}
 </section>
@@ -516,7 +518,7 @@
       <div class="tile"><b>{{ s.week_count }}</b><span>이번 주 소개한 게임</span></div>
       <div class="tile"><b>MON</b><span>다음 리포트 12:00</span></div>
     </div>
-    <div class="foot"><span>{{ handle }}</span><span>{{ n|pad2 }} / {{ total|pad2 }}</span></div>
+    <div class="foot"><span>{{ handle }}</span></div>
   </div>
 </section>
 
