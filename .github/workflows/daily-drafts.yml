@@ -33,7 +33,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-noto-cjk
+      - name: Install ffmpeg, CJK fonts
+        # 우분투 미러가 가끔 멈춘다: 한 번에 5분까지만 기다리고 최대 3번 다시 시도.
+        run: |
+          for i in 1 2 3; do
+            timeout 300 sh -c 'sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 update && sudo apt-get install -y ffmpeg fonts-noto-cjk' && exit 0
+            echo "apt 실패, 다시 시도 ($i)"; sleep 10
+          done
+          exit 1
       - run: pip install -r requirements.txt && playwright install --with-deps chromium
       - name: Render drafts
         run: |
