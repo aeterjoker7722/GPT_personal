@@ -44,6 +44,14 @@ jobs:
           else
             python -m dealbot today --motion
           fi
+      - name: Copy results to GameSaleInsta/<날짜>
+        # 평가용으로 완성본(이미지, 영상, 캡션)만 저장소에 남긴다. 중간 파일(trailer_*, part_*)과 html/json 은 뺀다.
+        run: |
+          d=$(TZ=Asia/Seoul date +%F)
+          [ -d "output/$d" ] || exit 0
+          mkdir -p "GameSaleInsta/$d"
+          (cd "output/$d" && find . -type f \( -name '*.png' -o -name '*.mp4' -o -name '*.gif' -o -name 'caption.txt' \) \
+             ! -name 'trailer_*' ! -name 'part_*' -exec cp --parents {} "../../GameSaleInsta/$d/" \;)
       - name: Commit weekly state (shown games, savings ledger)
         # 요일별 게시물이 같은 게임을 반복하지 않도록 이번 주 소개 기록과 누적 장부를 저장소에 남긴다.
         # 가격 DB(sqlite)는 collect-prices 워크플로가 커밋하므로 여기서는 되돌린다 (바이너리 충돌 방지).
@@ -51,8 +59,8 @@ jobs:
           git checkout -- data/price_history.sqlite 2>/dev/null || true
           git config user.name "dealbot"
           git config user.email "dealbot@users.noreply.github.com"
-          for f in data/week_state.json data/ledger.json; do [ -f "$f" ] && git add "$f"; done
-          git diff --cached --quiet || git commit -m "data: weekly state $(date -u +%F)"
+          for f in data/week_state.json data/ledger.json GameSaleInsta; do [ -e "$f" ] && git add "$f"; done
+          git diff --cached --quiet || git commit -m "data: weekly state and drafts $(TZ=Asia/Seoul date +%F)"
           git pull --rebase --autostash || true
           git push || true
       - uses: actions/upload-artifact@v4
