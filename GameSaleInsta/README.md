@@ -4,12 +4,14 @@
 
 ```
 GameSaleInsta/
-  2026-10-26/          월: 스팀 리포트 + 릴스
-    slide_01.png …     캐러셀 이미지 (1080×1350)
-    slide_01.mp4       움직이는 슬라이드
-    reel.mp4           릴스
-    caption.txt        본문 캡션
-  2026-10-27/          화: 대작 할인
+  2026-10-26/              월
+    report/                스팀 리포트 캐러셀
+      slide_01.png …       이미지 (1080×1350)
+      slide_01.mp4         움직이는 표지
+      caption.txt          본문 캡션
+    reel/reel.mp4          릴스
+    story/                 스토리 (1080×1920)
+  2026-10-27/              화: aaa/ (대작 할인), story/
   …
 ```
 
