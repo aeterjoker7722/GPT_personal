@@ -36,6 +36,6 @@ CHROMIUM_PATH = os.getenv("DEALBOT_CHROMIUM", "")
 # 카드뉴스 구성
 HERO_SLIDES = int(os.getenv("DEALBOT_HERO_SLIDES", "5"))
 LIST_SLIDE_ITEMS = 6
-ACCOUNT_HANDLE = os.getenv("DEALBOT_HANDLE", "@your_handle")
-BRAND = os.getenv("DEALBOT_BRAND", "주간 게임 세일")
+ACCOUNT_HANDLE = os.getenv("DEALBOT_HANDLE") or "@your_handle"  # 워크플로에서 변수가 비어 있으면 "" 로 들어온다
+BRAND = os.getenv("DEALBOT_BRAND") or "주간 게임 세일"
 THEME = os.getenv("DEALBOT_THEME", "poster")
