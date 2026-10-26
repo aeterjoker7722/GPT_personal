@@ -6,7 +6,7 @@
 GameSaleInsta/
   2026-10-26/              월
     report/                스팀 리포트 캐러셀
-      slide_01.png …       이미지 (1080×1350)
+      slide_01.jpg …       이미지 (1080×1350)
       slide_01.mp4         움직이는 표지
       caption.txt          본문 캡션
     reel/reel.mp4          릴스
