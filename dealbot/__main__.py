@@ -134,7 +134,7 @@ def build_ctx(kind: str, deals, free, picks, sample: bool) -> dict:
         rows = state.ledger()
         ctx["ledger_rows"], ctx["ledger"] = rows, state.ledger_summary(rows)
         ctx["events"] = posts.next_week_events(ctx["events"]) or ctx["events"][:3]
-        ctx["week_count"] = len(state.used_keys())
+        ctx["week_count"] = len({k for k in state.used_keys() if k.startswith("t:")})  # 소개한 게임 수 (스토어 중복 제외)
     return ctx
 
 

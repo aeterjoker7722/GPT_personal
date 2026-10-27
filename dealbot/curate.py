@@ -13,7 +13,7 @@ KOREAN_BONUS = {"음성": 12, "자막": 8, "지원": 8, "미지원": -10}
 
 
 def normalize_title(title: str) -> str:
-    t = unicodedata.normalize("NFKC", title).lower()
+    t = unicodedata.normalize("NFKC", re.sub(r"[™®©]", " ", title)).lower()  # NFKC 가 ™ 를 "TM" 으로 바꾸기 전에 뺀다
     t = re.sub(r"[™®©:'’\-–—!?.,]", " ", t)
     t = re.sub(r"\b(the|edition|standard|digital|pc)\b", " ", t)
     return re.sub(r"\s+", " ", t).strip()

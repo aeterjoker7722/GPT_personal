@@ -13,7 +13,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
 
-from . import config, curate
+from . import config, curate, state
 from .models import Deal, FreeGame
 
 KST = timezone(timedelta(hours=9))
@@ -126,7 +126,7 @@ def ending_soon(deals: list[Deal], hours: int = 80) -> list[Deal]:
 
 def select(kind: str, deals: list[Deal], n: int = 9, exclude: set[str] | None = None) -> list[Deal]:
     """포맷별 선정. exclude(이번 주 이미 소개한 게임)는 빼고 고른다. 결과가 적으면 그만큼만 쓴다."""
-    pool = [d for d in deals if d.key not in (exclude or set())]
+    pool = [d for d in deals if not state.is_used(d, exclude or set())]
     if kind in ("report", "weekly"):
         return curate.pick(deals, n)  # 주간 대표 게시물은 중복 제외 없이 최고만
     if kind == "lowest":
@@ -143,7 +143,7 @@ def select(kind: str, deals: list[Deal], n: int = 9, exclude: set[str] | None = 
         return curate.pick_console(deals, n)
     if kind == "story":  # 9:16 이라 세로 키아트가 있는 게임만 (가로 이미지를 늘리면 깨져 보임)
         tall = [d for d in deals if d.art_tall]
-        return curate.pick([d for d in tall if d.key not in (exclude or set())], 1) or curate.pick(tall, 1)
+        return curate.pick([d for d in tall if not state.is_used(d, exclude or set())], 1) or curate.pick(tall, 1)
     if kind in ("guide", "recap"):
         return curate.pick(deals, 5)  # 표지 그림용
     return []

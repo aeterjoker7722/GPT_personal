@@ -8,7 +8,7 @@ from __future__ import annotations
 import json
 from datetime import datetime, timedelta, timezone
 
-from . import config
+from . import config, curate
 from .models import Deal
 
 KST = timezone(timedelta(hours=9))
@@ -33,18 +33,31 @@ def _save(path, data) -> None:
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
+def title_key(d: Deal) -> str:
+    return "t:" + curate.offer_key(d.title)
+
+
+def is_used(d: Deal, used: set[str]) -> bool:
+    return d.key in used or title_key(d) in used
+
+
 def used_keys() -> set[str]:
     st = _load(WEEK_FILE, {})
-    return set(st.get("used", [])) if st.get("week") == week_id() else set()
+    if st.get("week") != week_id():
+        return set()
+    # 게시물별 제목 기록에서도 제목 키를 만든다 (제목 키를 남기기 전에 기록된 게임까지 걸러지게)
+    titles = {"t:" + curate.offer_key(t) for ts in st.get("posts", {}).values() for t in ts}
+    return set(st.get("used", [])) | titles
 
 
 def mark_used(kind: str, deals: list[Deal]) -> None:
     st = _load(WEEK_FILE, {})
     if st.get("week") != week_id():
         st = {"week": week_id(), "used": [], "posts": {}}
-    for d in deals:
-        if d.key not in st["used"]:
-            st["used"].append(d.key)
+    for d in deals:  # 스토어 키와 제목 키를 함께 남긴다 (같은 게임을 다른 스토어 가격으로 다시 소개하지 않게)
+        for k in (d.key, title_key(d)):
+            if k not in st["used"]:
+                st["used"].append(k)
     st["posts"][kind] = [d.title for d in deals]
     _save(WEEK_FILE, st)
 
