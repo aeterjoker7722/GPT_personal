@@ -9,7 +9,14 @@
     "steam:613100",
     "steam:203160",
     "steam:1196590",
-    "steam:678950"
+    "steam:678950",
+    "steam:534380",
+    "steam:728880",
+    "steam:1449690",
+    "steam:1182900",
+    "gog:shadow_tactics_blades_of_the_shogun",
+    "steam:275850",
+    "steam:1475810"
   ],
   "posts": {
     "report": [
@@ -22,6 +29,15 @@
       "Tomb Raider Game of the Year",
       "Biohazard Village",
       "DRAGON BALL FighterZ"
+    ],
+    "aaa": [
+      "Dying Light 2 Stay Human: Reloaded Edition",
+      "Overcooked! 2",
+      "The Walking Dead: The Telltale Definitive Series",
+      "A Plague Tale: Requiem",
+      "Shadow Tactics: Blades of the Shogun",
+      "No Man's Sky",
+      "Ghostwire: Tokyo"
     ]
   }
 }
