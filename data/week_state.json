@@ -16,7 +16,23 @@
     "steam:1182900",
     "gog:shadow_tactics_blades_of_the_shogun",
     "steam:275850",
-    "steam:1475810"
+    "steam:1475810",
+    "steam:304430",
+    "t:inside",
+    "steam:264710",
+    "t:서브노티카",
+    "steam:424840",
+    "t:little nightmares",
+    "steam:692850",
+    "t:bloodstained ritual of night",
+    "steam:242760",
+    "t:forest",
+    "steam:646570",
+    "t:slay spire",
+    "steam:322330",
+    "t:don t starve together",
+    "steam:1084600",
+    "t:my time at sandrock"
   ],
   "posts": {
     "report": [
@@ -38,6 +54,16 @@
       "Shadow Tactics: Blades of the Shogun",
       "No Man's Sky",
       "Ghostwire: Tokyo"
+    ],
+    "indie": [
+      "INSIDE",
+      "서브노티카",
+      "Little Nightmares",
+      "Bloodstained: Ritual of the Night",
+      "The Forest",
+      "Slay the Spire",
+      "Don't Starve Together",
+      "My Time at Sandrock"
     ]
   }
 }
