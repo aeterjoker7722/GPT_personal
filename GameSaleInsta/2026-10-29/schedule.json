@@ -1,0 +1,17 @@
+[
+  {
+    "at": "09:00",
+    "kind": "story",
+    "dir": "story"
+  },
+  {
+    "at": "19:00",
+    "kind": "under5k",
+    "dir": "under5k"
+  },
+  {
+    "at": "23:00",
+    "kind": "story:upcoming-free",
+    "dir": "story-free"
+  }
+]

@@ -32,7 +32,23 @@
     "steam:322330",
     "t:don t starve together",
     "steam:1084600",
-    "t:my time at sandrock"
+    "t:my time at sandrock",
+    "steam:239140",
+    "t:dying light",
+    "steam:750920",
+    "t:shadow of tomb raider definitive",
+    "steam:206440",
+    "t:to moon",
+    "steam:752590",
+    "t:a plague tale innocence",
+    "steam:466130",
+    "t:화이트데이 학교라는 이름의 미궁",
+    "steam:815370",
+    "t:green hell",
+    "steam:247080",
+    "t:crypt of necrodancer",
+    "steam:1496590",
+    "t:tchia"
   ],
   "posts": {
     "report": [
@@ -64,6 +80,17 @@
       "Slay the Spire",
       "Don't Starve Together",
       "My Time at Sandrock"
-    ]
+    ],
+    "under5k": [
+      "Dying Light",
+      "Shadow of the Tomb Raider: Definitive Edition",
+      "To the Moon",
+      "A Plague Tale: Innocence",
+      "화이트데이: 학교라는 이름의 미궁",
+      "Green Hell",
+      "Crypt of the NecroDancer",
+      "Tchia"
+    ],
+    "story:upcoming-free": []
   }
 }
