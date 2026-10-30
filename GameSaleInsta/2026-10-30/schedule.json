@@ -3,5 +3,20 @@
     "at": "00:05",
     "kind": "free",
     "dir": "free"
+  },
+  {
+    "at": "09:00",
+    "kind": "story",
+    "dir": "story"
+  },
+  {
+    "at": "18:00",
+    "kind": "ending",
+    "dir": "ending"
+  },
+  {
+    "at": "20:00",
+    "kind": "reel:ending",
+    "dir": "reel-ending"
   }
 ]
