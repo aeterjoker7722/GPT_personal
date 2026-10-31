@@ -48,7 +48,22 @@
     "steam:247080",
     "t:crypt of necrodancer",
     "steam:1496590",
-    "t:tchia"
+    "t:tchia",
+    "playstation:HP0700-CUSA11187_00-SET0000000000015",
+    "playstation:HP0700-CUSA06059_00-RISEOFTOMBRAIDER",
+    "t:rise of tomb raider 20 year celebration",
+    "playstation:HP0082-CUSA00302_00-000000TOMBRAIDER",
+    "t:tomb raider definitive 제품판",
+    "playstation:UP2047-PPSA02395_00-821MEEGOLDEDGEN9",
+    "t:metro exodus gold",
+    "playstation:HP0102-PPSA09418_00-RE4RMAINGAME0000",
+    "t:biohazard re 4",
+    "playstation:UP1018-CUSA04408_00-ASIASOWDEFEDIT00",
+    "t:미들 어스 섀도우 오브 워 완결판",
+    "playstation:HP0102-PPSA04290_00-BH2R000000000001",
+    "t:biohazard re 2",
+    "playstation:HP0102-PPSA03954_00-BH3ROFF000000001",
+    "t:biohazard re 3"
   ],
   "posts": {
     "report": [
@@ -92,6 +107,16 @@
       "Tchia"
     ],
     "story:upcoming-free": [],
-    "free": []
+    "free": [],
+    "console": [
+      "Shadow of the Tomb Raider: Definitive Edition",
+      "Rise of the Tomb Raider: 20 Year Celebration",
+      "TOMB RAIDER DEFINITIVE EDITION 제품판",
+      "Metro Exodus Gold Edition",
+      "BIOHAZARD RE:4 PS4 & PS5",
+      "미들 어스™: 섀도우 오브 워™ 완결판",
+      "BIOHAZARD RE:2",
+      "BIOHAZARD RE:3"
+    ]
   }
 }
