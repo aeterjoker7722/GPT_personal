@@ -1,0 +1,12 @@
+[
+  {
+    "at": "09:00",
+    "kind": "story",
+    "dir": "story"
+  },
+  {
+    "at": "20:00",
+    "kind": "recap",
+    "dir": "recap"
+  }
+]
