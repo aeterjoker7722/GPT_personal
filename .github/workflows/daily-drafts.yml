@@ -7,9 +7,10 @@ permissions:
   contents: write
 
 on:
-  schedule:
-    - cron: "37 23 * * *"   # 매일 08:37 KST
-    - cron: "10 15 * * 4"   # 금요일 00:10 KST
+  # 일시 중지 (2026-11-02): 다시 켜려면 아래 schedule 블록의 주석을 푼다
+  # schedule:
+  #   - cron: "37 23 * * *"   # 매일 08:37 KST
+  #   - cron: "10 15 * * 4"   # 금요일 00:10 KST
   workflow_dispatch:
     inputs:
       kinds:

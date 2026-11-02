@@ -3,8 +3,9 @@
 name: collect-prices
 
 on:
-  schedule:
-    - cron: "17 1 * * *"   # 매일 10:17 KST
+  # 일시 중지 (2026-11-02): 다시 켜려면 아래 schedule 블록의 주석을 푼다
+  # schedule:
+  #   - cron: "17 1 * * *"   # 매일 10:17 KST
   workflow_dispatch:
 
 permissions:
